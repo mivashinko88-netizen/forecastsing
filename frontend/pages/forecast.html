@@ -1,0 +1,3427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forecasts - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            padding: var(--space-4) var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .page-header .btn {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .page-header .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .page-content {
+            padding: var(--space-5);
+        }
+
+        /* Controls Bar */
+        .controls-bar {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-5);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .control-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .date-range-picker input {
+            width: 140px;
+        }
+
+        .date-range-picker span {
+            color: var(--gray-400);
+            font-size: 13px;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: 3px;
+        }
+
+        .view-toggle-btn {
+            padding: var(--space-2) var(--space-3);
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+        }
+
+        .view-toggle-btn.active {
+            background: white;
+            color: var(--gray-900);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-separator {
+            width: 1px;
+            height: 40px;
+            background: var(--gray-200);
+        }
+
+        /* Overview Cards */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-4);
+            margin-bottom: var(--space-5);
+        }
+
+        .overview-card {
+            background: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .overview-card.primary { background: linear-gradient(135deg, #fff 0%, #eef2ff 100%); }
+        .overview-card.primary::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .overview-card.success { background: linear-gradient(135deg, #fff 0%, #ecfdf5 100%); }
+        .overview-card.success::before { background: linear-gradient(90deg, #10b981, #34d399); }
+        .overview-card.warning { background: linear-gradient(135deg, #fff 0%, #fffbeb 100%); }
+        .overview-card.warning::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .overview-card.info { background: linear-gradient(135deg, #fff 0%, #eff6ff 100%); }
+        .overview-card.info::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .overview-card.purple { background: linear-gradient(135deg, #fff 0%, #faf5ff 100%); }
+        .overview-card.purple::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+        .overview-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-500);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .overview-label svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .overview-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.1;
+        }
+
+        .overview-value.small {
+            font-size: 20px;
+        }
+
+        .overview-subtext {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        .overview-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            margin-top: var(--space-2);
+        }
+
+        .overview-trend.up {
+            background: var(--success-100);
+            color: var(--success-700);
+        }
+
+        .overview-trend.down {
+            background: var(--error-100);
+            color: var(--error-700);
+        }
+
+        .overview-trend svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-5);
+            margin-bottom: var(--space-5);
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .chart-header {
+            padding: var(--space-4) var(--space-5);
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        /* Collapsible chart styles */
+        .chart-card.collapsed .chart-body,
+        .chart-card.collapsed .top-items-list,
+        .chart-card.collapsed .events-timeline,
+        .chart-card.collapsed .heatmap-container,
+        .chart-card.collapsed .day-groups-container,
+        .chart-card.collapsed .ai-insights-content,
+        .chart-card.collapsed .table-controls {
+            display: none !important;
+        }
+
+        .chart-card.collapsed {
+            min-height: auto;
+        }
+
+        .chart-card.collapsed .chart-header {
+            border-bottom: none;
+        }
+
+        .chart-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--space-1);
+            color: var(--gray-400);
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-toggle-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .chart-toggle-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform var(--transition-fast);
+        }
+
+        .chart-card.collapsed .chart-toggle-btn svg {
+            transform: rotate(-90deg);
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .chart-subtitle {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .chart-action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .chart-action-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .chart-action-btn svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-600);
+        }
+
+        .chart-body {
+            padding: var(--space-4);
+        }
+
+        /* Top Items List */
+        .top-items-list {
+            padding: var(--space-4);
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-2);
+            transition: background var(--transition-fast);
+        }
+
+        .top-item:hover {
+            background: var(--gray-50);
+        }
+
+        .top-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .top-item-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .top-item-rank.gold { background: #FEF3C7; color: #B45309; }
+        .top-item-rank.silver { background: #E5E7EB; color: #4B5563; }
+        .top-item-rank.bronze { background: #FED7AA; color: #C2410C; }
+        .top-item-rank.default { background: var(--gray-100); color: var(--gray-600); }
+
+        .top-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .top-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-item-bar {
+            height: 4px;
+            background: var(--gray-100);
+            border-radius: 2px;
+            margin-top: var(--space-1);
+            overflow: hidden;
+        }
+
+        .top-item-bar-fill {
+            height: 100%;
+            background: var(--primary-500);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .top-item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            white-space: nowrap;
+        }
+
+        .top-item-meta {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .item-size {
+            display: inline-block;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            font-size: 10px;
+            font-weight: 500;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            text-transform: uppercase;
+        }
+
+        .item-price {
+            color: var(--success-600);
+            font-weight: 500;
+        }
+
+        .item-revenue {
+            color: var(--primary-600);
+            font-weight: 600;
+        }
+
+        /* Events Timeline */
+        .events-timeline {
+            padding: var(--space-4);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-2);
+            background: var(--gray-50);
+        }
+
+        .event-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .event-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .event-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .event-icon.holiday { background: var(--error-100); color: var(--error-600); }
+        .event-icon.sports { background: var(--success-100); color: var(--success-600); }
+        .event-icon.payday { background: var(--warning-100); color: var(--warning-600); }
+        .event-icon.weather { background: var(--info-100); color: var(--info-600); }
+
+        .event-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .event-date {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .event-impact {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: var(--radius);
+            margin-top: var(--space-1);
+            display: inline-block;
+        }
+
+        .event-impact.high { background: var(--success-100); color: var(--success-700); }
+        .event-impact.medium { background: var(--warning-100); color: var(--warning-700); }
+        .event-impact.low { background: var(--gray-100); color: var(--gray-600); }
+
+        /* Heatmap Calendar */
+        .heatmap-container {
+            padding: var(--space-4);
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .heatmap-header {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-align: center;
+            padding: var(--space-2);
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+            position: relative;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+
+        .heatmap-cell .day {
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .heatmap-cell .value {
+            font-size: 9px;
+            color: var(--gray-500);
+        }
+
+        .heatmap-cell.level-0 { background: var(--gray-100); }
+        .heatmap-cell.level-1 { background: #DBEAFE; }
+        .heatmap-cell.level-2 { background: #93C5FD; }
+        .heatmap-cell.level-3 { background: #3B82F6; color: white; }
+        .heatmap-cell.level-4 { background: #1D4ED8; color: white; }
+        .heatmap-cell.level-5 { background: #1E3A8A; color: white; }
+
+        .heatmap-cell.level-3 .day,
+        .heatmap-cell.level-4 .day,
+        .heatmap-cell.level-5 .day { color: white; }
+
+        .heatmap-cell.level-3 .value,
+        .heatmap-cell.level-4 .value,
+        .heatmap-cell.level-5 .value { color: rgba(255,255,255,0.8); }
+
+        .heatmap-cell.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            width: 4px;
+            height: 4px;
+            background: var(--error-500);
+            border-radius: 50%;
+        }
+
+        .heatmap-cell.selected {
+            outline: 3px solid var(--primary-500);
+            outline-offset: -3px;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+
+        .heatmap-legend-scale {
+            display: flex;
+            gap: 2px;
+        }
+
+        .heatmap-legend-scale span {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Data Table Container */
+        .data-table-container {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-2) var(--space-3);
+        }
+
+        .search-box svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-400);
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            width: 150px;
+            outline: none;
+        }
+
+        .event-filter {
+            font-size: 13px;
+            padding: var(--space-2) var(--space-3);
+            min-width: 140px;
+        }
+
+        /* Day Groups - Excel-like styling */
+        .day-groups-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-300);
+            border-top: none;
+        }
+
+        /* Fullscreen mode for data table */
+        .data-table-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            margin: 0;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-table-container.fullscreen .day-groups-container {
+            max-height: none;
+            flex: 1;
+        }
+
+        .data-table-container.fullscreen .chart-header {
+            border-radius: 0;
+        }
+
+        .fullscreen-btn {
+            background: none;
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+            padding: var(--space-2);
+            color: var(--gray-500);
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .fullscreen-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .day-group {
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .day-group:last-child {
+            border-bottom: none;
+        }
+
+        .day-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3) var(--space-4);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            user-select: none;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .day-group-header:hover {
+            background: var(--gray-100);
+        }
+
+        .day-group.collapsed .day-group-header {
+            border-bottom: none;
+        }
+
+        .day-group-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .day-group-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform var(--transition-fast);
+        }
+
+        .day-group-toggle svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-400);
+        }
+
+        .day-group.collapsed .day-group-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .day-group-date {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .day-group-weekday {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-left: var(--space-2);
+        }
+
+        .day-group-events {
+            display: flex;
+            gap: var(--space-2);
+            margin-left: var(--space-3);
+        }
+
+        .day-event-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .day-event-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .day-event-badge.holiday { background: var(--error-100); color: var(--error-700); }
+        .day-event-badge.sports { background: var(--success-100); color: var(--success-700); }
+        .day-event-badge.payday { background: var(--warning-100); color: var(--warning-700); }
+        .day-event-badge.weather { background: var(--info-100); color: var(--info-700); }
+
+        .day-group-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .day-group-total {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 15px;
+        }
+
+        .day-group-total span {
+            font-weight: 400;
+            color: var(--gray-500);
+            font-size: 13px;
+        }
+
+        .day-group-revenue {
+            font-weight: 600;
+            color: var(--success-600);
+            font-size: 14px;
+        }
+
+        .day-group-content {
+            padding: 0;
+            display: block;
+            background: white;
+        }
+
+        .day-group.collapsed .day-group-content {
+            display: none;
+        }
+
+        /* Excel-like table header */
+        .excel-header {
+            display: grid;
+            grid-template-columns: 2fr 100px 100px 120px;
+            background: var(--gray-100);
+            border-bottom: 2px solid var(--gray-300);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .excel-header > div {
+            padding: var(--space-2) var(--space-3);
+            border-right: 1px solid var(--gray-300);
+        }
+
+        .excel-header > div:last-child {
+            border-right: none;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 100px 100px 120px;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-200);
+            transition: background var(--transition-fast);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-row:hover {
+            background: var(--primary-50);
+        }
+
+        .item-row:nth-child(even) {
+            background: var(--gray-50);
+        }
+
+        .item-row:nth-child(even):hover {
+            background: var(--primary-50);
+        }
+
+        .item-row > div,
+        .item-row > span {
+            padding: var(--space-2) var(--space-3);
+            border-right: 1px solid var(--gray-200);
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+        }
+
+        .item-row > div:last-child,
+        .item-row > span:last-child {
+            border-right: none;
+        }
+
+        .item-name {
+            font-size: 13px;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .item-qty {
+            font-weight: 600;
+            color: var(--gray-900);
+            justify-content: flex-end;
+        }
+
+        .item-price {
+            color: var(--gray-600);
+            justify-content: flex-end;
+        }
+
+        .item-revenue {
+            font-weight: 600;
+            color: var(--success-600);
+            justify-content: flex-end;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: var(--space-8);
+            color: var(--gray-500);
+        }
+
+        /* AI Insights Panel */
+        .ai-insights-card {
+            background: linear-gradient(135deg, var(--primary-50), var(--info-50));
+            border: 1px solid var(--primary-200);
+        }
+
+        .ai-insights-content {
+            padding: var(--space-4);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--gray-700);
+        }
+
+        .ai-insights-loading {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            color: var(--gray-500);
+        }
+
+        /* Empty/Loading States */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            color: var(--gray-300);
+            margin-bottom: var(--space-4);
+        }
+
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-12);
+        }
+
+        /* Export Dropdown */
+        .export-dropdown {
+            position: relative;
+        }
+
+        .export-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: var(--space-2);
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 180px;
+            z-index: 100;
+            display: none;
+        }
+
+        .export-menu.show {
+            display: block;
+        }
+
+        .export-menu-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            font-size: 14px;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .export-menu-item:hover {
+            background: var(--gray-50);
+        }
+
+        .export-menu-item:first-child {
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .export-menu-item:last-child {
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        .export-menu-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--gray-500);
+        }
+
+        /* Quick Access Buttons */
+        .quick-access-bar {
+            display: flex;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-5);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .quick-access-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            backdrop-filter: blur(10px);
+        }
+
+        .quick-access-btn:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-1px);
+        }
+
+        .quick-access-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .quick-access-btn.forecast-btn { background: linear-gradient(135deg, rgba(99,102,241,0.8), rgba(139,92,246,0.8)); }
+        .quick-access-btn.graphs-btn { background: linear-gradient(135deg, rgba(59,130,246,0.8), rgba(96,165,250,0.8)); }
+        .quick-access-btn.events-btn { background: linear-gradient(135deg, rgba(245,158,11,0.8), rgba(251,191,36,0.8)); }
+
+        /* Fullscreen Section Modal */
+        .section-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .section-fullscreen .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4) var(--space-5);
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .section-fullscreen .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .section-fullscreen .section-content {
+            flex: 1;
+            overflow: auto;
+            padding: var(--space-4);
+        }
+
+        .section-fullscreen .section-filters {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .close-section-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .close-section-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .close-section-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .ai-chat-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .ai-chat-btn svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .ai-chat-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 998;
+        }
+
+        .ai-chat-panel.open {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: var(--space-4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-header h3 {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .ai-chat-header h3 svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .ai-chat-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: var(--space-1);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-chat-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .ai-chat-close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .ai-message.assistant {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            border: 1px solid #d1ddf5;
+        }
+
+        .ai-message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .ai-chat-input {
+            padding: var(--space-3);
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .ai-chat-input input {
+            flex: 1;
+            padding: var(--space-3);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .ai-chat-input input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .ai-chat-send {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .ai-chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        .ai-chat-send svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: var(--space-3);
+            align-self: flex-start;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .overview-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .control-separator {
+                width: 100%;
+                height: 1px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                display: none;
+            }
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/frontend/pages/home.html" class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <a href="/frontend/pages/dashboard.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/frontend/pages/forecast.html" class="sidebar-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 9l-5-6-4 8-3-2"/>
+                        </svg>
+                        Forecasts
+                    </a>
+                    <a href="/frontend/pages/calendar.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Calendar
+                    </a>
+                    <a href="/frontend/pages/upload.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Upload Data
+                    </a>
+                    <a href="/frontend/pages/analytics.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Analytics
+                    </a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Settings</div>
+                    <a href="/frontend/pages/account.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Account
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Sales Forecast Dashboard</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 2v6h-6"/>
+                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+                            <path d="M3 22v-6h6"/>
+                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    <div class="export-dropdown">
+                        <button class="btn btn-primary" onclick="toggleExportMenu()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Export
+                        </button>
+                        <div class="export-menu" id="exportMenu">
+                            <div class="export-menu-item" onclick="exportCSV()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                Export as CSV
+                            </div>
+                            <div class="export-menu-item" onclick="exportImage()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                Export as Image
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Bar -->
+            <div class="quick-access-bar">
+                <button class="quick-access-btn forecast-btn" onclick="openSection('forecast')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    Detailed Forecast
+                </button>
+                <button class="quick-access-btn graphs-btn" onclick="openSection('graphs')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Graphs
+                </button>
+                <button class="quick-access-btn events-btn" onclick="openSection('events')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Events
+                </button>
+            </div>
+
+            <!-- Fullscreen Section Container -->
+            <div id="fullscreenSection" style="display: none;"></div>
+
+            <div class="page-content" id="dashboardContent">
+                <!-- Controls Bar -->
+                <div class="controls-bar">
+                    <div class="control-group">
+                        <div class="control-label">Date Range</div>
+                        <div class="date-range-picker">
+                            <input type="date" class="input" id="startDate">
+                            <span>to</span>
+                            <input type="date" class="input" id="endDate">
+                        </div>
+                    </div>
+
+                    <div class="control-separator"></div>
+
+                    <div class="control-group">
+                        <div class="control-label">View</div>
+                        <div class="view-toggle">
+                            <button class="view-toggle-btn active" data-view="daily" onclick="setView('daily')">Daily</button>
+                            <button class="view-toggle-btn" data-view="weekly" onclick="setView('weekly')">Weekly</button>
+                            <button class="view-toggle-btn" data-view="monthly" onclick="setView('monthly')">Monthly</button>
+                        </div>
+                    </div>
+
+                    <div class="control-separator"></div>
+
+                    <div class="control-group">
+                        <div class="control-label">Category</div>
+                        <select class="input select" id="categoryFilter" onchange="onCategoryChange()" style="min-width: 120px;">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">Item</div>
+                        <select class="input select" id="itemFilter" onchange="onItemChange()" style="min-width: 150px;">
+                            <option value="all">All Items</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">Size</div>
+                        <select class="input select" id="sizeFilter" onchange="onSizeChange()" style="min-width: 100px;">
+                            <option value="all">All Sizes</option>
+                        </select>
+                    </div>
+
+                    <div style="flex: 1;"></div>
+
+                    <div class="control-group">
+                        <div class="control-label">Last Updated</div>
+                        <div style="font-size: 13px; color: var(--gray-600);" id="lastUpdated">--</div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-state">
+                    <div class="spinner spinner-lg"></div>
+                    <p class="text-gray-500 mt-4">Loading forecast data...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" style="display: none;">
+                    <div class="chart-card">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18 9l-5-6-4 8-3-2"/>
+                            </svg>
+                            <h3 class="text-lg font-semibold text-gray-900">No forecasts available</h3>
+                            <p class="text-gray-500 mt-2">Upload your sales data and train a model to see predictions.</p>
+                            <a href="/frontend/pages/upload.html" class="btn btn-primary mt-4">Upload Data</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content -->
+                <div id="forecastDashboard" style="display: none;">
+                    <!-- Overview Cards -->
+                    <div class="overview-grid">
+                        <div class="overview-card primary">
+                            <div class="overview-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3v18h18"/>
+                                    <path d="M18 9l-5-6-4 8-3-2"/>
+                                </svg>
+                                Total Forecast
+                            </div>
+                            <div class="overview-value" id="totalForecast">--</div>
+                            <div class="overview-subtext" id="forecastPeriod">Loading...</div>
+                        </div>
+
+                        <div class="overview-card success">
+                            <div class="overview-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                Daily Average
+                            </div>
+                            <div class="overview-value" id="dailyAverage">--</div>
+                            <div class="overview-subtext">units per day</div>
+                        </div>
+
+                        <div class="overview-card warning">
+                            <div class="overview-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                    <polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                Peak Day
+                            </div>
+                            <div class="overview-value small" id="peakDay">--</div>
+                            <div class="overview-subtext" id="peakDayValue">-- units</div>
+                        </div>
+
+                        <div class="overview-card info">
+                            <div class="overview-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                </svg>
+                                Upcoming Events
+                            </div>
+                            <div class="overview-value" id="eventCount">0</div>
+                            <div class="overview-subtext">in forecast period</div>
+                        </div>
+
+                        <div class="overview-card purple">
+                            <div class="overview-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                Model Accuracy
+                            </div>
+                            <div class="overview-value" id="modelAccuracy">--%</div>
+                            <div class="overview-subtext">MAPE score</div>
+                        </div>
+                    </div>
+
+                    <!-- Main Charts Row -->
+                    <div class="dashboard-grid">
+                        <!-- Trend Chart -->
+                        <div class="chart-card" id="trendChartCard">
+                            <div class="chart-header">
+                                <div class="chart-header-left">
+                                    <button class="chart-toggle-btn" onclick="toggleChartCard('trendChartCard')" title="Collapse/Expand">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9"/>
+                                        </svg>
+                                    </button>
+                                    <div>
+                                        <div class="chart-title">Sales Forecast Trend</div>
+                                        <div class="chart-subtitle">Predicted sales over time</div>
+                                    </div>
+                                </div>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn" onclick="toggleChartType()" title="Toggle chart type">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="7" height="7"/>
+                                            <rect x="14" y="3" width="7" height="7"/>
+                                            <rect x="14" y="14" width="7" height="7"/>
+                                            <rect x="3" y="14" width="7" height="7"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="trendChart" style="height: 350px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Top Items -->
+                        <div class="chart-card" id="topItemsCard">
+                            <div class="chart-header">
+                                <div class="chart-header-left">
+                                    <button class="chart-toggle-btn" onclick="toggleChartCard('topItemsCard')" title="Collapse/Expand">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9"/>
+                                        </svg>
+                                    </button>
+                                    <div>
+                                        <div class="chart-title">Top Performing Items</div>
+                                        <div class="chart-subtitle">Highest predicted sales</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="top-items-list" id="topItemsList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hourly Chart Section (only shown on daily view) -->
+                    <div id="hourlyChartSection" class="chart-card" style="margin-bottom: var(--space-5);">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <button class="chart-toggle-btn" onclick="toggleChartCard('hourlyChartSection')" title="Collapse/Expand">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                                <div>
+                                    <div class="chart-title">Peak Hours Analysis</div>
+                                    <div class="chart-subtitle" id="peakHoursText">Sales distribution by hour</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="hourlyChart" style="height: 450px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Day Groups - Main forecast data -->
+                    <div class="data-table-container chart-card" id="dataTableCard">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <button class="chart-toggle-btn" onclick="toggleChartCard('dataTableCard')" title="Collapse/Expand">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                                <div>
+                                    <div class="chart-title">Detailed Forecast by Day</div>
+                                    <div class="chart-subtitle" id="tableRowCount">-- rows</div>
+                                </div>
+                            </div>
+                            <div class="table-controls">
+                                <div class="search-box">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                    <input type="text" placeholder="Search items..." id="itemSearch" oninput="filterItems()">
+                                </div>
+                                <select class="input select event-filter" id="eventFilter" onchange="filterByEvent()">
+                                    <option value="all">All Days</option>
+                                    <option value="events">Days with Events</option>
+                                    <option value="holiday">Holidays Only</option>
+                                    <option value="sports">Sports Events Only</option>
+                                    <option value="payday">Paydays Only</option>
+                                </select>
+                                <button class="btn btn-secondary btn-sm" onclick="toggleAllDays()" id="toggleAllBtn">
+                                    Collapse All
+                                </button>
+                                <button class="fullscreen-btn" onclick="toggleFullscreen()" id="fullscreenBtn" title="Toggle Fullscreen">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="fullscreenIcon">
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="day-groups-container" id="dayGroupsContainer">
+                            <!-- Collapsible day groups will be rendered here -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/chat-widget.js"></script>
+    <script>
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        // State
+        let modelId = null;
+        let businessId = null;
+        let currentPredictions = [];
+        let currentFactors = {};
+        let itemMetadata = {};
+        let hourlyPatterns = {};
+        let categories = {};
+        let currentView = 'daily';
+        let chartType = 'line';
+
+        // Filter state
+        let selectedCategory = 'all';
+        let selectedItem = 'all';
+        let selectedSize = 'all';
+
+        // Initialize
+        async function init() {
+            try {
+                // Set default dates
+                const today = new Date();
+                const futureDate = new Date(today);
+                futureDate.setDate(today.getDate() + 14);
+
+                document.getElementById('startDate').value = today.toISOString().split('T')[0];
+                document.getElementById('endDate').value = futureDate.toISOString().split('T')[0];
+
+                // Add date change listeners
+                document.getElementById('startDate').addEventListener('change', applyFilters);
+                document.getElementById('endDate').addEventListener('change', applyFilters);
+
+                // Load business and model
+                const businesses = await api.getBusinesses();
+                if (!businesses || businesses.length === 0) {
+                    showState('empty');
+                    return;
+                }
+
+                businessId = businesses[0].id;
+                const models = await api.getModels(businessId);
+
+                if (!models || models.length === 0) {
+                    showState('empty');
+                    return;
+                }
+
+                const activeModel = models.find(m => m.is_active) || models[0];
+                modelId = activeModel.id;
+
+                // Update model accuracy
+                document.getElementById('modelAccuracy').textContent =
+                    activeModel.test_mape ? `${activeModel.test_mape.toFixed(1)}%` : '--%';
+
+                await loadForecastData();
+            } catch (error) {
+                console.error('Init error:', error);
+                showState('empty');
+            }
+        }
+
+        function showState(state) {
+            document.getElementById('loadingState').style.display = state === 'loading' ? 'flex' : 'none';
+            document.getElementById('emptyState').style.display = state === 'empty' ? 'block' : 'none';
+            document.getElementById('forecastDashboard').style.display = state === 'content' ? 'block' : 'none';
+        }
+
+        async function loadForecastData() {
+            showState('loading');
+
+            try {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                // Calculate days
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+                // Fetch all predictions (filtering will happen client-side)
+                const predictions = await api.predict(modelId, days, null);
+
+                if (!predictions || !predictions.predictions || predictions.predictions.length === 0) {
+                    showState('empty');
+                    return;
+                }
+
+                currentPredictions = predictions.predictions;
+                currentFactors = predictions.factors_in_range || {};
+                itemMetadata = predictions.item_metadata || {};
+                hourlyPatterns = predictions.hourly_patterns || {};
+                categories = predictions.categories || {};
+
+                // Update last updated time
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+                // Populate cascading filters
+                populateCategoryFilter();
+
+                // Render dashboard
+                renderOverviewCards();
+                renderTrendChart();
+                renderTopItems();
+                renderHourlyChart();
+                renderDayGroups();
+
+                showState('content');
+            } catch (error) {
+                console.error('Load error:', error);
+                showState('empty');
+            }
+        }
+
+        function renderOverviewCards() {
+            const filtered = getFilteredPredictions();
+            const total = filtered.reduce((sum, p) => sum + p.predicted_quantity, 0);
+            const totalRevenue = filtered.reduce((sum, p) => sum + (p.predicted_revenue || 0), 0);
+            const days = [...new Set(filtered.map(p => p.date))].length;
+            const dailyAvg = days > 0 ? total / days : 0;
+
+            // Find peak day
+            const dailyTotals = {};
+            filtered.forEach(p => {
+                dailyTotals[p.date] = (dailyTotals[p.date] || 0) + p.predicted_quantity;
+            });
+            const peakEntry = Object.entries(dailyTotals).sort((a, b) => b[1] - a[1])[0];
+
+            // Count events
+            let eventCount = 0;
+            if (currentFactors.holidays) eventCount += currentFactors.holidays.length;
+            if (currentFactors.sports) eventCount += currentFactors.sports.length;
+            if (currentFactors.paydays) eventCount += currentFactors.paydays.length;
+
+            // Update UI
+            document.getElementById('totalForecast').textContent = total.toLocaleString();
+            document.getElementById('forecastPeriod').textContent = totalRevenue > 0 ? `$${totalRevenue.toLocaleString()} est. revenue` : `${days} days`;
+            document.getElementById('dailyAverage').textContent = Math.round(dailyAvg).toLocaleString();
+
+            if (peakEntry) {
+                const peakDate = new Date(peakEntry[0]);
+                document.getElementById('peakDay').textContent = peakDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                document.getElementById('peakDayValue').textContent = `${Math.round(peakEntry[1]).toLocaleString()} units`;
+            }
+
+            document.getElementById('eventCount').textContent = eventCount;
+        }
+
+        function renderTrendChart() {
+            const filtered = getFilteredPredictions();
+
+            // Helper to get period key based on view
+            function getPeriodKey(dateStr) {
+                const date = new Date(dateStr + 'T00:00:00');
+                if (currentView === 'weekly') {
+                    // Get week start (Sunday)
+                    const weekStart = new Date(date);
+                    weekStart.setDate(date.getDate() - date.getDay());
+                    return `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                } else if (currentView === 'monthly') {
+                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                }
+                return dateStr;
+            }
+
+            const periodData = {};
+            const itemData = {};
+
+            filtered.forEach(p => {
+                const periodKey = getPeriodKey(p.date);
+
+                if (!periodData[periodKey]) periodData[periodKey] = 0;
+                periodData[periodKey] += p.predicted_quantity;
+
+                if (!itemData[p.item_name]) itemData[p.item_name] = {};
+                if (!itemData[p.item_name][periodKey]) itemData[p.item_name][periodKey] = 0;
+                itemData[p.item_name][periodKey] += p.predicted_quantity;
+            });
+
+            // Sort periods correctly
+            let periods;
+            if (currentView === 'daily') {
+                periods = Object.keys(periodData).sort();
+            } else {
+                // For weekly/monthly, preserve insertion order (already chronological)
+                periods = Object.keys(periodData);
+            }
+
+            // Create traces for each item
+            const traces = Object.keys(itemData).map((item, i) => ({
+                x: periods,
+                y: periods.map(p => itemData[item][p] || 0),
+                type: chartType === 'line' ? 'scatter' : 'bar',
+                mode: chartType === 'line' ? 'lines+markers' : undefined,
+                name: item,
+                line: { width: 2, shape: 'spline' },
+                marker: { size: 5 }
+            }));
+
+            const layout = {
+                font: { family: '-apple-system, BlinkMacSystemFont, sans-serif', size: 12 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                margin: { t: 10, r: 20, b: 80, l: 50 },
+                xaxis: {
+                    gridcolor: '#E5E7EB',
+                    tickformat: currentView === 'daily' ? '%b %d' : undefined,
+                    tickangle: -45
+                },
+                yaxis: {
+                    gridcolor: '#E5E7EB',
+                    title: 'Predicted Quantity'
+                },
+                legend: { orientation: 'h', y: -0.3, x: 0.5, xanchor: 'center' },
+                colorway: ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'],
+                barmode: 'stack'
+            };
+
+            Plotly.newPlot('trendChart', traces, layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderTopItems() {
+            const filtered = getFilteredPredictions();
+            const itemTotals = {};
+            const itemRevenue = {};
+            filtered.forEach(p => {
+                itemTotals[p.item_name] = (itemTotals[p.item_name] || 0) + p.predicted_quantity;
+                itemRevenue[p.item_name] = (itemRevenue[p.item_name] || 0) + (p.predicted_revenue || 0);
+            });
+
+            const sorted = Object.entries(itemTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const maxValue = sorted[0] ? sorted[0][1] : 1;
+
+            const container = document.getElementById('topItemsList');
+            container.innerHTML = sorted.map(([name, value], i) => {
+                const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'default';
+                const percentage = (value / maxValue) * 100;
+                const meta = itemMetadata[name] || {};
+                const revenue = itemRevenue[name] || 0;
+                const sizeInfo = meta.primary_size ? `<span class="item-size">${meta.primary_size}</span>` : '';
+                const priceInfo = meta.unit_price ? `$${meta.unit_price.toFixed(2)}` : '';
+                const revenueInfo = revenue > 0 ? `$${revenue.toLocaleString()}` : '';
+
+                return `
+                    <div class="top-item">
+                        <div class="top-item-rank ${rankClass}">${i + 1}</div>
+                        <div class="top-item-info">
+                            <div class="top-item-name">${name} ${sizeInfo}</div>
+                            <div class="top-item-bar">
+                                <div class="top-item-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
+                            ${priceInfo ? `<div class="top-item-meta">${priceInfo}/unit ${revenueInfo ? '• ' + revenueInfo + ' total' : ''}</div>` : ''}
+                        </div>
+                        <div class="top-item-value">${Math.round(value).toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // State for filtering
+        let allDaysExpanded = true;
+        let selectedDate = null;
+
+        function renderDayGroups() {
+            const container = document.getElementById('dayGroupsContainer');
+            const searchTerm = document.getElementById('itemSearch').value.toLowerCase();
+            const eventFilter = document.getElementById('eventFilter').value;
+            const filtered = getFilteredPredictions();
+
+            // Group predictions by date
+            const groupedByDate = {};
+            filtered.forEach(p => {
+                if (!groupedByDate[p.date]) {
+                    groupedByDate[p.date] = [];
+                }
+                groupedByDate[p.date].push(p);
+            });
+
+            // Build event lookup
+            const eventLookup = {};
+            if (currentFactors.holidays) {
+                currentFactors.holidays.forEach(h => {
+                    if (!eventLookup[h.date]) eventLookup[h.date] = [];
+                    eventLookup[h.date].push({ type: 'holiday', name: h.name });
+                });
+            }
+            if (currentFactors.sports) {
+                currentFactors.sports.forEach(s => {
+                    if (!eventLookup[s.date]) eventLookup[s.date] = [];
+                    eventLookup[s.date].push({ type: 'sports', name: s.name });
+                });
+            }
+            if (currentFactors.paydays) {
+                currentFactors.paydays.forEach(p => {
+                    if (!eventLookup[p.date]) eventLookup[p.date] = [];
+                    eventLookup[p.date].push({ type: 'payday', name: 'Payday' });
+                });
+            }
+
+            // Sort dates
+            const dates = Object.keys(groupedByDate).sort();
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const fullDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            // Event icons
+            const eventIcons = {
+                holiday: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>',
+                sports: '<circle cx="12" cy="12" r="10"/>',
+                payday: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+                weather: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2"/>'
+            };
+
+            let html = '';
+            let totalItems = 0;
+            let visibleDays = 0;
+
+            dates.forEach(dateStr => {
+                const items = groupedByDate[dateStr];
+                const events = eventLookup[dateStr] || [];
+                const date = new Date(dateStr + 'T00:00:00');
+                const dayTotal = items.reduce((sum, p) => sum + p.predicted_quantity, 0);
+                const dayRevenue = items.reduce((sum, p) => sum + (p.predicted_revenue || 0), 0);
+
+                // Apply event filter
+                if (eventFilter !== 'all') {
+                    if (eventFilter === 'events' && events.length === 0) return;
+                    if (eventFilter === 'holiday' && !events.some(e => e.type === 'holiday')) return;
+                    if (eventFilter === 'sports' && !events.some(e => e.type === 'sports')) return;
+                    if (eventFilter === 'payday' && !events.some(e => e.type === 'payday')) return;
+                }
+
+                // Apply selected date filter from heatmap click
+                if (selectedDate && dateStr !== selectedDate) return;
+
+                // Filter items by search term
+                const filteredItems = items.filter(p =>
+                    p.item_name.toLowerCase().includes(searchTerm)
+                );
+
+                if (filteredItems.length === 0 && searchTerm) return;
+
+                visibleDays++;
+                totalItems += filteredItems.length;
+
+                // Build event badges
+                const eventBadges = events.map(e => `
+                    <span class="day-event-badge ${e.type}" title="${e.name}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            ${eventIcons[e.type]}
+                        </svg>
+                        ${e.type === 'payday' ? '$' : e.type.charAt(0).toUpperCase() + e.type.slice(1)}
+                    </span>
+                `).join('');
+
+                // Determine if this is today or in the past
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isPast = date < today;
+                const isToday = date.getTime() === today.getTime();
+
+                const collapsedClass = allDaysExpanded ? '' : 'collapsed';
+
+                html += `
+                    <div class="day-group ${collapsedClass}" data-date="${dateStr}">
+                        <div class="day-group-header" onclick="toggleDayGroup('${dateStr}')">
+                            <div class="day-group-left">
+                                <div class="day-group-toggle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </div>
+                                <span class="day-group-date">${fullDayNames[date.getDay()]}, ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                ${isToday ? '<span class="day-event-badge" style="background: var(--primary-100); color: var(--primary-700);">Today</span>' : ''}
+                                <div class="day-group-events">${eventBadges}</div>
+                            </div>
+                            <div class="day-group-right">
+                                ${dayRevenue > 0 ? `<span class="day-group-revenue">$${dayRevenue.toLocaleString()}</span>` : ''}
+                                <span class="day-group-total">${Math.round(dayTotal).toLocaleString()} <span>units</span></span>
+                            </div>
+                        </div>
+                        <div class="day-group-content">
+                            <div class="excel-header">
+                                <div>Item</div>
+                                <div style="text-align: right;">Qty</div>
+                                <div style="text-align: right;">Price</div>
+                                <div style="text-align: right;">Revenue</div>
+                            </div>
+                            ${filteredItems.sort((a, b) => b.predicted_quantity - a.predicted_quantity).map(p => {
+                                const sizeTag = p.size ? `<span class="item-size">${p.size}</span>` : '';
+                                const priceVal = p.unit_price ? `$${p.unit_price.toFixed(2)}` : '-';
+                                const revenueVal = p.predicted_revenue ? `$${p.predicted_revenue.toFixed(2)}` : '-';
+                                return `
+                                <div class="item-row">
+                                    <div class="item-name">${p.item_name} ${sizeTag}</div>
+                                    <div class="item-qty">${p.predicted_quantity}</div>
+                                    <div class="item-price">${priceVal}</div>
+                                    <div class="item-revenue">${revenueVal}</div>
+                                </div>
+                            `}).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (html === '') {
+                html = '<div class="no-results">No results found</div>';
+            }
+
+            container.innerHTML = html;
+            document.getElementById('tableRowCount').textContent = `${totalItems} items across ${visibleDays} days`;
+        }
+
+        function toggleDayGroup(dateStr) {
+            const group = document.querySelector(`.day-group[data-date="${dateStr}"]`);
+            if (group) {
+                group.classList.toggle('collapsed');
+            }
+        }
+
+        function toggleAllDays() {
+            allDaysExpanded = !allDaysExpanded;
+            document.getElementById('toggleAllBtn').textContent = allDaysExpanded ? 'Collapse All' : 'Expand All';
+            document.querySelectorAll('.day-group').forEach(group => {
+                group.classList.toggle('collapsed', !allDaysExpanded);
+            });
+        }
+
+        let isFullscreen = false;
+        function toggleFullscreen() {
+            const container = document.getElementById('dataTableCard');
+            const icon = document.getElementById('fullscreenIcon');
+            isFullscreen = !isFullscreen;
+
+            container.classList.toggle('fullscreen', isFullscreen);
+            document.body.style.overflow = isFullscreen ? 'hidden' : '';
+
+            // Update icon
+            if (isFullscreen) {
+                icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
+            } else {
+                icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+            }
+        }
+
+        // Exit fullscreen on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (isFullscreen) toggleFullscreen();
+                if (document.getElementById('fullscreenSection').style.display !== 'none') {
+                    closeSection();
+                }
+            }
+        });
+
+        // Fullscreen section state
+        let fullscreenCategoryFilter = 'all';
+        let fullscreenItemFilter = 'all';
+        let fullscreenSizeFilter = 'all';
+
+        function openSection(sectionType) {
+            const container = document.getElementById('fullscreenSection');
+            document.body.style.overflow = 'hidden';
+
+            let content = '';
+
+            switch(sectionType) {
+                case 'forecast':
+                    content = renderFullscreenForecast();
+                    break;
+                case 'peakHours':
+                    content = renderFullscreenPeakHours();
+                    break;
+                case 'graphs':
+                    content = renderFullscreenGraphs();
+                    break;
+                case 'events':
+                    content = renderFullscreenEvents();
+                    break;
+            }
+
+            container.innerHTML = content;
+            container.style.display = 'block';
+
+            // Initialize section-specific functionality
+            if (sectionType === 'forecast') {
+                populateFullscreenFilters();
+                renderFullscreenDayGroups();
+            } else if (sectionType === 'peakHours') {
+                setTimeout(() => renderFullscreenHourlyChart(), 100);
+            } else if (sectionType === 'graphs') {
+                setTimeout(() => {
+                    renderFullscreenTrendChart();
+                    renderFullscreenCategoryChart();
+                }, 100);
+            } else if (sectionType === 'events') {
+                renderFullscreenEventsList();
+            }
+        }
+
+        function closeSection() {
+            const container = document.getElementById('fullscreenSection');
+            container.style.display = 'none';
+            container.innerHTML = '';
+            document.body.style.overflow = '';
+        }
+
+        function renderFullscreenForecast() {
+            const cats = Object.keys(categories).sort();
+            const catOptions = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            return `
+                <div class="section-fullscreen">
+                    <div class="section-header">
+                        <h2>Detailed Forecast</h2>
+                        <div class="section-filters">
+                            <select class="input select" id="fsCategoryFilter" onchange="onFsCategoryChange()" style="min-width: 130px;">
+                                <option value="all">All Categories</option>
+                                ${catOptions}
+                            </select>
+                            <select class="input select" id="fsItemFilter" onchange="onFsItemChange()" style="min-width: 160px;">
+                                <option value="all">All Items</option>
+                            </select>
+                            <select class="input select" id="fsSizeFilter" onchange="onFsSizeChange()" style="min-width: 110px;">
+                                <option value="all">All Sizes</option>
+                            </select>
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                                <input type="text" placeholder="Search items..." id="fsItemSearch" oninput="renderFullscreenDayGroups()">
+                            </div>
+                            <button class="close-section-btn" onclick="closeSection()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div id="fsDayGroupsContainer" class="day-groups-container" style="max-height: none; border: 1px solid var(--gray-300);"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFullscreenPeakHours() {
+            return `
+                <div class="section-fullscreen">
+                    <div class="section-header">
+                        <h2>Peak Hours Analysis</h2>
+                        <button class="close-section-btn" onclick="closeSection()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Close
+                        </button>
+                    </div>
+                    <div class="section-content">
+                        <div id="fsHourlyChart" style="height: calc(100vh - 150px);"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFullscreenGraphs() {
+            return `
+                <div class="section-fullscreen">
+                    <div class="section-header">
+                        <h2>Sales Graphs</h2>
+                        <button class="close-section-btn" onclick="closeSection()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Close
+                        </button>
+                    </div>
+                    <div class="section-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+                        <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-4); box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                            <h3 style="margin: 0 0 var(--space-3) 0; font-size: 16px; font-weight: 600;">Sales Trend</h3>
+                            <div id="fsTrendChart" style="height: 350px;"></div>
+                        </div>
+                        <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-4); box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                            <h3 style="margin: 0 0 var(--space-3) 0; font-size: 16px; font-weight: 600;">Sales by Category</h3>
+                            <div id="fsCategoryChart" style="height: 350px;"></div>
+                        </div>
+                        <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-4); box-shadow: 0 2px 10px rgba(0,0,0,0.08); grid-column: 1 / -1;">
+                            <h3 style="margin: 0 0 var(--space-3) 0; font-size: 16px; font-weight: 600;">Top Items Comparison</h3>
+                            <div id="fsItemsChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFullscreenTrendChart() {
+            const filtered = getFilteredPredictions();
+            const dailyTotals = {};
+
+            filtered.forEach(p => {
+                dailyTotals[p.date] = (dailyTotals[p.date] || 0) + p.predicted_quantity;
+            });
+
+            const dates = Object.keys(dailyTotals).sort();
+            const values = dates.map(d => dailyTotals[d]);
+
+            const trace = {
+                x: dates.map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                y: values,
+                type: 'scatter',
+                mode: 'lines+markers',
+                fill: 'tozeroy',
+                fillcolor: 'rgba(99, 102, 241, 0.1)',
+                line: { color: '#6366F1', width: 3, shape: 'spline' },
+                marker: { color: '#6366F1', size: 8 }
+            };
+
+            const layout = {
+                font: { family: '-apple-system, BlinkMacSystemFont, sans-serif' },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                margin: { t: 20, r: 20, b: 70, l: 60 },
+                xaxis: { gridcolor: '#E5E7EB', title: '', tickangle: -45 },
+                yaxis: { gridcolor: '#E5E7EB', title: 'Units' },
+                showlegend: false
+            };
+
+            Plotly.newPlot('fsTrendChart', [trace], layout, { responsive: true, displayModeBar: false });
+
+            // Also render items chart
+            renderFullscreenItemsChart();
+        }
+
+        function renderFullscreenCategoryChart() {
+            const categoryTotals = {};
+
+            currentPredictions.forEach(p => {
+                const cat = itemMetadata[p.item_name]?.category || 'Other';
+                categoryTotals[cat] = (categoryTotals[cat] || 0) + p.predicted_quantity;
+            });
+
+            const cats = Object.keys(categoryTotals);
+            const values = cats.map(c => categoryTotals[c]);
+            const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899'];
+
+            const trace = {
+                labels: cats,
+                values: values,
+                type: 'pie',
+                hole: 0.4,
+                marker: { colors: colors.slice(0, cats.length) },
+                textinfo: 'label+percent',
+                textposition: 'outside'
+            };
+
+            const layout = {
+                font: { family: '-apple-system, BlinkMacSystemFont, sans-serif' },
+                paper_bgcolor: 'transparent',
+                margin: { t: 20, r: 20, b: 80, l: 20 },
+                showlegend: true,
+                legend: { orientation: 'h', y: -0.25, x: 0.5, xanchor: 'center' }
+            };
+
+            Plotly.newPlot('fsCategoryChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderFullscreenItemsChart() {
+            const itemTotals = {};
+
+            currentPredictions.forEach(p => {
+                itemTotals[p.item_name] = (itemTotals[p.item_name] || 0) + p.predicted_quantity;
+            });
+
+            const sorted = Object.entries(itemTotals).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            const items = sorted.map(s => s[0]);
+            const values = sorted.map(s => s[1]);
+
+            const trace = {
+                x: values,
+                y: items,
+                type: 'bar',
+                orientation: 'h',
+                marker: {
+                    color: values.map((v, i) => {
+                        const colors = ['#6366F1', '#818CF8', '#A5B4FC', '#C7D2FE', '#E0E7FF'];
+                        return colors[Math.min(i, colors.length - 1)];
+                    })
+                }
+            };
+
+            const layout = {
+                font: { family: '-apple-system, BlinkMacSystemFont, sans-serif' },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                margin: { t: 10, r: 20, b: 40, l: 150 },
+                xaxis: { gridcolor: '#E5E7EB', title: 'Predicted Units' },
+                yaxis: { gridcolor: '#E5E7EB', autorange: 'reversed' },
+                showlegend: false
+            };
+
+            Plotly.newPlot('fsItemsChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderFullscreenAIInsights() {
+            const content = document.getElementById('aiInsightsContent')?.innerHTML || 'Loading...';
+            return `
+                <div class="section-fullscreen">
+                    <div class="section-header">
+                        <h2>AI Insights</h2>
+                        <button class="close-section-btn" onclick="closeSection()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Close
+                        </button>
+                    </div>
+                    <div class="section-content">
+                        <div class="ai-insights-content" style="font-size: 16px; line-height: 1.8; max-width: 900px;">
+                            ${content}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFullscreenEvents() {
+            return `
+                <div class="section-fullscreen">
+                    <div class="section-header">
+                        <h2>Upcoming Events</h2>
+                        <button class="close-section-btn" onclick="closeSection()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Close
+                        </button>
+                    </div>
+                    <div class="section-content">
+                        <div id="fsEventsList" class="events-timeline" style="max-height: none;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function populateFullscreenFilters() {
+            // Populate item filter based on category
+            const itemSelect = document.getElementById('fsItemFilter');
+            if (!itemSelect) return;
+
+            itemSelect.innerHTML = '<option value="all">All Items</option>';
+
+            let items = [];
+            if (fullscreenCategoryFilter === 'all') {
+                items = Object.keys(itemMetadata).sort();
+            } else {
+                items = (categories[fullscreenCategoryFilter] || []).sort();
+            }
+
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                itemSelect.appendChild(option);
+            });
+
+            // Populate size filter
+            const sizeSelect = document.getElementById('fsSizeFilter');
+            if (!sizeSelect) return;
+
+            sizeSelect.innerHTML = '<option value="all">All Sizes</option>';
+
+            let sizes = new Set();
+            const visibleItems = fullscreenCategoryFilter === 'all'
+                ? Object.keys(itemMetadata)
+                : (categories[fullscreenCategoryFilter] || []);
+
+            visibleItems.forEach(item => {
+                const meta = itemMetadata[item];
+                if (meta && meta.sizes) {
+                    meta.sizes.forEach(s => sizes.add(s));
+                }
+            });
+
+            const sizeOrder = ['Personal', 'Small', 'Medium', 'Large', 'Family', 'XL', 'XXL'];
+            const sortedSizes = [...sizes].sort((a, b) => {
+                const aIdx = sizeOrder.indexOf(a);
+                const bIdx = sizeOrder.indexOf(b);
+                if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+                if (aIdx === -1) return 1;
+                if (bIdx === -1) return -1;
+                return aIdx - bIdx;
+            });
+
+            sortedSizes.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = size;
+                sizeSelect.appendChild(option);
+            });
+        }
+
+        function onFsCategoryChange() {
+            fullscreenCategoryFilter = document.getElementById('fsCategoryFilter').value;
+            fullscreenItemFilter = 'all';
+            fullscreenSizeFilter = 'all';
+            populateFullscreenFilters();
+            renderFullscreenDayGroups();
+        }
+
+        function onFsItemChange() {
+            fullscreenItemFilter = document.getElementById('fsItemFilter').value;
+            fullscreenSizeFilter = 'all';
+            populateFullscreenFilters();
+            renderFullscreenDayGroups();
+        }
+
+        function onFsSizeChange() {
+            fullscreenSizeFilter = document.getElementById('fsSizeFilter').value;
+            renderFullscreenDayGroups();
+        }
+
+        function getFullscreenFilteredPredictions() {
+            return currentPredictions.filter(p => {
+                if (fullscreenCategoryFilter !== 'all') {
+                    const itemCat = itemMetadata[p.item_name]?.category;
+                    if (itemCat !== fullscreenCategoryFilter) return false;
+                }
+                if (fullscreenItemFilter !== 'all') {
+                    if (p.item_name !== fullscreenItemFilter) return false;
+                }
+                if (fullscreenSizeFilter !== 'all') {
+                    if (p.size !== fullscreenSizeFilter) return false;
+                }
+                return true;
+            });
+        }
+
+        function renderFullscreenDayGroups() {
+            const container = document.getElementById('fsDayGroupsContainer');
+            if (!container) return;
+
+            const searchInput = document.getElementById('fsItemSearch');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const filtered = getFullscreenFilteredPredictions();
+
+            // Group predictions by date
+            const groupedByDate = {};
+            filtered.forEach(p => {
+                if (!groupedByDate[p.date]) groupedByDate[p.date] = [];
+                groupedByDate[p.date].push(p);
+            });
+
+            // Build event lookup
+            const eventLookup = {};
+            if (currentFactors.holidays) {
+                currentFactors.holidays.forEach(h => {
+                    if (!eventLookup[h.date]) eventLookup[h.date] = [];
+                    eventLookup[h.date].push({ type: 'holiday', name: h.name });
+                });
+            }
+            if (currentFactors.sports) {
+                currentFactors.sports.forEach(s => {
+                    if (!eventLookup[s.date]) eventLookup[s.date] = [];
+                    eventLookup[s.date].push({ type: 'sports', name: s.name });
+                });
+            }
+            if (currentFactors.paydays) {
+                currentFactors.paydays.forEach(p => {
+                    if (!eventLookup[p.date]) eventLookup[p.date] = [];
+                    eventLookup[p.date].push({ type: 'payday', name: 'Payday' });
+                });
+            }
+
+            const dates = Object.keys(groupedByDate).sort();
+            const fullDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            const eventIcons = {
+                holiday: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>',
+                sports: '<circle cx="12" cy="12" r="10"/>',
+                payday: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
+            };
+
+            let html = '';
+
+            dates.forEach(dateStr => {
+                const items = groupedByDate[dateStr];
+                const events = eventLookup[dateStr] || [];
+                const date = new Date(dateStr + 'T00:00:00');
+                const dayTotal = items.reduce((sum, p) => sum + p.predicted_quantity, 0);
+                const dayRevenue = items.reduce((sum, p) => sum + (p.predicted_revenue || 0), 0);
+
+                const filteredItems = items.filter(p => p.item_name.toLowerCase().includes(searchTerm));
+                if (filteredItems.length === 0 && searchTerm) return;
+
+                const eventBadges = events.map(e => `
+                    <span class="day-event-badge ${e.type}" title="${e.name}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${eventIcons[e.type]}</svg>
+                        ${e.type === 'payday' ? '$' : e.type.charAt(0).toUpperCase() + e.type.slice(1)}
+                    </span>
+                `).join('');
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isToday = date.getTime() === today.getTime();
+
+                html += `
+                    <div class="day-group" data-date="${dateStr}">
+                        <div class="day-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                            <div class="day-group-left">
+                                <div class="day-group-toggle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </div>
+                                <span class="day-group-date">${fullDayNames[date.getDay()]}, ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                ${isToday ? '<span class="day-event-badge" style="background: var(--primary-100); color: var(--primary-700);">Today</span>' : ''}
+                                <div class="day-group-events">${eventBadges}</div>
+                            </div>
+                            <div class="day-group-right">
+                                ${dayRevenue > 0 ? `<span class="day-group-revenue">$${dayRevenue.toLocaleString()}</span>` : ''}
+                                <span class="day-group-total">${Math.round(dayTotal).toLocaleString()} <span>units</span></span>
+                            </div>
+                        </div>
+                        <div class="day-group-content">
+                            <div class="excel-header">
+                                <div>Item</div>
+                                <div style="text-align: right;">Qty</div>
+                                <div style="text-align: right;">Price</div>
+                                <div style="text-align: right;">Revenue</div>
+                            </div>
+                            ${filteredItems.sort((a, b) => b.predicted_quantity - a.predicted_quantity).map(p => {
+                                const sizeTag = p.size ? `<span class="item-size">${p.size}</span>` : '';
+                                const priceVal = p.unit_price ? `$${p.unit_price.toFixed(2)}` : '-';
+                                const revenueVal = p.predicted_revenue ? `$${p.predicted_revenue.toFixed(2)}` : '-';
+                                return `
+                                <div class="item-row">
+                                    <div class="item-name">${p.item_name} ${sizeTag}</div>
+                                    <div class="item-qty">${p.predicted_quantity}</div>
+                                    <div class="item-price">${priceVal}</div>
+                                    <div class="item-revenue">${revenueVal}</div>
+                                </div>
+                            `}).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<div class="no-results">No results found</div>';
+        }
+
+        function renderFullscreenHourlyChart() {
+            const overall = hourlyPatterns._overall || [];
+            if (overall.length === 0) return;
+
+            const sortedData = [...overall].sort((a, b) => a.hour - b.hour);
+            const hourLabels = sortedData.map(d => {
+                const hour = d.hour;
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                return `${displayHour} ${ampm}`;
+            });
+
+            const trace = {
+                x: hourLabels,
+                y: sortedData.map(d => d.percentage),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#6366F1', width: 4, shape: 'spline' },
+                marker: {
+                    color: sortedData.map(d => d.percentage > 12 ? '#6366F1' : d.percentage > 8 ? '#818CF8' : '#A5B4FC'),
+                    size: 12
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(99, 102, 241, 0.15)',
+                hovertemplate: '%{x}: %{y:.1f}% of daily sales<extra></extra>'
+            };
+
+            const layout = {
+                font: { family: '-apple-system, BlinkMacSystemFont, sans-serif', size: 14 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                margin: { t: 30, r: 40, b: 80, l: 80 },
+                xaxis: {
+                    gridcolor: '#E5E7EB',
+                    title: 'Time of Day',
+                    tickfont: { size: 13 },
+                    zeroline: false
+                },
+                yaxis: {
+                    gridcolor: '#E5E7EB',
+                    title: '% of Daily Sales',
+                    ticksuffix: '%',
+                    tickfont: { size: 13 }
+                },
+                showlegend: false
+            };
+
+            Plotly.newPlot('fsHourlyChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderFullscreenEventsList() {
+            const container = document.getElementById('fsEventsList');
+            if (!container) return;
+
+            const events = [];
+
+            if (currentFactors.holidays) {
+                currentFactors.holidays.forEach(h => {
+                    events.push({ type: 'holiday', name: h.name, date: h.date, impact: 'high' });
+                });
+            }
+            if (currentFactors.sports) {
+                currentFactors.sports.forEach(s => {
+                    events.push({ type: 'sports', name: s.name, date: s.date, impact: 'medium' });
+                });
+            }
+            if (currentFactors.paydays) {
+                currentFactors.paydays.forEach(p => {
+                    events.push({ type: 'payday', name: 'Payday', date: p.date, impact: 'high' });
+                });
+            }
+
+            events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (events.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center p-4">No special events in this period</p>';
+                return;
+            }
+
+            const icons = {
+                holiday: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>',
+                sports: '<circle cx="12" cy="12" r="10"/>',
+                payday: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
+            };
+
+            container.innerHTML = events.map(e => `
+                <div class="event-item" style="margin-bottom: var(--space-3);">
+                    <div class="event-icon ${e.type}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            ${icons[e.type] || icons.holiday}
+                        </svg>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-name" style="font-size: 15px;">${e.name}</div>
+                        <div class="event-date">${new Date(e.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                        <span class="event-impact ${e.impact}">${e.impact} impact</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterItems() {
+            renderDayGroups();
+        }
+
+        function filterByEvent() {
+            selectedDate = null; // Clear date filter when changing event filter
+            renderDayGroups();
+        }
+
+        function filterByDate(dateStr) {
+            selectedDate = selectedDate === dateStr ? null : dateStr;
+            renderDayGroups();
+            // Update heatmap to show selected state
+            document.querySelectorAll('.heatmap-cell').forEach(cell => {
+                cell.classList.toggle('selected', cell.dataset.date === selectedDate);
+            });
+        }
+
+        function renderHeatmap() {
+            const container = document.getElementById('heatmapContainer');
+            const filtered = getFilteredPredictions();
+            const dailyTotals = {};
+            const eventDates = new Set();
+
+            filtered.forEach(p => {
+                dailyTotals[p.date] = (dailyTotals[p.date] || 0) + p.predicted_quantity;
+            });
+
+            // Collect event dates
+            if (currentFactors.holidays) currentFactors.holidays.forEach(h => eventDates.add(h.date));
+            if (currentFactors.sports) currentFactors.sports.forEach(s => eventDates.add(s.date));
+            if (currentFactors.paydays) currentFactors.paydays.forEach(p => eventDates.add(p.date));
+
+            const values = Object.values(dailyTotals);
+            const minVal = Math.min(...values);
+            const maxVal = Math.max(...values);
+            const range = maxVal - minVal || 1;
+
+            const dates = Object.keys(dailyTotals).sort();
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            let html = '<div class="heatmap-grid">';
+
+            // Headers
+            dayNames.forEach(d => {
+                html += `<div class="heatmap-header">${d}</div>`;
+            });
+
+            // Find first day of week for padding
+            const firstDate = new Date(dates[0]);
+            const startDay = firstDate.getDay();
+
+            // Add empty cells for padding
+            for (let i = 0; i < startDay; i++) {
+                html += '<div class="heatmap-cell level-0"></div>';
+            }
+
+            // Add cells for each date
+            dates.forEach(date => {
+                const value = dailyTotals[date];
+                const level = Math.min(5, Math.floor(((value - minVal) / range) * 5) + 1);
+                const hasEvent = eventDates.has(date);
+                const d = new Date(date);
+                const isSelected = selectedDate === date;
+
+                html += `
+                    <div class="heatmap-cell level-${level}${hasEvent ? ' has-event' : ''}${isSelected ? ' selected' : ''}"
+                         data-date="${date}"
+                         title="${date}: ${Math.round(value)} units - Click to filter"
+                         onclick="filterByDate('${date}')">
+                        <span class="day">${d.getDate()}</span>
+                        <span class="value">${Math.round(value)}</span>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            // Legend
+            html += `
+                <div class="heatmap-legend">
+                    <span>Less</span>
+                    <div class="heatmap-legend-scale">
+                        <span class="level-1" style="background: #DBEAFE;"></span>
+                        <span class="level-2" style="background: #93C5FD;"></span>
+                        <span class="level-3" style="background: #3B82F6;"></span>
+                        <span class="level-4" style="background: #1D4ED8;"></span>
+                        <span class="level-5" style="background: #1E3A8A;"></span>
+                    </div>
+                    <span>More</span>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        async function fetchAIInsights() {
+            const container = document.getElementById('aiInsightsContent');
+
+            try {
+                const dates = currentPredictions.map(p => p.date).sort();
+                const dateRange = dates.length > 0 ? { start: dates[0], end: dates[dates.length - 1] } : null;
+
+                const result = await api.summarizeForecast(currentPredictions, currentFactors, dateRange);
+
+                if (result && result.success) {
+                    container.innerHTML = result.content;
+                } else {
+                    container.innerHTML = '<p class="text-gray-500">AI insights unavailable. Start Ollama to enable.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-gray-500">AI insights unavailable.</p>';
+            }
+        }
+
+        // Controls
+        function setView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            // Re-render charts based on view (daily/weekly/monthly)
+            renderTrendChart();
+            renderDayGroups();
+
+            // Show/hide hourly chart based on view
+            const hourlySection = document.getElementById('hourlyChartSection');
+            if (hourlySection) {
+                hourlySection.style.display = view === 'daily' ? 'block' : 'none';
+            }
+        }
+
+        function toggleChartType() {
+            chartType = chartType === 'line' ? 'bar' : 'line';
+            renderTrendChart();
+        }
+
+        function toggleChartCard(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.toggle('collapsed');
+            }
+        }
+
+        function renderHourlyChart() {
+            const container = document.getElementById('hourlyChartSection');
+            if (!container) return;
+
+            // Check if we have hourly patterns
+            const hasHourlyData = hourlyPatterns && Object.keys(hourlyPatterns).length > 0;
+
+            if (!hasHourlyData || currentView !== 'daily') {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+
+            // Use overall hourly pattern
+            const overall = hourlyPatterns._overall || [];
+            if (overall.length === 0) {
+                container.innerHTML = '<div class="chart-card"><p class="text-gray-500" style="padding: 2rem; text-align: center;">No hourly data available. Upload data with time column to see peak hours.</p></div>';
+                return;
+            }
+
+            // Sort by hour
+            const sortedData = [...overall].sort((a, b) => a.hour - b.hour);
+
+            // Create hour labels for X-axis
+            const hourLabels = sortedData.map(d => {
+                const hour = d.hour;
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                return `${displayHour} ${ampm}`;
+            });
+
+            const trace = {
+                x: hourLabels,
+                y: sortedData.map(d => d.percentage),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: {
+                    color: '#6366F1',
+                    width: 3,
+                    shape: 'spline'
+                },
+                marker: {
+                    color: sortedData.map(d => {
+                        if (d.percentage > 12) return '#6366F1';
+                        if (d.percentage > 8) return '#818CF8';
+                        return '#A5B4FC';
+                    }),
+                    size: 10
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(99, 102, 241, 0.15)',
+                hovertemplate: '%{x}: %{y:.1f}% of daily sales<extra></extra>'
+            };
+
+            const layout = {
+                font: { family: '-apple-system, BlinkMacSystemFont, sans-serif', size: 12 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                margin: { t: 20, r: 30, b: 60, l: 60 },
+                xaxis: {
+                    gridcolor: '#E5E7EB',
+                    title: 'Time of Day',
+                    tickfont: { size: 11 }
+                },
+                yaxis: {
+                    gridcolor: '#E5E7EB',
+                    title: '% of Daily Sales',
+                    ticksuffix: '%',
+                    zeroline: false
+                },
+                showlegend: false
+            };
+
+            // Find peak hours
+            const peakHours = sortedData
+                .sort((a, b) => b.percentage - a.percentage)
+                .slice(0, 3)
+                .map(d => {
+                    const hour = d.hour;
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    const displayHour = hour % 12 || 12;
+                    return `${displayHour}${ampm}`;
+                });
+
+            document.getElementById('peakHoursText').textContent = `Peak hours: ${peakHours.join(', ')}`;
+
+            Plotly.newPlot('hourlyChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        // Cascading filter functions
+        function populateCategoryFilter() {
+            const select = document.getElementById('categoryFilter');
+            select.innerHTML = '<option value="all">All Categories</option>';
+
+            // Get unique categories from categories object
+            const cats = Object.keys(categories).sort();
+            cats.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+
+            // Reset other filters
+            selectedCategory = 'all';
+            selectedItem = 'all';
+            selectedSize = 'all';
+            populateItemFilter();
+        }
+
+        function populateItemFilter() {
+            const select = document.getElementById('itemFilter');
+            select.innerHTML = '<option value="all">All Items</option>';
+
+            let items = [];
+            if (selectedCategory === 'all') {
+                // Get all items
+                items = Object.keys(itemMetadata).sort();
+            } else {
+                // Get items in selected category
+                items = (categories[selectedCategory] || []).sort();
+            }
+
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                select.appendChild(option);
+            });
+
+            // Reset size filter
+            selectedItem = 'all';
+            selectedSize = 'all';
+            populateSizeFilter();
+        }
+
+        function populateSizeFilter() {
+            const select = document.getElementById('sizeFilter');
+            select.innerHTML = '<option value="all">All Sizes</option>';
+
+            let sizes = new Set();
+            if (selectedItem === 'all') {
+                // Get all sizes from all visible items
+                const visibleItems = selectedCategory === 'all'
+                    ? Object.keys(itemMetadata)
+                    : (categories[selectedCategory] || []);
+
+                visibleItems.forEach(item => {
+                    const meta = itemMetadata[item];
+                    if (meta && meta.sizes) {
+                        meta.sizes.forEach(s => sizes.add(s));
+                    }
+                });
+            } else {
+                // Get sizes for selected item
+                const meta = itemMetadata[selectedItem];
+                if (meta && meta.sizes) {
+                    meta.sizes.forEach(s => sizes.add(s));
+                }
+            }
+
+            // Sort sizes logically
+            const sizeOrder = ['Personal', 'Small', 'Medium', 'Large', 'Family', 'XL', 'XXL'];
+            const sortedSizes = [...sizes].sort((a, b) => {
+                const aIdx = sizeOrder.indexOf(a);
+                const bIdx = sizeOrder.indexOf(b);
+                if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+                if (aIdx === -1) return 1;
+                if (bIdx === -1) return -1;
+                return aIdx - bIdx;
+            });
+
+            sortedSizes.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = size;
+                select.appendChild(option);
+            });
+
+            selectedSize = 'all';
+        }
+
+        function onCategoryChange() {
+            selectedCategory = document.getElementById('categoryFilter').value;
+            populateItemFilter();
+            renderAllCharts();
+        }
+
+        function onItemChange() {
+            selectedItem = document.getElementById('itemFilter').value;
+            populateSizeFilter();
+            renderAllCharts();
+        }
+
+        function onSizeChange() {
+            selectedSize = document.getElementById('sizeFilter').value;
+            renderAllCharts();
+        }
+
+        function getFilteredPredictions() {
+            return currentPredictions.filter(p => {
+                // Filter by category
+                if (selectedCategory !== 'all') {
+                    const itemCat = itemMetadata[p.item_name]?.category;
+                    if (itemCat !== selectedCategory) return false;
+                }
+
+                // Filter by item
+                if (selectedItem !== 'all') {
+                    if (p.item_name !== selectedItem) return false;
+                }
+
+                // Filter by size
+                if (selectedSize !== 'all') {
+                    if (p.size !== selectedSize) return false;
+                }
+
+                return true;
+            });
+        }
+
+        function renderAllCharts() {
+            renderOverviewCards();
+            renderTrendChart();
+            renderTopItems();
+            renderHeatmap();
+            renderHourlyChart();
+            renderDayGroups();
+        }
+
+        function applyFilters() {
+            loadForecastData();
+        }
+
+        function refreshData() {
+            loadForecastData();
+        }
+
+        // Export functions
+        function toggleExportMenu() {
+            document.getElementById('exportMenu').classList.toggle('show');
+        }
+
+        // Close export menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.export-dropdown')) {
+                document.getElementById('exportMenu').classList.remove('show');
+            }
+        });
+
+        function exportCSV() {
+            if (!currentPredictions.length) return;
+
+            const csv = ['Date,Day,Item,Predicted Quantity'];
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            currentPredictions.forEach(p => {
+                const date = new Date(p.date);
+                csv.push(`${p.date},${dayNames[date.getDay()]},${p.item_name},${p.predicted_quantity}`);
+            });
+
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `forecast_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            toggleExportMenu();
+        }
+
+        async function exportImage() {
+            const dashboard = document.getElementById('dashboardContent');
+
+            try {
+                const canvas = await html2canvas(dashboard, {
+                    backgroundColor: '#F9FAFB',
+                    scale: 2
+                });
+
+                const link = document.createElement('a');
+                link.download = `forecast_dashboard_${new Date().toISOString().split('T')[0]}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error('Export image error:', error);
+                alert('Failed to export image');
+            }
+
+            toggleExportMenu();
+        }
+
+        init();
+    </script>
+
+    <!-- AI Chat Widget -->
+    <button class="ai-chat-btn" onclick="toggleAIChat()" title="AI Assistant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+            <path d="M12 2a10 10 0 0 1 10 10"/>
+            <circle cx="12" cy="12" r="4"/>
+        </svg>
+    </button>
+
+    <div class="ai-chat-panel" id="aiChatPanel">
+        <div class="ai-chat-header">
+            <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+                    <circle cx="12" cy="12" r="4"/>
+                </svg>
+                AI Assistant
+            </h3>
+            <button class="ai-chat-close" onclick="toggleAIChat()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-message assistant">
+                Hi! I'm your AI assistant. I can help you understand your forecast data. Try asking me:
+                <br><br>
+                • "What's my busiest day this week?"<br>
+                • "Which items are predicted to sell the most?"<br>
+                • "Tell me about upcoming events"<br>
+                • "Summarize my forecast"
+            </div>
+        </div>
+        <div class="ai-chat-input">
+            <input type="text" id="aiChatInput" placeholder="Ask about your forecast..." onkeypress="if(event.key==='Enter')sendAIMessage()">
+            <button class="ai-chat-send" onclick="sendAIMessage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let chatOpen = false;
+
+        function toggleAIChat() {
+            chatOpen = !chatOpen;
+            document.getElementById('aiChatPanel').classList.toggle('open', chatOpen);
+            if (chatOpen) {
+                document.getElementById('aiChatInput').focus();
+            }
+        }
+
+        async function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('aiChatMessages');
+
+            // Add user message
+            messagesContainer.innerHTML += `<div class="ai-message user">${message}</div>`;
+            input.value = '';
+
+            // Show typing indicator
+            messagesContainer.innerHTML += `<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>`;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            try {
+                // Build context from current predictions
+                const context = buildChatContext(message);
+
+                const response = await fetch('/api/llm/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: context
+                    })
+                });
+
+                // Remove typing indicator
+                document.getElementById('typingIndicator')?.remove();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    messagesContainer.innerHTML += `<div class="ai-message assistant">${data.response || data.message || 'I processed your request.'}</div>`;
+                } else {
+                    messagesContainer.innerHTML += `<div class="ai-message assistant">I'm having trouble connecting to the AI service. Make sure Ollama is running locally.</div>`;
+                }
+            } catch (error) {
+                document.getElementById('typingIndicator')?.remove();
+                messagesContainer.innerHTML += `<div class="ai-message assistant">Sorry, I couldn't process that request. Please check if Ollama is running.</div>`;
+            }
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function buildChatContext(message) {
+            // Build context from current forecast data
+            const context = {
+                predictions_count: currentPredictions.length,
+                date_range: {
+                    start: document.getElementById('startDate')?.value,
+                    end: document.getElementById('endDate')?.value
+                },
+                top_items: [],
+                events: currentFactors,
+                total_predicted: 0
+            };
+
+            // Get top 5 items
+            const itemTotals = {};
+            currentPredictions.forEach(p => {
+                itemTotals[p.item_name] = (itemTotals[p.item_name] || 0) + p.predicted_quantity;
+                context.total_predicted += p.predicted_quantity;
+            });
+
+            context.top_items = Object.entries(itemTotals)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([name, qty]) => ({ name, qty }));
+
+            // Get busiest day
+            const dailyTotals = {};
+            currentPredictions.forEach(p => {
+                dailyTotals[p.date] = (dailyTotals[p.date] || 0) + p.predicted_quantity;
+            });
+
+            const sortedDays = Object.entries(dailyTotals).sort((a, b) => b[1] - a[1]);
+            if (sortedDays.length > 0) {
+                context.busiest_day = { date: sortedDays[0][0], qty: sortedDays[0][1] };
+                context.slowest_day = { date: sortedDays[sortedDays.length - 1][0], qty: sortedDays[sortedDays.length - 1][1] };
+            }
+
+            return context;
+        }
+    </script>
+</body>
+</html>

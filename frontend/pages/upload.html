@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            background: var(--gray-50);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            padding: var(--space-5) var(--space-6);
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .page-header p {
+            color: rgba(255,255,255,0.8);
+            margin-top: var(--space-1);
+            font-size: 14px;
+        }
+
+        .page-content {
+            padding: var(--space-6);
+            max-width: 800px;
+        }
+
+        .upload-section {
+            background: white;
+            border: none;
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            color: var(--gray-900);
+        }
+
+        .section-title .step-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .dropzone {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-xl);
+            padding: var(--space-10);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+        }
+
+        .dropzone:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.06) 0%, rgba(118, 75, 162, 0.06) 100%);
+            transform: translateY(-1px);
+        }
+
+        .dropzone.dragover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-style: solid;
+        }
+
+        .dropzone-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto var(--space-4);
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius-lg);
+            color: white;
+        }
+
+        .dropzone-text {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 15px;
+        }
+
+        .dropzone-subtext {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: var(--space-2);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.08) 0%, rgba(56, 239, 125, 0.08) 100%);
+            border-radius: var(--radius-lg);
+            margin-top: var(--space-4);
+            border: 1px solid rgba(17, 153, 142, 0.2);
+        }
+
+        .file-info svg {
+            width: 28px;
+            height: 28px;
+            color: #11998e;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .file-size {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .mapping-grid {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .mapping-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--space-3);
+            align-items: center;
+        }
+
+        .mapping-row .input {
+            border-radius: var(--radius-lg);
+        }
+
+        .mapping-arrow {
+            color: #667eea;
+        }
+
+        .preview-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .training-progress {
+            text-align: center;
+            padding: var(--space-10);
+        }
+
+        .training-progress .spinner {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto var(--space-4);
+            border-width: 3px;
+        }
+
+        .training-progress h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .training-progress p {
+            color: var(--gray-500);
+            margin-top: var(--space-2);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .result-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-100);
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .result-card:nth-child(2)::before {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .result-card:nth-child(3)::before {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+
+        .result-card:nth-child(4)::before {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        .success-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+        }
+
+        .success-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        /* Dark Mode Support */
+        [data-theme="dark"] .page-header {
+            background: linear-gradient(135deg, #4c5fd7 0%, #5a3d8a 100%);
+        }
+
+        [data-theme="dark"] .upload-section {
+            background: var(--gray-800);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        [data-theme="dark"] .section-title {
+            color: var(--gray-100);
+        }
+
+        [data-theme="dark"] .dropzone {
+            border-color: var(--gray-600);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        [data-theme="dark"] .dropzone:hover,
+        [data-theme="dark"] .dropzone.dragover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        }
+
+        [data-theme="dark"] .dropzone-text {
+            color: var(--gray-200);
+        }
+
+        [data-theme="dark"] .file-info {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.15) 0%, rgba(56, 239, 125, 0.15) 100%);
+            border-color: rgba(17, 153, 142, 0.3);
+        }
+
+        [data-theme="dark"] .file-name {
+            color: var(--gray-100);
+        }
+
+        [data-theme="dark"] .result-card {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+        }
+
+        [data-theme="dark"] .result-value {
+            color: var(--gray-100);
+        }
+
+        [data-theme="dark"] .training-progress h3 {
+            color: var(--gray-100);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/frontend/pages/home.html" class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <a href="/frontend/pages/dashboard.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/frontend/pages/forecast.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 9l-5-6-4 8-3-2"/>
+                        </svg>
+                        Forecasts
+                    </a>
+                    <a href="/frontend/pages/calendar.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Calendar
+                    </a>
+                    <a href="/frontend/pages/upload.html" class="sidebar-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Upload Data
+                    </a>
+                    <a href="/frontend/pages/analytics.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Analytics
+                    </a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Settings</div>
+                    <a href="/frontend/pages/account.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Account
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Upload Sales Data</h1>
+                <p>Upload your CSV file to train or update your forecasting model</p>
+            </div>
+
+            <div class="page-content">
+                <!-- Step 1: Upload -->
+                <div class="upload-section" id="uploadSection">
+                    <div class="section-title">
+                        <span class="step-badge">1</span>
+                        Upload CSV File
+                    </div>
+                    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p class="dropzone-text">Drop your CSV file here or click to browse</p>
+                        <p class="dropzone-subtext">Supports .csv files up to 10MB</p>
+                    </div>
+                    <input type="file" id="fileInput" accept=".csv" style="display: none" onchange="handleFileSelect(event)">
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <div class="file-details">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="clearFile()">Remove</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Column Mapping -->
+                <div class="upload-section" id="mappingSection" style="display: none;">
+                    <div class="section-title">
+                        <span class="step-badge">2</span>
+                        Confirm Column Mapping
+                    </div>
+                    <p class="text-gray-500 mb-4">We detected your columns. Verify the mapping below:</p>
+                    <div class="mapping-grid" id="mappingGrid"></div>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button class="btn btn-secondary" onclick="resetUpload()">Back</button>
+                        <button class="btn btn-primary" onclick="startTraining()">Train Model</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Training -->
+                <div class="upload-section" id="trainingSection" style="display: none;">
+                    <div class="training-progress">
+                        <div class="spinner spinner-lg"></div>
+                        <h3 class="text-lg font-semibold">Training your model...</h3>
+                        <p class="text-gray-500 mt-2">This may take a minute. We're fetching weather, holidays, and other data for your location.</p>
+                    </div>
+                </div>
+
+                <!-- Step 4: Results -->
+                <div class="upload-section" id="resultsSection" style="display: none;">
+                    <div class="section-title">
+                        <div class="success-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        Training Complete!
+                    </div>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <div class="result-value" id="resultMAE">--</div>
+                            <div class="result-label">Test MAE (avg error)</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="resultMAPE">--</div>
+                            <div class="result-label">Test MAPE (%)</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="resultRows">--</div>
+                            <div class="result-label">Training Rows</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="resultExternal">--</div>
+                            <div class="result-label">External Data Points</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="/frontend/pages/forecast.html" class="btn btn-primary flex-1">View Forecasts</a>
+                        <button class="btn btn-secondary" onclick="resetUpload()">Upload More Data</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/chat-widget.js"></script>
+    <script>
+        // Check auth
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        let currentFile = null;
+        let uploadData = null;
+        let businessId = localStorage.getItem('current_business_id');
+
+        // Dropzone handlers
+        const dropzone = document.getElementById('dropzone');
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                handleFile(file);
+            }
+        });
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        }
+
+        async function handleFile(file) {
+            currentFile = file;
+            document.getElementById('fileInfo').style.display = 'flex';
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+
+            // Upload and get column mapping
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                uploadData = await response.json();
+                showMappingSection(uploadData);
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Failed to process file. Please try again.');
+            }
+        }
+
+        function showMappingSection(data) {
+            const grid = document.getElementById('mappingGrid');
+            grid.innerHTML = '';
+
+            const ourColumns = ['date', 'item_name', 'quantity', 'size', 'type', 'unit_price', 'total_price', 'order_id', 'time', 'N/A'];
+
+            data.their_columns.forEach(col => {
+                const suggested = data.suggested_mapping[col] || 'N/A';
+                const row = document.createElement('div');
+                row.className = 'mapping-row';
+                row.innerHTML = `
+                    <div class="input" style="background: var(--gray-50); cursor: default;">${col}</div>
+                    <svg class="mapping-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                    <select class="input select" data-col="${col}">
+                        ${ourColumns.map(c => `<option value="${c}" ${c === suggested ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                `;
+                grid.appendChild(row);
+            });
+
+            document.getElementById('mappingSection').style.display = 'block';
+        }
+
+        async function startTraining() {
+            document.getElementById('mappingSection').style.display = 'none';
+            document.getElementById('trainingSection').style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                // Get business config
+                const businesses = await api.getBusinesses();
+                if (businesses && businesses.length > 0) {
+                    const business = businesses[0];
+                    const config = {
+                        business_name: business.name,
+                        city: business.city,
+                        state: business.state,
+                        zipcode: business.zipcode,
+                        country: business.country,
+                        timezone: business.timezone
+                    };
+                    formData.append('config', JSON.stringify(config));
+                    formData.append('business_id', business.id);
+                }
+
+                const response = await fetch('/train', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const results = await response.json();
+                showResults(results);
+            } catch (error) {
+                console.error('Training error:', error);
+                alert('Training failed: ' + error.message);
+                resetUpload();
+            }
+        }
+
+        function showResults(results) {
+            document.getElementById('trainingSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+
+            document.getElementById('resultMAE').textContent = results.test_mae?.toFixed(2) || '--';
+            document.getElementById('resultMAPE').textContent = (results.test_mape?.toFixed(1) || '--') + '%';
+            document.getElementById('resultRows').textContent = (results.training_rows || 0).toLocaleString();
+
+            const external = results.external_data || {};
+            const totalExternal = (external.weather_days || 0) + (external.holidays || 0) +
+                                  (external.sports_games || 0) + (external.paydays || 0);
+            document.getElementById('resultExternal').textContent = totalExternal.toLocaleString();
+        }
+
+        function clearFile() {
+            currentFile = null;
+            uploadData = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('mappingSection').style.display = 'none';
+        }
+
+        function resetUpload() {
+            clearFile();
+            document.getElementById('trainingSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+    </script>
+</body>
+</html>

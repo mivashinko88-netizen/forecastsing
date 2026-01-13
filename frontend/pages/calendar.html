@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        /* Weather Effects Container */
+        .weather-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* Sunny Effect */
+        .weather-sunny .main-content {
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F4FF 30%, var(--gray-50) 60%);
+        }
+
+        .weather-sunny .sun {
+            position: absolute;
+            top: 20px;
+            right: 100px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            border-radius: 50%;
+            box-shadow: 0 0 60px 20px rgba(255, 215, 0, 0.4);
+            animation: pulse-sun 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-sun {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 60px 20px rgba(255, 215, 0, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 80px 30px rgba(255, 215, 0, 0.5); }
+        }
+
+        /* Cloudy Effect */
+        .weather-cloudy .main-content {
+            background: linear-gradient(180deg, #B0BEC5 0%, #CFD8DC 30%, var(--gray-100) 60%);
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.9;
+            filter: blur(2px);
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .cloud-1 { width: 100px; height: 40px; top: 40px; left: 10%; animation: float-cloud 25s linear infinite; }
+        .cloud-1::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+        .cloud-1::after { width: 60px; height: 60px; top: -30px; left: 45px; }
+
+        .cloud-2 { width: 80px; height: 32px; top: 80px; left: 50%; animation: float-cloud 30s linear infinite; animation-delay: -10s; }
+        .cloud-2::before { width: 40px; height: 40px; top: -20px; left: 10px; }
+        .cloud-2::after { width: 50px; height: 50px; top: -25px; left: 35px; }
+
+        .cloud-3 { width: 120px; height: 48px; top: 30px; left: 70%; animation: float-cloud 35s linear infinite; animation-delay: -20s; }
+        .cloud-3::before { width: 60px; height: 60px; top: -30px; left: 20px; }
+        .cloud-3::after { width: 70px; height: 70px; top: -35px; left: 55px; }
+
+        @keyframes float-cloud {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-200vw); }
+        }
+
+        /* Rain Effect */
+        .weather-rainy .main-content {
+            background: linear-gradient(180deg, #546E7A 0%, #78909C 30%, #B0BEC5 60%);
+        }
+
+        .rain {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .rain-drop {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(transparent, rgba(174, 194, 224, 0.8));
+            animation: rain-fall linear infinite;
+        }
+
+        @keyframes rain-fall {
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0.3; }
+        }
+
+        /* Snow Effect */
+        .weather-snowy .main-content {
+            background: linear-gradient(180deg, #90A4AE 0%, #CFD8DC 30%, #ECEFF1 60%);
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+            animation: snow-fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes snow-fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0.3; }
+        }
+
+        /* Night Effect */
+        .weather-night .main-content {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 30%, #1f2937 60%);
+        }
+
+        .weather-night .page-header,
+        .weather-night .calendar-card,
+        .weather-night .controls-bar .view-toggle,
+        .weather-night .month-nav-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(71, 85, 105, 0.5);
+        }
+
+        .weather-night .page-header h1,
+        .weather-night .current-month,
+        .weather-night .calendar-header-cell {
+            color: #E2E8F0;
+        }
+
+        .weather-night .page-header p,
+        .weather-night .view-toggle-btn,
+        .weather-night .legend-item {
+            color: #94A3B8;
+        }
+
+        .weather-night .calendar-cell {
+            background: rgba(30, 41, 59, 0.5);
+            border-color: rgba(71, 85, 105, 0.3);
+        }
+
+        .weather-night .calendar-cell:hover {
+            background: rgba(51, 65, 85, 0.7);
+        }
+
+        .weather-night .day-number {
+            color: #E2E8F0;
+        }
+
+        .weather-night .calendar-cell.other-month {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .weather-night .calendar-cell.other-month .day-number {
+            color: #64748B;
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .moon {
+            position: absolute;
+            top: 30px;
+            right: 120px;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #F5F5DC, #E8E8C8);
+            border-radius: 50%;
+            box-shadow: 0 0 30px 10px rgba(255, 255, 220, 0.3);
+        }
+
+        /* Weather indicator badge */
+        .weather-badge {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .weather-night .weather-badge {
+            background: rgba(30, 41, 59, 0.95);
+            color: #E2E8F0;
+        }
+
+        .weather-badge svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            background: var(--gray-50);
+            transition: background 0.5s ease;
+        }
+
+        .page-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-content {
+            padding: var(--space-6);
+        }
+
+        .controls-bar {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: 4px;
+        }
+
+        .view-toggle-btn {
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+        }
+
+        .view-toggle-btn.active {
+            background: white;
+            color: var(--gray-900);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .month-nav-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .month-nav-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .month-nav-btn svg {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-600);
+        }
+
+        .current-month {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .calendar-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        /* Calendar Grid Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-header-cell {
+            padding: var(--space-3);
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-500);
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .calendar-cell {
+            min-height: 100px;
+            padding: var(--space-2);
+            border-right: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .calendar-cell:nth-child(7n) {
+            border-right: none;
+        }
+
+        .calendar-cell:hover {
+            background: var(--gray-50);
+        }
+
+        .calendar-cell.other-month {
+            background: var(--gray-50);
+        }
+
+        .calendar-cell.other-month .day-number {
+            color: var(--gray-400);
+        }
+
+        .calendar-cell.today {
+            background: var(--primary-50);
+        }
+
+        .calendar-cell.today .day-number {
+            background: var(--primary-600);
+            color: white;
+        }
+
+        /* Past days styling */
+        .calendar-cell.past-day {
+            background: var(--gray-100);
+            opacity: 0.7;
+        }
+
+        .calendar-cell.past-day .day-number {
+            color: var(--gray-400);
+        }
+
+        .calendar-cell.past-day .event-dot {
+            opacity: 0.5;
+        }
+
+        .calendar-cell.past-day .event-count {
+            color: var(--gray-400);
+        }
+
+        .calendar-cell.past-day:hover {
+            background: var(--gray-150);
+            opacity: 0.8;
+        }
+
+        .day-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: var(--space-1);
+        }
+
+        .event-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: var(--space-1);
+        }
+
+        .event-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .event-dot.holiday { background: var(--error-500); }
+        .event-dot.sports { background: var(--success-500); }
+        .event-dot.payday { background: var(--warning-500); }
+        .event-dot.school { background: var(--primary-500); }
+
+        .event-preview {
+            font-size: 11px;
+            color: var(--gray-600);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+            display: none; /* Hide text previews for cleaner look */
+        }
+
+        .event-count {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* Day Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-date {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .modal-weekday {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-200);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+            color: var(--gray-600);
+        }
+
+        .modal-body {
+            padding: var(--space-6);
+            overflow-y: auto;
+            max-height: calc(80vh - 120px);
+        }
+
+        .modal-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin-bottom: var(--space-3);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .modal-section-title svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .weather-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--info-50);
+            border-radius: var(--radius-lg);
+        }
+
+        .weather-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--info-100);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--info-600);
+        }
+
+        .weather-details {
+            flex: 1;
+        }
+
+        .weather-temp {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .weather-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .event-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-2);
+        }
+
+        .event-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .event-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event-card-icon.holiday { background: var(--error-100); color: var(--error-600); }
+        .event-card-icon.sports { background: var(--success-100); color: var(--success-600); }
+        .event-card-icon.payday { background: var(--warning-100); color: var(--warning-600); }
+        .event-card-icon.school { background: var(--primary-100); color: var(--primary-600); }
+
+        .event-card-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .event-card-content {
+            flex: 1;
+        }
+
+        .event-card-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .event-card-type {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: capitalize;
+        }
+
+        .event-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-2);
+            margin-bottom: var(--space-1);
+        }
+
+        .event-card-badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .event-card-badge.holiday { background: var(--error-100); color: var(--error-700); }
+        .event-card-badge.sports { background: var(--success-100); color: var(--success-700); }
+        .event-card-badge.payday { background: var(--warning-100); color: var(--warning-700); }
+        .event-card-badge.school { background: var(--primary-100); color: var(--primary-700); }
+
+        .event-card-teams {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 13px;
+            margin-top: var(--space-1);
+        }
+
+        .event-card-teams .team {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .event-card-teams .team.home {
+            color: var(--success-700);
+        }
+
+        .event-card-teams .team.away {
+            color: var(--primary-700);
+        }
+
+        .event-card-teams .vs {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--gray-400);
+            text-transform: uppercase;
+        }
+
+        .event-card-venue {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .event-card-venue::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--gray-400);
+            border-radius: 50%;
+        }
+
+        .event-card-description {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        .ai-summary {
+            padding: var(--space-4);
+            background: linear-gradient(135deg, var(--primary-50), var(--info-50));
+            border-radius: var(--radius-lg);
+            border-left: 3px solid var(--primary-500);
+        }
+
+        .ai-summary-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--primary-600);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .ai-summary-text {
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .ai-summary-loading {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--gray-500);
+            font-size: 13px;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: var(--space-4);
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        /* List View Styles */
+        .events-list {
+            display: none;
+        }
+
+        .events-list.active {
+            display: block;
+        }
+
+        .event-group {
+            padding: var(--space-4) var(--space-6);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .event-group:last-child {
+            border-bottom: none;
+        }
+
+        .event-group-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-3);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .event-group-weekday {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--gray-500);
+        }
+
+        .event-list-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) 0;
+        }
+
+        .event-type-badge {
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .event-type-badge.holiday { background: var(--error-100); color: var(--error-700); }
+        .event-type-badge.sports { background: var(--success-100); color: var(--success-700); }
+        .event-type-badge.payday { background: var(--warning-100); color: var(--warning-700); }
+        .event-type-badge.school { background: var(--primary-100); color: var(--primary-700); }
+
+        .event-name {
+            font-size: 14px;
+            color: var(--gray-900);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            color: var(--gray-300);
+            margin-bottom: var(--space-4);
+        }
+
+        .legend {
+            display: flex;
+            gap: var(--space-4);
+            padding: var(--space-4) var(--space-6);
+            border-top: 1px solid var(--gray-100);
+            background: var(--gray-50);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        /* Heatmap Legend */
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-6);
+            border-top: 1px solid var(--gray-100);
+            background: var(--gray-50);
+        }
+
+        .heatmap-legend-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .heatmap-scale {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .heatmap-scale-bar {
+            flex: 1;
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(90deg,
+                #f3e8ff 0%,
+                #e9d5ff 20%,
+                #d8b4fe 40%,
+                #c084fc 60%,
+                #a855f7 80%,
+                #7c3aed 100%
+            );
+        }
+
+        .heatmap-scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .heatmap-scale-min,
+        .heatmap-scale-max {
+            font-size: 11px;
+            color: var(--gray-500);
+            white-space: nowrap;
+        }
+
+        /* Heatmap cell coloring - Purple theme */
+        .calendar-cell.heatmap-1 { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
+        .calendar-cell.heatmap-2 { background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); }
+        .calendar-cell.heatmap-3 { background: linear-gradient(135deg, #ede9fe 0%, #e9d5ff 100%); }
+        .calendar-cell.heatmap-4 { background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%); }
+        .calendar-cell.heatmap-5 { background: linear-gradient(135deg, #ddd6fe 0%, #d8b4fe 100%); }
+        .calendar-cell.heatmap-6 { background: linear-gradient(135deg, #d8b4fe 0%, #c4b5fd 100%); }
+        .calendar-cell.heatmap-7 { background: linear-gradient(135deg, #c4b5fd 0%, #c084fc 100%); }
+        .calendar-cell.heatmap-8 { background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%); }
+        .calendar-cell.heatmap-9 { background: linear-gradient(135deg, #a78bfa 0%, #a855f7 100%); }
+        .calendar-cell.heatmap-10 { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); }
+
+        .calendar-cell.heatmap-1:hover { background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); }
+        .calendar-cell.heatmap-2:hover { background: linear-gradient(135deg, #ede9fe 0%, #e9d5ff 100%); }
+        .calendar-cell.heatmap-3:hover { background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%); }
+        .calendar-cell.heatmap-4:hover { background: linear-gradient(135deg, #ddd6fe 0%, #d8b4fe 100%); }
+        .calendar-cell.heatmap-5:hover { background: linear-gradient(135deg, #d8b4fe 0%, #c4b5fd 100%); }
+        .calendar-cell.heatmap-6:hover { background: linear-gradient(135deg, #c4b5fd 0%, #c084fc 100%); }
+        .calendar-cell.heatmap-7:hover { background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%); }
+        .calendar-cell.heatmap-8:hover { background: linear-gradient(135deg, #a78bfa 0%, #a855f7 100%); }
+        .calendar-cell.heatmap-9:hover { background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%); }
+        .calendar-cell.heatmap-10:hover { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+
+        /* Prediction indicator on day cell */
+        .day-prediction {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 4px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .day-prediction.low { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+        .day-prediction.medium { background: rgba(139, 92, 246, 0.25); color: #6d28d9; }
+        .day-prediction.high { background: rgba(139, 92, 246, 0.4); color: #5b21b6; }
+
+        /* No prediction state */
+        .calendar-cell.no-prediction {
+            background: var(--gray-50);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                display: none;
+            }
+            .calendar-cell {
+                min-height: 60px;
+            }
+            .event-preview {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Weather Effects Container -->
+    <div class="weather-effects" id="weatherEffects"></div>
+
+    <!-- Weather Badge -->
+    <div class="weather-badge" id="weatherBadge" style="display: none;">
+        <span id="weatherBadgeIcon"></span>
+        <span id="weatherBadgeText">Loading...</span>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/frontend/pages/home.html" class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <a href="/frontend/pages/dashboard.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/frontend/pages/forecast.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 9l-5-6-4 8-3-2"/>
+                        </svg>
+                        Forecasts
+                    </a>
+                    <a href="/frontend/pages/calendar.html" class="sidebar-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Calendar
+                    </a>
+                    <a href="/frontend/pages/upload.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Upload Data
+                    </a>
+                    <a href="/frontend/pages/analytics.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Analytics
+                    </a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Settings</div>
+                    <a href="/frontend/pages/account.html" class="sidebar-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Account
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Events Calendar</h1>
+                    <p class="text-gray-500 mt-1">View upcoming events that may affect your sales</p>
+                </div>
+            </div>
+
+            <div class="page-content">
+                <!-- Controls -->
+                <div class="controls-bar">
+                    <!-- View Toggle -->
+                    <div class="view-toggle">
+                        <button class="view-toggle-btn active" id="gridViewBtn" onclick="setView('grid')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            Grid
+                        </button>
+                        <button class="view-toggle-btn" id="listViewBtn" onclick="setView('list')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                                <line x1="8" y1="6" x2="21" y2="6"/>
+                                <line x1="8" y1="12" x2="21" y2="12"/>
+                                <line x1="8" y1="18" x2="21" y2="18"/>
+                                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                <line x1="3" y1="18" x2="3.01" y2="18"/>
+                            </svg>
+                            List
+                        </button>
+                    </div>
+
+                    <!-- Month Navigation -->
+                    <div class="month-nav">
+                        <button class="month-nav-btn" onclick="prevMonth()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="current-month" id="currentMonth">January 2024</div>
+                        <button class="month-nav-btn" onclick="nextMonth()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="goToToday()">Today</button>
+                    </div>
+                </div>
+
+                <!-- Calendar Card -->
+                <div class="calendar-card">
+                    <!-- Grid View -->
+                    <div id="gridView">
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- List View -->
+                    <div class="events-list" id="listView">
+                        <div id="eventsList">
+                            <!-- Events list will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="event-dot holiday"></div>
+                            Holidays
+                        </div>
+                        <div class="legend-item">
+                            <div class="event-dot sports"></div>
+                            Sports
+                        </div>
+                        <div class="legend-item">
+                            <div class="event-dot payday"></div>
+                            Paydays
+                        </div>
+                        <div class="legend-item">
+                            <div class="event-dot school"></div>
+                            School
+                        </div>
+                    </div>
+
+                    <!-- Heatmap Legend -->
+                    <div class="heatmap-legend" id="heatmapLegend" style="display: none;">
+                        <span class="heatmap-legend-label">Predicted Traffic:</span>
+                        <span class="heatmap-scale-min">Slow</span>
+                        <div class="heatmap-scale">
+                            <div class="heatmap-scale-bar"></div>
+                        </div>
+                        <span class="heatmap-scale-max">Busy</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Day Detail Modal -->
+    <div class="modal-overlay" id="dayModal" onclick="closeDayModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-date" id="modalDate">January 15, 2024</div>
+                    <div class="modal-weekday" id="modalWeekday">Wednesday</div>
+                </div>
+                <button class="modal-close" onclick="closeDayModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- AI Summary -->
+                <div class="modal-section" id="aiSummarySection">
+                    <div class="ai-summary">
+                        <div class="ai-summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                                <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+                                <path d="M12 2a10 10 0 0 1 10 10"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            AI Insight
+                        </div>
+                        <div class="ai-summary-text" id="aiSummaryText">
+                            <div class="ai-summary-loading">
+                                <div class="spinner spinner-sm"></div>
+                                Analyzing day factors...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather -->
+                <div class="modal-section" id="weatherSection">
+                    <div class="modal-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                        </svg>
+                        Weather Forecast
+                    </div>
+                    <div class="weather-card" id="weatherCard">
+                        <div class="weather-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="4"/>
+                                <path d="M12 2v2M12 20v2"/>
+                            </svg>
+                        </div>
+                        <div class="weather-details">
+                            <div class="weather-temp" id="weatherTemp">72°F / 58°F</div>
+                            <div class="weather-desc" id="weatherDesc">Clear skies, no precipitation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Events -->
+                <div class="modal-section" id="eventsSection">
+                    <div class="modal-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                        </svg>
+                        Events
+                    </div>
+                    <div id="eventsList">
+                        <!-- Events will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Prediction Summary -->
+                <div class="modal-section" id="predictionSection" style="display: none;">
+                    <div class="modal-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 9l-5-6-4 8-3-2"/>
+                        </svg>
+                        Predicted Sales
+                    </div>
+                    <div id="predictionCard" class="weather-card" style="background: linear-gradient(135deg, #f3e8ff, #ede9fe);">
+                        <div class="weather-icon" style="background: #ede9fe;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #7c3aed;">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18 9l-5-6-4 8-3-2"/>
+                            </svg>
+                        </div>
+                        <div class="weather-details">
+                            <div class="weather-temp" id="predictionQty">-- units</div>
+                            <div class="weather-desc" id="predictionDesc">Loading prediction data...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Forecast Button -->
+                <div class="modal-section">
+                    <a href="#" id="viewForecastBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        View Sales Forecast
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="margin-left: 8px;">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/chat-widget.js"></script>
+    <script>
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        let currentDate = new Date();
+        let currentView = 'grid';
+        let businessId = null;
+        let eventsData = {};
+        let predictionsData = {}; // Store predictions by date
+        let predictionRange = { min: 0, max: 0 }; // For heatmap scaling
+
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        async function init() {
+            try {
+                const businesses = await api.getBusinesses();
+                if (!businesses || businesses.length === 0) {
+                    showEmptyState('No business configured');
+                    return;
+                }
+                businessId = businesses[0].id;
+                await loadEvents();
+            } catch (error) {
+                console.error('Init error:', error);
+            }
+        }
+
+        async function loadEvents() {
+            if (!businessId) return;
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
+
+            try {
+                const response = await fetch(
+                    `/api/businesses/${businessId}/events?start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`,
+                    { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } }
+                );
+
+                if (response.ok) {
+                    eventsData = await response.json();
+                } else {
+                    eventsData = { holidays: [], sports: [], paydays: [], school: [] };
+                }
+
+                // Also load predictions for heatmap
+                await loadPredictions();
+
+                renderCalendar();
+            } catch (error) {
+                console.error('Failed to load events:', error);
+                eventsData = { holidays: [], sports: [], paydays: [], school: [] };
+                renderCalendar();
+            }
+        }
+
+        async function loadPredictions() {
+            if (!businessId) return;
+
+            try {
+                // Get active model for the business
+                const modelsResponse = await fetch(
+                    `/api/businesses/${businessId}/models`,
+                    { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } }
+                );
+
+                if (!modelsResponse.ok) {
+                    predictionsData = {};
+                    return;
+                }
+
+                const models = await modelsResponse.json();
+                const activeModel = models.find(m => m.is_active);
+
+                if (!activeModel) {
+                    predictionsData = {};
+                    document.getElementById('heatmapLegend').style.display = 'none';
+                    return;
+                }
+
+                // Calculate days to predict (rest of month from today, or full month if viewing future)
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+
+                // Start from today if viewing current month, otherwise from first of month
+                const startPrediction = (year === today.getFullYear() && month === today.getMonth())
+                    ? today
+                    : firstDay;
+
+                // Calculate number of days to predict
+                const daysToPredict = Math.ceil((lastDay - startPrediction) / (1000 * 60 * 60 * 24)) + 1;
+
+                if (daysToPredict <= 0) {
+                    predictionsData = {};
+                    document.getElementById('heatmapLegend').style.display = 'none';
+                    return;
+                }
+
+                // Get predictions from API
+                const predictResponse = await fetch(
+                    `/api/models/${activeModel.id}/predict`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ days: daysToPredict })
+                    }
+                );
+
+                if (!predictResponse.ok) {
+                    predictionsData = {};
+                    return;
+                }
+
+                const predictData = await predictResponse.json();
+                const predictions = predictData.predictions || [];
+
+                // Aggregate predictions by date (sum all items for each day)
+                predictionsData = {};
+                predictions.forEach(p => {
+                    const date = p.date;
+                    if (!predictionsData[date]) {
+                        predictionsData[date] = { totalQty: 0, totalRevenue: 0, items: [] };
+                    }
+                    predictionsData[date].totalQty += p.predicted_quantity || 0;
+                    predictionsData[date].totalRevenue += p.predicted_revenue || 0;
+                    predictionsData[date].items.push(p);
+                });
+
+                // Calculate min/max for scaling
+                const totals = Object.values(predictionsData).map(d => d.totalQty);
+                if (totals.length > 0) {
+                    predictionRange.min = Math.min(...totals);
+                    predictionRange.max = Math.max(...totals);
+                    document.getElementById('heatmapLegend').style.display = 'flex';
+                } else {
+                    document.getElementById('heatmapLegend').style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Failed to load predictions:', error);
+                predictionsData = {};
+            }
+        }
+
+        function getHeatmapLevel(dateStr) {
+            const prediction = predictionsData[dateStr];
+            if (!prediction || predictionRange.max === predictionRange.min) return 0;
+
+            const value = prediction.totalQty;
+            const range = predictionRange.max - predictionRange.min;
+            const normalized = (value - predictionRange.min) / range;
+
+            // Return 1-10 scale
+            return Math.max(1, Math.min(10, Math.ceil(normalized * 10)));
+        }
+
+        function getPredictionLabel(dateStr) {
+            const prediction = predictionsData[dateStr];
+            if (!prediction) return null;
+
+            const level = getHeatmapLevel(dateStr);
+            let label = 'low';
+            if (level >= 7) label = 'high';
+            else if (level >= 4) label = 'medium';
+
+            return {
+                qty: prediction.totalQty,
+                label: label
+            };
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('gridViewBtn').classList.toggle('active', view === 'grid');
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            document.getElementById('gridView').style.display = view === 'grid' ? 'block' : 'none';
+            document.getElementById('listView').classList.toggle('active', view === 'list');
+            renderCalendar();
+        }
+
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            loadEvents();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            loadEvents();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            loadEvents();
+        }
+
+        function getEventsForDate(dateStr) {
+            const events = [];
+
+            if (eventsData.holidays) {
+                eventsData.holidays.filter(h => h.date === dateStr).forEach(h => {
+                    events.push({
+                        type: 'holiday',
+                        name: h.name,
+                        date: h.date,
+                        description: 'Public Holiday'
+                    });
+                });
+            }
+            if (eventsData.sports) {
+                eventsData.sports.filter(s => s.date === dateStr).forEach(s => {
+                    events.push({
+                        type: 'sports',
+                        name: s.name,
+                        date: s.date,
+                        home_team: s.home_team,
+                        away_team: s.away_team,
+                        venue: s.venue,
+                        description: s.venue ? `at ${s.venue}` : 'Game Day'
+                    });
+                });
+            }
+            if (eventsData.paydays) {
+                eventsData.paydays.filter(p => p.date === dateStr).forEach(p => {
+                    events.push({
+                        type: 'payday',
+                        name: p.name || 'Payday',
+                        date: p.date,
+                        description: 'Expected increase in customer spending'
+                    });
+                });
+            }
+            if (eventsData.school) {
+                eventsData.school.forEach(s => {
+                    const startDate = s.start_date;
+                    const endDate = s.end_date || s.start_date;
+                    if (dateStr >= startDate && dateStr <= endDate) {
+                        events.push({
+                            type: 'school',
+                            name: s.name,
+                            date: dateStr,
+                            description: s.type === 'break' ? 'School Break Period' : 'School Event'
+                        });
+                    }
+                });
+            }
+
+            return events;
+        }
+
+        function renderCalendar() {
+            document.getElementById('currentMonth').textContent =
+                `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+            if (currentView === 'grid') {
+                renderGridView();
+            } else {
+                renderListView();
+            }
+        }
+
+        function renderGridView() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Header row
+            dayNames.forEach(day => {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-header-cell';
+                cell.textContent = day;
+                grid.appendChild(cell);
+            });
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Days from previous month
+            const startDayOfWeek = firstDay.getDay();
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+
+            for (let i = startDayOfWeek - 1; i >= 0; i--) {
+                const day = prevMonthLastDay - i;
+                const cell = createDayCell(day, true, false);
+                grid.appendChild(cell);
+            }
+
+            // Days of current month
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(year, month, day);
+                date.setHours(0, 0, 0, 0);
+                const isToday = date.getTime() === today.getTime();
+                const isPast = date < today;
+                const dateStr = formatDate(date);
+                const events = getEventsForDate(dateStr);
+                const cell = createDayCell(day, false, isToday, events, dateStr, isPast);
+                grid.appendChild(cell);
+            }
+
+            // Days from next month
+            const endDayOfWeek = lastDay.getDay();
+            for (let i = 1; i < 7 - endDayOfWeek; i++) {
+                const cell = createDayCell(i, true, false);
+                grid.appendChild(cell);
+            }
+        }
+
+        function createDayCell(day, isOtherMonth, isToday, events = [], dateStr = '', isPast = false) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-cell';
+            if (isOtherMonth) cell.className += ' other-month';
+            if (isToday) cell.className += ' today';
+            if (isPast && !isToday) cell.className += ' past-day';
+
+            // Apply heatmap coloring for future dates (not past, not other month)
+            if (!isOtherMonth && !isPast && dateStr) {
+                const heatmapLevel = getHeatmapLevel(dateStr);
+                if (heatmapLevel > 0) {
+                    cell.className += ` heatmap-${heatmapLevel}`;
+                }
+            }
+
+            let html = `<div class="day-number">${day}</div>`;
+
+            if (events.length > 0) {
+                html += '<div class="event-dots">';
+                const uniqueTypes = [...new Set(events.map(e => e.type))];
+                uniqueTypes.forEach(type => {
+                    html += `<div class="event-dot ${type}"></div>`;
+                });
+                html += '</div>';
+                // Show event count instead of text
+                html += `<div class="event-count">${events.length} event${events.length > 1 ? 's' : ''}</div>`;
+            }
+
+            // Add prediction indicator for future dates
+            if (!isOtherMonth && !isPast && dateStr) {
+                const predLabel = getPredictionLabel(dateStr);
+                if (predLabel) {
+                    html += `<div class="day-prediction ${predLabel.label}">${predLabel.qty} units</div>`;
+                }
+            }
+
+            cell.innerHTML = html;
+
+            if (dateStr && !isOtherMonth) {
+                cell.onclick = () => openDayModal(dateStr, events, isPast, isToday);
+            }
+
+            return cell;
+        }
+
+        function openDayModal(dateStr, events, isPast = false, isToday = false) {
+            const date = new Date(dateStr + 'T00:00:00');
+            const fullDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            // Update modal header
+            document.getElementById('modalDate').textContent =
+                `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            document.getElementById('modalWeekday').textContent = fullDayNames[date.getDay()] +
+                (isPast && !isToday ? ' (Past)' : isToday ? ' (Today)' : '');
+
+            // Update forecast link
+            document.getElementById('viewForecastBtn').href = `/frontend/pages/forecast.html?date=${dateStr}`;
+
+            // Render events
+            renderModalEvents(events);
+
+            // Show loading state for AI summary
+            document.getElementById('aiSummaryText').innerHTML = `
+                <div class="ai-summary-loading">
+                    <div class="spinner spinner-sm"></div>
+                    Analyzing day factors...
+                </div>
+            `;
+
+            // Weather section visibility - only show for current day
+            const weatherSection = document.getElementById('weatherSection');
+            if (isToday) {
+                weatherSection.style.display = 'block';
+                document.getElementById('weatherTemp').textContent = '--°F / --°F';
+                document.getElementById('weatherDesc').textContent = 'Loading weather data...';
+            } else {
+                weatherSection.style.display = 'none';
+            }
+
+            // Prediction section - show for future dates
+            const predictionSection = document.getElementById('predictionSection');
+            const prediction = predictionsData[dateStr];
+
+            if (!isPast && prediction) {
+                predictionSection.style.display = 'block';
+                document.getElementById('predictionQty').textContent = `${prediction.totalQty} units`;
+
+                // Build description based on level - Purple theme
+                const level = getHeatmapLevel(dateStr);
+                let levelDesc = 'Normal';
+                let bgColor = '#f3e8ff, #ede9fe';
+                let iconBg = '#ede9fe';
+                let iconColor = '#7c3aed';
+
+                if (level >= 8) {
+                    levelDesc = 'Very Busy Day';
+                    bgColor = '#a855f7, #7c3aed';
+                    iconBg = '#c4b5fd';
+                    iconColor = '#5b21b6';
+                } else if (level >= 6) {
+                    levelDesc = 'Busy Day';
+                    bgColor = '#c084fc, #a855f7';
+                    iconBg = '#d8b4fe';
+                    iconColor = '#6d28d9';
+                } else if (level >= 4) {
+                    levelDesc = 'Moderate Traffic';
+                    bgColor = '#ddd6fe, #c4b5fd';
+                    iconBg = '#e9d5ff';
+                    iconColor = '#7c3aed';
+                } else if (level >= 2) {
+                    levelDesc = 'Light Traffic';
+                } else {
+                    levelDesc = 'Slow Day';
+                }
+
+                // Format revenue if available
+                let revenueText = '';
+                if (prediction.totalRevenue > 0) {
+                    revenueText = ` | Est. Revenue: $${prediction.totalRevenue.toLocaleString()}`;
+                }
+
+                document.getElementById('predictionDesc').textContent = `${levelDesc}${revenueText}`;
+
+                // Update card styling based on intensity
+                const predCard = document.getElementById('predictionCard');
+                predCard.style.background = `linear-gradient(135deg, ${bgColor})`;
+                predCard.querySelector('.weather-icon').style.background = iconBg;
+                predCard.querySelector('.weather-icon svg').style.color = iconColor;
+            } else {
+                predictionSection.style.display = 'none';
+            }
+
+            // Show modal
+            document.getElementById('dayModal').classList.add('active');
+
+            // Fetch detailed data for this day
+            fetchDayDetails(dateStr, events, isToday);
+        }
+
+        function closeDayModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('dayModal').classList.remove('active');
+        }
+
+        function renderModalEvents(events) {
+            const container = document.getElementById('eventsList');
+
+            if (!events || events.length === 0) {
+                container.innerHTML = '<div class="no-events">No special events on this day</div>';
+                return;
+            }
+
+            const icons = {
+                holiday: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>',
+                sports: '<circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>',
+                payday: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+                school: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>'
+            };
+
+            container.innerHTML = events.map(e => {
+                // Build detailed content based on event type
+                let detailsHtml = '';
+
+                if (e.type === 'sports' && e.home_team && e.away_team) {
+                    detailsHtml = `
+                        <div class="event-card-teams">
+                            <span class="team home">${e.home_team}</span>
+                            <span class="vs">vs</span>
+                            <span class="team away">${e.away_team}</span>
+                        </div>
+                        ${e.venue ? `<div class="event-card-venue">${e.venue}</div>` : ''}
+                    `;
+                } else {
+                    detailsHtml = `<div class="event-card-description">${e.description || ''}</div>`;
+                }
+
+                return `
+                    <div class="event-card ${e.type}">
+                        <div class="event-card-icon ${e.type}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                ${icons[e.type] || icons.holiday}
+                            </svg>
+                        </div>
+                        <div class="event-card-content">
+                            <div class="event-card-header">
+                                <div class="event-card-name">${e.name}</div>
+                                <span class="event-card-badge ${e.type}">${e.type}</span>
+                            </div>
+                            ${detailsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function fetchDayDetails(dateStr, events, isToday = false) {
+            // Only fetch weather for current day
+            if (isToday) {
+                try {
+                    const response = await fetch(
+                        `/api/businesses/${businessId}/events?date=${dateStr}`,
+                        { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } }
+                    );
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // Update weather if available
+                        if (data.weather && data.weather.length > 0) {
+                            const weather = data.weather[0];
+                            document.getElementById('weatherTemp').textContent =
+                                `${weather.temp_max || '--'}°F / ${weather.temp_min || '--'}°F`;
+                            document.getElementById('weatherDesc').textContent =
+                                weather.precipitation > 0 ? `${weather.precipitation}" precipitation expected` : 'No precipitation expected';
+                        } else {
+                            document.getElementById('weatherDesc').textContent = 'Weather data not available';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch weather:', error);
+                    document.getElementById('weatherDesc').textContent = 'Weather data not available';
+                }
+            }
+
+            // Try to get AI summary
+            fetchAISummary(dateStr, events);
+        }
+
+        async function fetchAISummary(dateStr, events) {
+            try {
+                // Format events for the API
+                const eventsPayload = {
+                    holidays: events.filter(e => e.type === 'holiday'),
+                    sports: events.filter(e => e.type === 'sports'),
+                    paydays: events.filter(e => e.type === 'payday'),
+                    school: events.filter(e => e.type === 'school')
+                };
+
+                const result = await api.summarizeDay(dateStr, eventsPayload);
+
+                if (result && result.success) {
+                    document.getElementById('aiSummaryText').textContent = result.content;
+                } else if (result && !result.available) {
+                    showAIUnavailable();
+                } else {
+                    showAIUnavailable();
+                }
+            } catch (error) {
+                console.error('AI summary error:', error);
+                showAIUnavailable();
+            }
+        }
+
+        function showAIUnavailable() {
+            document.getElementById('aiSummaryText').innerHTML =
+                '<span style="color: var(--gray-500);">AI insights unavailable. Start Ollama to enable AI summaries.</span>';
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDayModal();
+        });
+
+        function renderListView() {
+            const container = document.getElementById('eventsList');
+            container.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const lastDay = new Date(year, month + 1, 0).getDate();
+
+            let hasEvents = false;
+
+            for (let day = 1; day <= lastDay; day++) {
+                const date = new Date(year, month, day);
+                const dateStr = formatDate(date);
+                const events = getEventsForDate(dateStr);
+
+                if (events.length > 0) {
+                    hasEvents = true;
+                    const group = document.createElement('div');
+                    group.className = 'event-group';
+
+                    const weekday = dayNames[date.getDay()];
+                    group.innerHTML = `
+                        <div class="event-group-date">
+                            ${monthNames[month]} ${day}, ${year}
+                            <span class="event-group-weekday">${weekday}</span>
+                        </div>
+                    `;
+
+                    events.forEach(event => {
+                        const item = document.createElement('div');
+                        item.className = 'event-list-item';
+                        item.innerHTML = `
+                            <span class="event-type-badge ${event.type}">${event.type}</span>
+                            <span class="event-name">${event.name}</span>
+                        `;
+                        group.appendChild(item);
+                    });
+
+                    container.appendChild(group);
+                }
+            }
+
+            if (!hasEvents) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">No events this month</h3>
+                        <p class="text-gray-500 mt-2">There are no special events scheduled for this month.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function showEmptyState(message) {
+            document.getElementById('calendarGrid').innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <p class="text-gray-500">${message}</p>
+                </div>
+            `;
+        }
+
+        // =============== WEATHER VISUAL EFFECTS ===============
+
+        const weatherIcons = {
+            sunny: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
+            cloudy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
+            rainy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 13v8M8 13v8M12 15v8M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg>',
+            snowy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="8" y1="20" x2="8.01" y2="20"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="12" y1="22" x2="12.01" y2="22"/><line x1="16" y1="16" x2="16.01" y2="16"/><line x1="16" y1="20" x2="16.01" y2="20"/></svg>',
+            night: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+        };
+
+        function getWeatherType(weatherCode, isNight) {
+            // Weather codes based on Open-Meteo WMO codes
+            if (isNight && weatherCode < 3) return 'night';
+            if (weatherCode === 0 || weatherCode === 1) return 'sunny';
+            if (weatherCode >= 2 && weatherCode <= 3) return 'cloudy';
+            if (weatherCode >= 45 && weatherCode <= 48) return 'cloudy'; // fog
+            if (weatherCode >= 51 && weatherCode <= 67) return 'rainy';
+            if (weatherCode >= 71 && weatherCode <= 77) return 'snowy';
+            if (weatherCode >= 80 && weatherCode <= 82) return 'rainy';
+            if (weatherCode >= 85 && weatherCode <= 86) return 'snowy';
+            if (weatherCode >= 95) return 'rainy'; // thunderstorm
+            return 'sunny';
+        }
+
+        function createRainDrops(container, count = 50) {
+            for (let i = 0; i < count; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain-drop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(drop);
+            }
+        }
+
+        function createSnowflakes(container, count = 40) {
+            const snowChars = ['*', '❄', '❅', '❆'];
+            for (let i = 0; i < count; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.textContent = snowChars[Math.floor(Math.random() * snowChars.length)];
+                flake.style.left = Math.random() * 100 + '%';
+                flake.style.fontSize = (10 + Math.random() * 15) + 'px';
+                flake.style.animationDuration = (5 + Math.random() * 10) + 's';
+                flake.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(flake);
+            }
+        }
+
+        function createStars(container, count = 50) {
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 40 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        function createClouds(container) {
+            for (let i = 1; i <= 3; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = `cloud cloud-${i}`;
+                container.appendChild(cloud);
+            }
+        }
+
+        async function applyWeatherEffects() {
+            // Check if we have business coordinates
+            if (!businessId) return;
+
+            try {
+                // Get today's date for weather fetch
+                const today = new Date().toISOString().split('T')[0];
+                const response = await fetch(
+                    `/api/businesses/${businessId}/events?date=${today}`,
+                    { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } }
+                );
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                const weather = data.weather && data.weather[0];
+
+                if (!weather) return;
+
+                // Determine if it's night (between 7pm and 6am)
+                const hour = new Date().getHours();
+                const isNight = hour >= 19 || hour < 6;
+
+                // Get weather type
+                const weatherCode = weather.weather_code || 0;
+                const weatherType = getWeatherType(weatherCode, isNight);
+
+                // Remove any existing weather classes
+                document.body.classList.remove('weather-sunny', 'weather-cloudy', 'weather-rainy', 'weather-snowy', 'weather-night');
+
+                // Apply weather class
+                document.body.classList.add(`weather-${weatherType}`);
+
+                // Create visual effects
+                const effectsContainer = document.getElementById('weatherEffects');
+                effectsContainer.innerHTML = '';
+
+                if (weatherType === 'sunny') {
+                    const sun = document.createElement('div');
+                    sun.className = 'sun';
+                    effectsContainer.appendChild(sun);
+                } else if (weatherType === 'cloudy') {
+                    createClouds(effectsContainer);
+                } else if (weatherType === 'rainy') {
+                    const rain = document.createElement('div');
+                    rain.className = 'rain';
+                    createRainDrops(rain, 60);
+                    effectsContainer.appendChild(rain);
+                    createClouds(effectsContainer);
+                } else if (weatherType === 'snowy') {
+                    createSnowflakes(effectsContainer, 50);
+                    createClouds(effectsContainer);
+                } else if (weatherType === 'night') {
+                    createStars(effectsContainer, 60);
+                    const moon = document.createElement('div');
+                    moon.className = 'moon';
+                    effectsContainer.appendChild(moon);
+                }
+
+                // Show weather badge
+                const badge = document.getElementById('weatherBadge');
+                const badgeIcon = document.getElementById('weatherBadgeIcon');
+                const badgeText = document.getElementById('weatherBadgeText');
+
+                badgeIcon.innerHTML = weatherIcons[weatherType];
+                const tempF = weather.temp_max ? `${Math.round(weather.temp_max)}°F` : '--';
+                const descriptions = {
+                    sunny: 'Clear & Sunny',
+                    cloudy: 'Cloudy',
+                    rainy: 'Rainy',
+                    snowy: 'Snowy',
+                    night: 'Clear Night'
+                };
+                badgeText.textContent = `${descriptions[weatherType]} | ${tempF}`;
+                badge.style.display = 'flex';
+
+            } catch (error) {
+                console.error('Failed to apply weather effects:', error);
+            }
+        }
+
+        // Apply weather effects after init
+        init();
+        setTimeout(applyWeatherEffects, 500);
+    </script>
+</body>
+</html>

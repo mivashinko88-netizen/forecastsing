@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-50);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: var(--space-6);
+        }
+
+        .login-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-6);
+        }
+
+        .login-logo svg {
+            width: 36px;
+            height: 36px;
+            color: var(--primary-600);
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+            text-align: center;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: var(--space-6);
+            text-align: center;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            margin-bottom: var(--space-6);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--gray-900);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+
+        .login-footer {
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--gray-100);
+            text-align: center;
+        }
+
+        .login-footer p {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--gray-500);
+            font-size: 14px;
+            margin-bottom: var(--space-6);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: var(--gray-700);
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .error-message {
+            background: var(--error-50);
+            color: var(--error-700);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            margin-bottom: var(--space-4);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: var(--success-50);
+            color: var(--success-700);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            margin-bottom: var(--space-4);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <a href="/" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to home
+            </a>
+
+            <div class="login-card">
+                <div class="login-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </div>
+
+                <!-- Tab Buttons -->
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('signin')">Sign In</button>
+                    <button class="tab-btn" onclick="showTab('signup')">Sign Up</button>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+
+                <!-- Sign In Form -->
+                <form id="signinForm" onsubmit="handleSignIn(event)">
+                    <div class="form-group">
+                        <label class="label" for="signinEmail">Email</label>
+                        <input type="email" class="input" id="signinEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="signinPassword">Password</label>
+                        <input type="password" class="input" id="signinPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="signinBtn">
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Sign Up Form -->
+                <form id="signupForm" class="hidden" onsubmit="handleSignUp(event)">
+                    <div class="form-group">
+                        <label class="label" for="signupName">Full Name</label>
+                        <input type="text" class="input" id="signupName" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="signupEmail">Email</label>
+                        <input type="email" class="input" id="signupEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="signupPassword">Password</label>
+                        <input type="password" class="input" id="signupPassword" placeholder="At least 6 characters" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="signupBtn">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <p>Free to use. All data stored locally.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        // Check if already logged in
+        if (api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/dashboard.html';
+        }
+
+        function showTab(tab) {
+            const signinForm = document.getElementById('signinForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            hideMessages();
+
+            tabs.forEach(t => t.classList.remove('active'));
+
+            if (tab === 'signin') {
+                signinForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabs[0].classList.add('active');
+            } else {
+                signinForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.classList.add('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = message;
+            el.classList.add('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        async function handleSignIn(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const btn = document.getElementById('signinBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner spinner-sm"></div> Signing in...';
+
+            try {
+                const email = document.getElementById('signinEmail').value;
+                const password = document.getElementById('signinPassword').value;
+
+                const response = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Sign in failed');
+                }
+
+                // Store tokens and user
+                api.setTokens(data.access_token, data.refresh_token);
+                api.setUser(data.user);
+
+                // Check for businesses
+                const businesses = await api.getBusinesses();
+                if (businesses && businesses.length > 0) {
+                    window.location.href = '/frontend/pages/dashboard.html';
+                } else {
+                    window.location.href = '/frontend/pages/setup/business-type.html';
+                }
+            } catch (error) {
+                showError(error.message);
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        }
+
+        async function handleSignUp(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const btn = document.getElementById('signupBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner spinner-sm"></div> Creating account...';
+
+            try {
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Sign up failed');
+                }
+
+                // Store tokens and user
+                api.setTokens(data.access_token, data.refresh_token);
+                api.setUser(data.user);
+
+                // Go to business setup
+                window.location.href = '/frontend/pages/setup/business-type.html';
+            } catch (error) {
+                showError(error.message);
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+    </script>
+</body>
+</html>

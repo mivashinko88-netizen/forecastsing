@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Location - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .setup-page {
+            min-height: 100vh;
+            background: var(--gray-50);
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .setup-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .setup-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-6);
+        }
+
+        .setup-logo svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary-600);
+        }
+
+        .setup-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .progress-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-600);
+            color: white;
+        }
+
+        .progress-dot.complete {
+            background: var(--success-500);
+            color: white;
+        }
+
+        .progress-dot.pending {
+            background: var(--gray-200);
+            color: var(--gray-500);
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--gray-900);
+        }
+
+        .progress-line {
+            width: 60px;
+            height: 2px;
+            background: var(--gray-200);
+        }
+
+        .progress-line.complete {
+            background: var(--success-500);
+        }
+
+        .setup-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .setup-subtitle {
+            font-size: 16px;
+            color: var(--gray-500);
+        }
+
+        .setup-form {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-4);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .setup-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        /* Location cards */
+        .locations-list {
+            margin-bottom: var(--space-4);
+        }
+
+        .location-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .location-card.primary {
+            border-color: var(--primary-300);
+            background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%);
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .location-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-100);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .location-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-600);
+        }
+
+        .location-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .location-details p {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .location-badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--primary-100);
+            color: var(--primary-700);
+            margin-left: var(--space-2);
+        }
+
+        .location-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .btn-icon:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--error-100);
+            color: var(--error-500);
+        }
+
+        .btn-icon svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-500);
+        }
+
+        .btn-icon.delete:hover svg {
+            color: var(--error-500);
+        }
+
+        /* Add location button */
+        .add-location-btn {
+            width: 100%;
+            padding: var(--space-4);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            color: var(--gray-500);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s;
+            margin-bottom: var(--space-6);
+        }
+
+        .add-location-btn:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-600);
+            background: var(--primary-50);
+        }
+
+        .add-location-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Form section header */
+        .form-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .form-section-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .form-section-header .location-count {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-6);
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: var(--space-3);
+            color: var(--gray-300);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Day checkbox styling */
+        .day-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            user-select: none;
+        }
+
+        .day-checkbox:hover {
+            background: var(--gray-200);
+        }
+
+        .day-checkbox input {
+            display: none;
+        }
+
+        .day-checkbox input:checked + span {
+            color: var(--primary-600);
+            font-weight: 600;
+        }
+
+        .day-checkbox:has(input:checked) {
+            background: var(--primary-50);
+            border-color: var(--primary-300);
+        }
+
+        .day-checkbox span {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        /* Dark mode for day checkboxes */
+        [data-theme="dark"] .day-checkbox {
+            background: #334155;
+            border-color: #475569;
+        }
+
+        [data-theme="dark"] .day-checkbox:hover {
+            background: #475569;
+        }
+
+        [data-theme="dark"] .day-checkbox span {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .day-checkbox:has(input:checked) {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+        }
+
+        [data-theme="dark"] .day-checkbox input:checked + span {
+            color: #a5b4fc;
+        }
+
+        [data-theme="dark"] .store-hours-section {
+            border-color: #334155;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-page">
+        <div class="setup-container">
+            <div class="setup-header">
+                <div class="setup-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </div>
+
+                <div class="setup-progress">
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Business Type</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Data Source</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step active">
+                        <div class="progress-dot active">3</div>
+                        <span class="progress-label">Location</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">4</div>
+                        <span class="progress-label">Complete</span>
+                    </div>
+                </div>
+
+                <h1 class="setup-title">Add your business locations</h1>
+                <p class="setup-subtitle">Add one or more locations. You can always add more later.</p>
+            </div>
+
+            <!-- Saved Locations List -->
+            <div class="locations-list" id="locationsList">
+                <!-- Locations will be rendered here -->
+            </div>
+
+            <!-- Add Location Button (shown when there are saved locations) -->
+            <button class="add-location-btn" id="addLocationBtn" onclick="showLocationForm()" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Another Location
+            </button>
+
+            <!-- Location Form -->
+            <form class="setup-form" id="locationForm" onsubmit="addLocation(event)">
+                <div class="form-section-header">
+                    <h3 id="formTitle">Add Location</h3>
+                    <span class="location-count" id="locationCount"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="businessName">Location Name *</label>
+                    <input type="text" class="input" id="businessName" placeholder="Downtown Coffee Shop" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="label" for="city">City *</label>
+                        <input type="text" class="input" id="city" placeholder="Denver" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="state">State *</label>
+                        <input type="text" class="input" id="state" placeholder="CO" maxlength="2" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="label" for="zipcode">ZIP Code *</label>
+                        <input type="text" class="input" id="zipcode" placeholder="80202" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="country">Country</label>
+                        <select class="input select" id="country">
+                            <option value="US" selected>United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="AU">Australia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="timezone">Timezone</label>
+                    <select class="input select" id="timezone">
+                        <option value="America/New_York">Eastern Time (ET)</option>
+                        <option value="America/Chicago">Central Time (CT)</option>
+                        <option value="America/Denver">Mountain Time (MT)</option>
+                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                        <option value="America/Anchorage">Alaska Time (AKT)</option>
+                        <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                    </select>
+                </div>
+
+                <!-- Store Hours Section -->
+                <div class="store-hours-section" style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
+                    <label class="label" style="margin-bottom: var(--space-3); display: block;">Store Hours</label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="label text-sm" for="openTime">Opening Time</label>
+                            <input type="time" class="input" id="openTime" value="09:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="label text-sm" for="closeTime">Closing Time</label>
+                            <input type="time" class="input" id="closeTime" value="21:00" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="label text-sm" style="margin-bottom: var(--space-2);">Days Open</label>
+                        <div class="days-selector" style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="mon" checked>
+                                <span>Mon</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="tue" checked>
+                                <span>Tue</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="wed" checked>
+                                <span>Wed</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="thu" checked>
+                                <span>Thu</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="fri" checked>
+                                <span>Fri</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="sat" checked>
+                                <span>Sat</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="daysOpen" value="sun" checked>
+                                <span>Sun</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: var(--space-3); justify-content: flex-end; margin-top: var(--space-4);">
+                    <button type="button" class="btn btn-ghost" onclick="cancelLocationForm()" id="cancelBtn" style="display: none;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="addLocationBtn2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Location
+                    </button>
+                </div>
+            </form>
+
+            <div class="setup-actions">
+                <button class="btn btn-ghost btn-back" onclick="goBack()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back
+                </button>
+                <button class="btn btn-primary btn-lg" onclick="finishSetup()" id="continueBtn" disabled>
+                    Continue
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        // Check if business type was selected
+        const businessType = sessionStorage.getItem('setup_business_type');
+        if (!businessType) {
+            window.location.href = '/frontend/pages/setup/business-type.html';
+        }
+
+        // Store locations temporarily
+        let locations = [];
+        let editingIndex = -1;
+
+        function goBack() {
+            window.location.href = '/frontend/pages/setup/integrations.html';
+        }
+
+        function renderLocations() {
+            const container = document.getElementById('locationsList');
+            const addBtn = document.getElementById('addLocationBtn');
+            const continueBtn = document.getElementById('continueBtn');
+            const locationCount = document.getElementById('locationCount');
+
+            if (locations.length === 0) {
+                container.innerHTML = '';
+                addBtn.style.display = 'none';
+                continueBtn.disabled = true;
+                locationCount.textContent = '';
+                return;
+            }
+
+            locationCount.textContent = `${locations.length} location${locations.length > 1 ? 's' : ''} added`;
+            continueBtn.disabled = false;
+            addBtn.style.display = 'flex';
+
+            container.innerHTML = locations.map((loc, index) => `
+                <div class="location-card ${index === 0 ? 'primary' : ''}">
+                    <div class="location-info">
+                        <div class="location-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <div class="location-details">
+                            <h4>
+                                ${loc.name}
+                                ${index === 0 ? '<span class="location-badge">Primary</span>' : ''}
+                            </h4>
+                            <p>${loc.city}, ${loc.state} ${loc.zipcode}</p>
+                        </div>
+                    </div>
+                    <div class="location-actions">
+                        <button class="btn-icon" onclick="editLocation(${index})" title="Edit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-icon delete" onclick="removeLocation(${index})" title="Remove">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getSelectedDays() {
+            const checkboxes = document.querySelectorAll('input[name="daysOpen"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value).join(',');
+        }
+
+        function setSelectedDays(daysString) {
+            const days = daysString ? daysString.split(',') : [];
+            document.querySelectorAll('input[name="daysOpen"]').forEach(cb => {
+                cb.checked = days.includes(cb.value);
+            });
+        }
+
+        function addLocation(e) {
+            e.preventDefault();
+
+            const locationData = {
+                name: document.getElementById('businessName').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value.toUpperCase(),
+                zipcode: document.getElementById('zipcode').value,
+                country: document.getElementById('country').value,
+                timezone: document.getElementById('timezone').value,
+                open_time: document.getElementById('openTime').value,
+                close_time: document.getElementById('closeTime').value,
+                days_open: getSelectedDays()
+            };
+
+            if (editingIndex >= 0) {
+                locations[editingIndex] = locationData;
+                editingIndex = -1;
+            } else {
+                locations.push(locationData);
+            }
+
+            renderLocations();
+            resetForm();
+            hideLocationForm();
+        }
+
+        function editLocation(index) {
+            const loc = locations[index];
+            editingIndex = index;
+
+            document.getElementById('businessName').value = loc.name;
+            document.getElementById('city').value = loc.city;
+            document.getElementById('state').value = loc.state;
+            document.getElementById('zipcode').value = loc.zipcode;
+            document.getElementById('country').value = loc.country;
+            document.getElementById('timezone').value = loc.timezone;
+            document.getElementById('openTime').value = loc.open_time || '09:00';
+            document.getElementById('closeTime').value = loc.close_time || '21:00';
+            setSelectedDays(loc.days_open || 'mon,tue,wed,thu,fri,sat,sun');
+
+            document.getElementById('formTitle').textContent = 'Edit Location';
+            document.getElementById('addLocationBtn2').innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Save Changes
+            `;
+
+            showLocationForm();
+        }
+
+        function removeLocation(index) {
+            if (confirm('Remove this location?')) {
+                locations.splice(index, 1);
+                renderLocations();
+            }
+        }
+
+        function showLocationForm() {
+            document.getElementById('locationForm').style.display = 'block';
+            document.getElementById('addLocationBtn').style.display = 'none';
+            if (locations.length > 0) {
+                document.getElementById('cancelBtn').style.display = 'block';
+            }
+        }
+
+        function hideLocationForm() {
+            if (locations.length > 0) {
+                document.getElementById('locationForm').style.display = 'none';
+                document.getElementById('addLocationBtn').style.display = 'flex';
+            }
+        }
+
+        function cancelLocationForm() {
+            editingIndex = -1;
+            resetForm();
+            hideLocationForm();
+        }
+
+        function resetForm() {
+            document.getElementById('locationForm').reset();
+            document.getElementById('formTitle').textContent = 'Add Location';
+            document.getElementById('addLocationBtn2').innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Location
+            `;
+            // Reset store hours to defaults
+            document.getElementById('openTime').value = '09:00';
+            document.getElementById('closeTime').value = '21:00';
+            setSelectedDays('mon,tue,wed,thu,fri,sat,sun');
+        }
+
+        async function finishSetup() {
+            if (locations.length === 0) {
+                alert('Please add at least one location');
+                return;
+            }
+
+            const btn = document.getElementById('continueBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner spinner-sm"></div> Saving...';
+
+            try {
+                const existingBusinessId = sessionStorage.getItem('setup_business_id');
+                const createdBusinesses = [];
+
+                // First location updates the existing business
+                const firstLoc = locations[0];
+                if (existingBusinessId) {
+                    const updateData = {
+                        name: firstLoc.name,
+                        city: firstLoc.city,
+                        state: firstLoc.state,
+                        zipcode: firstLoc.zipcode,
+                        country: firstLoc.country,
+                        timezone: firstLoc.timezone,
+                        open_time: firstLoc.open_time,
+                        close_time: firstLoc.close_time,
+                        days_open: firstLoc.days_open
+                    };
+
+                    const business = await api.updateBusiness(existingBusinessId, updateData);
+                    if (business) {
+                        createdBusinesses.push(business);
+                        await api.completeBusinessSetup(business.id);
+                    }
+                }
+
+                // Additional locations create new businesses
+                for (let i = 1; i < locations.length; i++) {
+                    const loc = locations[i];
+                    const businessData = {
+                        name: loc.name,
+                        business_type: businessType,
+                        city: loc.city,
+                        state: loc.state,
+                        zipcode: loc.zipcode,
+                        country: loc.country,
+                        timezone: loc.timezone,
+                        open_time: loc.open_time,
+                        close_time: loc.close_time,
+                        days_open: loc.days_open
+                    };
+
+                    const business = await api.createBusiness(businessData);
+                    if (business) {
+                        createdBusinesses.push(business);
+                        await api.completeBusinessSetup(business.id);
+                    }
+                }
+
+                if (createdBusinesses.length > 0) {
+                    // Store first business ID as primary
+                    sessionStorage.setItem('setup_business_id', createdBusinesses[0].id);
+                    sessionStorage.setItem('setup_locations_count', createdBusinesses.length);
+
+                    // Navigate to complete page
+                    window.location.href = '/frontend/pages/setup/complete.html';
+                }
+            } catch (error) {
+                console.error('Error saving businesses:', error);
+                alert(error.message || 'Failed to save business. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = 'Continue <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            }
+        }
+
+        // Initialize
+        renderLocations();
+    </script>
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forecast Pro - AI-Powered Sales Forecasting</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        /* Landing Page Specific Styles */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .nav-logo svg {
+            width: 32px;
+            height: 32px;
+            color: var(--primary-600);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .nav-link:hover {
+            color: var(--gray-900);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 80px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--gray-50) 0%, white 100%);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: 6px 12px;
+            background: var(--primary-50);
+            color: var(--primary-700);
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: var(--space-6);
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: var(--space-6);
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto var(--space-8);
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-12);
+        }
+
+        .hero-image {
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto var(--space-12);
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            margin-bottom: var(--space-4);
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--gray-600);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-6);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        .feature-card {
+            padding: var(--space-6);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition);
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-200);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-4);
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .feature-icon.weather { background: var(--info-100); color: var(--info-600); }
+        .feature-icon.holiday { background: var(--error-100); color: var(--error-600); }
+        .feature-icon.sports { background: var(--success-100); color: var(--success-600); }
+        .feature-icon.payday { background: var(--warning-100); color: var(--warning-600); }
+
+        .feature-card h3 {
+            font-size: 16px;
+            margin-bottom: var(--space-2);
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--gray-50);
+        }
+
+        .steps-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        .step-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-10);
+            margin-bottom: var(--space-10);
+        }
+
+        .step-row:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-number-large {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--primary-100);
+            line-height: 1;
+            margin-bottom: var(--space-2);
+        }
+
+        .step-content h3 {
+            font-size: 24px;
+            margin-bottom: var(--space-3);
+        }
+
+        .step-content p {
+            font-size: 16px;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .step-visual {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Business Types */
+        .business-types {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-6);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        .type-card {
+            text-align: center;
+            padding: var(--space-8);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            transition: all var(--transition);
+        }
+
+        .type-card:hover {
+            border-color: var(--primary-300);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .type-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--space-4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-50);
+            border-radius: var(--radius-xl);
+            color: var(--primary-600);
+        }
+
+        .type-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .type-card h3 {
+            font-size: 18px;
+            margin-bottom: var(--space-2);
+        }
+
+        .type-card p {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 36px;
+            color: white;
+            margin-bottom: var(--space-4);
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            color: var(--primary-200);
+            margin-bottom: var(--space-8);
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary-700);
+            font-weight: 600;
+        }
+
+        .btn-white:hover {
+            background: var(--gray-100);
+        }
+
+        /* Footer */
+        .footer {
+            padding: var(--space-8) 0;
+            background: var(--gray-900);
+            color: var(--gray-400);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-6);
+        }
+
+        .footer-links a {
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .features-grid,
+            .types-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-row,
+            .step-row:nth-child(even) {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18"/>
+                    <path d="M18 9l-5-6-4 8-3-2"/>
+                </svg>
+                Forecast Pro
+            </a>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="/frontend/pages/login.html" class="nav-link">Sign In</a>
+                <a href="/frontend/pages/login.html" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <span class="hero-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                AI-Powered Forecasting
+            </span>
+            <h1>Predict Your Sales<br>With Precision</h1>
+            <p class="hero-subtitle">
+                Stop guessing. Our AI analyzes weather, holidays, sports events, and more
+                to give you accurate sales forecasts for your business.
+            </p>
+            <div class="hero-cta">
+                <a href="/frontend/pages/login.html" class="btn btn-primary btn-lg">Start Forecasting Free</a>
+                <a href="#how-it-works" class="btn btn-secondary btn-lg">See How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Intelligent Forecasting</h2>
+            <p>Our AI considers factors that actually impact your sales, not just historical patterns.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon weather">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                        <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                </div>
+                <h3>Weather Intelligence</h3>
+                <p>Correlate sales with local weather patterns. Know how rain, heat, or cold affects your business.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon holiday">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <h3>Holiday Planning</h3>
+                <p>Automatically factor in holidays, long weekends, and special events in your region.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon sports">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>
+                        <path d="M2 12h20"/>
+                    </svg>
+                </div>
+                <h3>Sports Impact</h3>
+                <p>Track how game days and major sporting events impact customer traffic and spending.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon payday">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <h3>Payday Patterns</h3>
+                <p>Understand how pay cycles affect purchasing behavior and plan inventory accordingly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Get accurate forecasts in three simple steps.</p>
+        </div>
+        <div class="steps-container">
+            <div class="step-row">
+                <div class="step-content">
+                    <div class="step-number-large">01</div>
+                    <h3>Connect Your Data</h3>
+                    <p>Upload your sales history as a CSV file. Our system automatically detects and maps your columns - date, items, quantities, and more.</p>
+                </div>
+                <div class="step-visual">
+                    <div style="height: 150px; display: flex; align-items: center; justify-content: center; color: var(--gray-400);">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-content">
+                    <div class="step-number-large">02</div>
+                    <h3>AI Learns Your Patterns</h3>
+                    <p>Our machine learning model analyzes your data alongside external factors like weather, holidays, and local events specific to your location.</p>
+                </div>
+                <div class="step-visual">
+                    <div style="height: 150px; display: flex; align-items: center; justify-content: center; color: var(--gray-400);">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2a10 10 0 1 0 10 10"/>
+                            <path d="M12 12l4-4"/>
+                            <path d="M16 4v4h4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-content">
+                    <div class="step-number-large">03</div>
+                    <h3>Get Accurate Forecasts</h3>
+                    <p>View interactive charts showing predicted sales for the next 7, 14, or 30 days. See exactly what factors are influencing each prediction.</p>
+                </div>
+                <div class="step-visual">
+                    <div style="height: 150px; display: flex; align-items: center; justify-content: center; color: var(--gray-400);">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 9l-5-6-4 8-3-2"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Types -->
+    <section class="business-types">
+        <div class="section-header">
+            <h2>Built for Your Business</h2>
+            <p>Whether you run a restaurant, retail store, or service business - we've got you covered.</p>
+        </div>
+        <div class="types-grid">
+            <div class="type-card">
+                <div class="type-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2l2.5 6.5L3 15h18l-2.5-6.5L21 2H3z"/>
+                        <path d="M3 15v6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6"/>
+                    </svg>
+                </div>
+                <h3>Restaurant & Food Service</h3>
+                <p>Cafes, restaurants, food trucks, bakeries, and catering services.</p>
+            </div>
+            <div class="type-card">
+                <div class="type-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                </div>
+                <h3>Retail Store</h3>
+                <p>Clothing, electronics, grocery, convenience stores, and general merchandise.</p>
+            </div>
+            <div class="type-card">
+                <div class="type-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                </div>
+                <h3>Service Business</h3>
+                <p>Salons, auto repairs, gyms, consultations, and professional services.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to predict your future sales?</h2>
+            <p>Join businesses that use data-driven forecasting to make smarter decisions.</p>
+            <a href="/frontend/pages/login.html" class="btn btn-white btn-lg">Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <span>&copy; 2024 Forecast Pro. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        // Check if user is already logged in
+        if (api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/dashboard.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+# services/llm.py - Ollama LLM integration service
+import httpx
+from typing import Optional, List, Dict, Any
+
+OLLAMA_BASE_URL = "http://localhost:11434"
+DEFAULT_MODEL = "llama3.2"
+
+
+async def check_ollama_available() -> bool:
+    """Check if Ollama is running and accessible"""
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            return response.status_code == 200
+    except Exception:
+        return False
+
+
+async def get_available_models() -> List[str]:
+    """Get list of available models from Ollama"""
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            if response.status_code == 200:
+                data = response.json()
+                return [model["name"] for model in data.get("models", [])]
+    except Exception:
+        pass
+    return []
+
+
+async def generate_response(
+    prompt: str,
+    model: str = DEFAULT_MODEL,
+    system_prompt: Optional[str] = None,
+    temperature: float = 0.7,
+    max_tokens: int = 500
+) -> Optional[str]:
+    """Generate a response from Ollama"""
+    try:
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "num_predict": max_tokens
+            }
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{OLLAMA_BASE_URL}/api/chat",
+                json=payload
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("message", {}).get("content", "")
+    except Exception as e:
+        print(f"Ollama error: {e}")
+    return None
+
+
+async def generate_day_summary(
+    date: str,
+    events: Dict[str, Any],
+    weather: Optional[Dict[str, Any]] = None,
+    predictions: Optional[List[Dict[str, Any]]] = None
+) -> str:
+    """Generate an AI summary for a specific day"""
+
+    # Build context
+    context_parts = [f"Date: {date}"]
+
+    # Weather info
+    if weather:
+        temp_max = weather.get("temp_max", "N/A")
+        temp_min = weather.get("temp_min", "N/A")
+        precip = weather.get("precipitation", 0)
+        conditions = get_weather_description(weather.get("weather_code", 0))
+        context_parts.append(f"Weather: {conditions}, High {temp_max}°F, Low {temp_min}°F, Precipitation: {precip}mm")
+
+    # Events
+    holidays = events.get("holidays", [])
+    sports = events.get("sports", [])
+    paydays = events.get("paydays", [])
+    school = events.get("school", [])
+
+    if holidays:
+        holiday_names = [h.get("name", "Holiday") for h in holidays]
+        context_parts.append(f"Holidays: {', '.join(holiday_names)}")
+
+    if sports:
+        game_info = [f"{g.get('home_team', '')} vs {g.get('away_team', '')}" for g in sports]
+        context_parts.append(f"Sports events: {', '.join(game_info)}")
+
+    if paydays:
+        context_parts.append("This is a payday (15th or end of month)")
+
+    if school:
+        school_events = [s.get("name", "School event") for s in school]
+        context_parts.append(f"School calendar: {', '.join(school_events)}")
+
+    # Predictions
+    if predictions:
+        total_predicted = sum(p.get("predicted_quantity", 0) for p in predictions)
+        context_parts.append(f"Predicted sales: {total_predicted:.0f} units")
+
+    context = "\n".join(context_parts)
+
+    system_prompt = """You are a business analyst AI assistant for a sales forecasting application.
+Your job is to provide brief, actionable insights about how various factors might affect business sales.
+Keep responses concise (2-3 sentences max) and focus on practical business implications.
+Be specific about expected impact (e.g., "expect 15-25% higher traffic" rather than "might be busier")."""
+
+    prompt = f"""Analyze this day and provide a brief business insight:
+
+{context}
+
+Provide a concise summary of what to expect for business operations on this day. Focus on actionable insights."""
+
+    response = await generate_response(prompt, system_prompt=system_prompt, max_tokens=200)
+
+    if not response:
+        return "AI summary unavailable. Make sure Ollama is running locally."
+
+    return response
+
+
+async def generate_forecast_summary(
+    predictions: List[Dict[str, Any]],
+    factors: Optional[Dict[str, Any]] = None,
+    date_range: Optional[Dict[str, str]] = None
+) -> str:
+    """Generate an AI summary for a forecast period"""
+
+    if not predictions:
+        return "No predictions available to summarize."
+
+    # Calculate key metrics
+    total_predicted = sum(p.get("predicted_quantity", 0) for p in predictions)
+    avg_daily = total_predicted / len(predictions) if predictions else 0
+
+    # Find peak and low days
+    sorted_preds = sorted(predictions, key=lambda x: x.get("predicted_quantity", 0), reverse=True)
+    peak_day = sorted_preds[0] if sorted_preds else None
+    low_day = sorted_preds[-1] if sorted_preds else None
+
+    context_parts = [
+        f"Forecast period: {len(predictions)} days",
+        f"Total predicted sales: {total_predicted:.0f} units",
+        f"Average daily: {avg_daily:.0f} units"
+    ]
+
+    if peak_day:
+        context_parts.append(f"Peak day: {peak_day.get('date', 'N/A')} with {peak_day.get('predicted_quantity', 0):.0f} units")
+
+    if low_day:
+        context_parts.append(f"Lowest day: {low_day.get('date', 'N/A')} with {low_day.get('predicted_quantity', 0):.0f} units")
+
+    if factors:
+        context_parts.append(f"Key factors: {', '.join(list(factors.keys())[:5])}")
+
+    context = "\n".join(context_parts)
+
+    system_prompt = """You are a business analyst AI for a sales forecasting app.
+Provide brief, actionable forecast insights. Focus on trends, peak periods, and preparation recommendations.
+Keep responses to 3-4 sentences max."""
+
+    prompt = f"""Summarize this sales forecast:
+
+{context}
+
+Provide key insights about the forecast period and any recommendations for business operations."""
+
+    response = await generate_response(prompt, system_prompt=system_prompt, max_tokens=250)
+
+    if not response:
+        return "AI insights unavailable. Make sure Ollama is running locally."
+
+    return response
+
+
+async def generate_dashboard_insights(
+    stats: Dict[str, Any],
+    recent_predictions: Optional[List[Dict[str, Any]]] = None
+) -> str:
+    """Generate AI insights for the dashboard"""
+
+    context_parts = []
+
+    if stats.get("model_accuracy"):
+        context_parts.append(f"Model accuracy (MAPE): {stats['model_accuracy']}%")
+
+    if stats.get("total_data_points"):
+        context_parts.append(f"Training data: {stats['total_data_points']} data points")
+
+    if stats.get("forecast_total"):
+        context_parts.append(f"7-day forecast total: {stats['forecast_total']} units")
+
+    if recent_predictions:
+        high_days = [p for p in recent_predictions if p.get("predicted_quantity", 0) > stats.get("avg_daily", 0)]
+        if high_days:
+            context_parts.append(f"Above-average days coming up: {len(high_days)}")
+
+    if not context_parts:
+        return "Upload data and train a model to see AI insights."
+
+    context = "\n".join(context_parts)
+
+    system_prompt = """You are a business dashboard AI assistant.
+Provide a brief overview of business health and upcoming trends.
+Keep it to 2-3 sentences, focusing on the most important insight."""
+
+    prompt = f"""Based on this dashboard data, provide a brief business insight:
+
+{context}"""
+
+    response = await generate_response(prompt, system_prompt=system_prompt, max_tokens=150)
+
+    if not response:
+        return "AI insights unavailable. Make sure Ollama is running locally."
+
+    return response
+
+
+async def chat_response(
+    message: str,
+    conversation_history: Optional[List[Dict[str, str]]] = None,
+    business_context: Optional[Dict[str, Any]] = None
+) -> str:
+    """Generate a chat response with business context"""
+
+    system_prompt = """You are an AI assistant for Forecast Pro, a sales forecasting application.
+You help business owners understand their sales predictions, analyze factors affecting sales, and provide actionable advice.
+
+You have access to:
+- Sales forecasts and predictions
+- Weather data and its impact on sales
+- Local events (holidays, sports, school calendar)
+- Payday cycles
+
+Be helpful, concise, and focus on practical business insights.
+If you don't have specific data, explain what information would help answer the question."""
+
+    # Build context from business data
+    context_parts = []
+    if business_context:
+        if business_context.get("business_name"):
+            context_parts.append(f"Business: {business_context['business_name']}")
+        if business_context.get("location"):
+            context_parts.append(f"Location: {business_context['location']}")
+        if business_context.get("recent_forecast"):
+            context_parts.append(f"Recent forecast summary: {business_context['recent_forecast']}")
+        if business_context.get("upcoming_events"):
+            context_parts.append(f"Upcoming events: {business_context['upcoming_events']}")
+
+    # Build messages
+    messages = []
+    if context_parts:
+        messages.append({
+            "role": "system",
+            "content": system_prompt + "\n\nCurrent business context:\n" + "\n".join(context_parts)
+        })
+    else:
+        messages.append({"role": "system", "content": system_prompt})
+
+    # Add conversation history
+    if conversation_history:
+        for msg in conversation_history[-10:]:  # Last 10 messages for context
+            messages.append(msg)
+
+    # Add current message
+    messages.append({"role": "user", "content": message})
+
+    try:
+        payload = {
+            "model": DEFAULT_MODEL,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": 0.7,
+                "num_predict": 500
+            }
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{OLLAMA_BASE_URL}/api/chat",
+                json=payload
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("message", {}).get("content", "I couldn't generate a response.")
+    except Exception as e:
+        print(f"Chat error: {e}")
+
+    return "I'm currently unavailable. Please make sure Ollama is running locally with `ollama serve`."
+
+
+def get_weather_description(code: int) -> str:
+    """Convert weather code to human-readable description"""
+    weather_codes = {
+        0: "Clear sky",
+        1: "Mainly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+        45: "Foggy",
+        48: "Depositing rime fog",
+        51: "Light drizzle",
+        53: "Moderate drizzle",
+        55: "Dense drizzle",
+        61: "Slight rain",
+        63: "Moderate rain",
+        65: "Heavy rain",
+        71: "Slight snow",
+        73: "Moderate snow",
+        75: "Heavy snow",
+        77: "Snow grains",
+        80: "Slight rain showers",
+        81: "Moderate rain showers",
+        82: "Violent rain showers",
+        85: "Slight snow showers",
+        86: "Heavy snow showers",
+        95: "Thunderstorm",
+        96: "Thunderstorm with slight hail",
+        99: "Thunderstorm with heavy hail"
+    }
+    return weather_codes.get(code, "Unknown")

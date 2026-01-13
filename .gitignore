@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+*.sqlite3
+data/forecasting.db
+
+# Models (large files)
+data/models/*.joblib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets
+.env
+.env.local
+credentials.json
+
+# Temp files
+tmpclaude-*
+nul
+.claude/
+
+# CSV data files
+*.csv

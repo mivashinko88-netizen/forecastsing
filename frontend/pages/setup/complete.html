@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Complete - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .setup-page {
+            min-height: 100vh;
+            background: var(--gray-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .complete-container {
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-6);
+            background: var(--success-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--success-600);
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .complete-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-3);
+        }
+
+        .complete-subtitle {
+            font-size: 16px;
+            color: var(--gray-500);
+            margin-bottom: var(--space-8);
+            line-height: 1.6;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+            text-align: left;
+        }
+
+        .summary-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-4);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .summary-value {
+            color: var(--gray-900);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .complete-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .btn-lg {
+            width: 100%;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-page">
+        <div class="complete-container">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+
+            <h1 class="complete-title">You're all set!</h1>
+            <p class="complete-subtitle">
+                Your business is configured and ready. Upload your sales data to start getting AI-powered forecasts.
+            </p>
+
+            <div class="summary-card">
+                <div class="summary-title">Business Summary</div>
+                <div class="summary-item">
+                    <span class="summary-label">Type</span>
+                    <span class="summary-value" id="summaryType">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Locations</span>
+                    <span class="summary-value" id="summaryLocations">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Data Sources</span>
+                    <span class="summary-value" id="summaryIntegrations">None connected</span>
+                </div>
+                <div id="locationsList" style="margin-top: var(--space-4);"></div>
+                <div id="integrationsList" style="margin-top: var(--space-2);"></div>
+            </div>
+
+            <div class="complete-actions">
+                <a href="/frontend/pages/upload.html" class="btn btn-primary btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Upload Sales Data
+                </a>
+                <a href="/frontend/pages/dashboard.html" class="btn btn-secondary btn-lg">
+                    Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        // Load business info
+        async function loadBusinessInfo() {
+            try {
+                const businesses = await api.getBusinesses();
+                if (businesses && businesses.length > 0) {
+                    const business = businesses[0]; // Primary business
+
+                    const typeNames = {
+                        'restaurant': 'Restaurant & Food',
+                        'retail': 'Retail Store',
+                        'service': 'Service Business'
+                    };
+                    document.getElementById('summaryType').textContent = typeNames[business.business_type] || business.business_type;
+
+                    // Show number of locations
+                    document.getElementById('summaryLocations').textContent =
+                        businesses.length === 1 ? '1 location' : `${businesses.length} locations`;
+
+                    // Show location list
+                    const locList = document.getElementById('locationsList');
+                    locList.innerHTML = businesses.map((b, i) => `
+                        <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; ${i < businesses.length - 1 ? 'border-bottom: 1px solid var(--gray-100);' : ''}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <span style="font-size: 14px; color: var(--gray-700);">${b.name}</span>
+                            <span style="font-size: 12px; color: var(--gray-400);">${b.city}, ${b.state}</span>
+                            ${i === 0 ? '<span style="font-size: 10px; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: 8px; margin-left: auto;">Primary</span>' : ''}
+                        </div>
+                    `).join('');
+
+                    // Store current business ID
+                    localStorage.setItem('current_business_id', business.id);
+                }
+            } catch (error) {
+                console.error('Error loading business:', error);
+            }
+        }
+
+        loadBusinessInfo();
+        loadIntegrations();
+
+        // Clear setup session data
+        sessionStorage.removeItem('setup_business_type');
+        sessionStorage.removeItem('setup_business_id');
+        sessionStorage.removeItem('setup_locations_count');
+        sessionStorage.removeItem('setup_integrations');
+        sessionStorage.removeItem('setup_skipped_integrations');
+
+        async function loadIntegrations() {
+            try {
+                const businesses = await api.getBusinesses();
+                if (businesses && businesses.length > 0) {
+                    const businessId = businesses[0].id;
+                    const response = await api.request(`/integrations/businesses/${businessId}`);
+
+                    const connected = response.filter(i => i.status === 'connected');
+                    if (connected.length > 0) {
+                        const names = connected.map(i => i.provider.charAt(0).toUpperCase() + i.provider.slice(1));
+                        document.getElementById('summaryIntegrations').textContent = names.join(', ');
+
+                        // Show integration list
+                        const intList = document.getElementById('integrationsList');
+                        intList.innerHTML = connected.map((integration, i) => `
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; ${i < connected.length - 1 ? 'border-bottom: 1px solid var(--gray-100);' : ''}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success-500)" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span style="font-size: 14px; color: var(--gray-700);">${integration.provider.charAt(0).toUpperCase() + integration.provider.slice(1)}</span>
+                                <span style="font-size: 12px; color: var(--success-500);">Connected</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading integrations:', error);
+            }
+        }
+    </script>
+</body>
+</html>

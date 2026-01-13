@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Data Source - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .setup-page {
+            min-height: 100vh;
+            background: var(--gray-50);
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .setup-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .setup-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-6);
+        }
+
+        .setup-logo svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary-600);
+        }
+
+        .setup-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .progress-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-600);
+            color: white;
+        }
+
+        .progress-dot.complete {
+            background: var(--success-500);
+            color: white;
+        }
+
+        .progress-dot.pending {
+            background: var(--gray-200);
+            color: var(--gray-500);
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--gray-900);
+        }
+
+        .progress-line {
+            width: 40px;
+            height: 2px;
+            background: var(--gray-200);
+        }
+
+        .progress-line.complete {
+            background: var(--success-500);
+        }
+
+        .setup-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .setup-subtitle {
+            font-size: 16px;
+            color: var(--gray-500);
+        }
+
+        .integrations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+
+        .integration-card {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            position: relative;
+            transition: all var(--transition);
+        }
+
+        .integration-card:hover {
+            border-color: var(--primary-300);
+            box-shadow: var(--shadow-md);
+        }
+
+        .integration-card.connected {
+            border-color: var(--success-500);
+            background: var(--success-50);
+        }
+
+        .integration-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .integration-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+            font-size: 24px;
+        }
+
+        .integration-card.connected .integration-icon {
+            background: var(--success-100);
+        }
+
+        .integration-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .integration-desc {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: var(--space-4);
+            line-height: 1.5;
+        }
+
+        .integration-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-bottom: var(--space-3);
+        }
+
+        .integration-status.connected {
+            color: var(--success-600);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-300);
+        }
+
+        .status-dot.connected {
+            background: var(--success-500);
+        }
+
+        .integration-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .btn-connect {
+            flex: 1;
+            padding: var(--space-2) var(--space-4);
+            font-size: 14px;
+        }
+
+        .btn-disconnect {
+            padding: var(--space-2);
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-600);
+        }
+
+        .btn-disconnect:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        /* Shopify domain input */
+        .shopify-domain-input {
+            display: none;
+            margin-bottom: var(--space-3);
+        }
+
+        .shopify-domain-input.visible {
+            display: block;
+        }
+
+        .shopify-domain-input input {
+            width: 100%;
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+        }
+
+        .shopify-domain-input input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(var(--primary-500-rgb), 0.1);
+        }
+
+        .shopify-domain-input small {
+            display: block;
+            margin-top: var(--space-1);
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .setup-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-skip {
+            color: var(--gray-500);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-skip:hover {
+            color: var(--gray-700);
+            text-decoration: underline;
+        }
+
+        .btn-continue {
+            min-width: 140px;
+        }
+
+        .alert {
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-6);
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: var(--success-50);
+            border: 1px solid var(--success-200);
+            color: var(--success-700);
+        }
+
+        .alert-error {
+            background: var(--danger-50);
+            border: 1px solid var(--danger-200);
+            color: var(--danger-700);
+        }
+
+        @media (max-width: 640px) {
+            .integrations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-page">
+        <div class="setup-container">
+            <div class="setup-header">
+                <div class="setup-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="setup-progress">
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Business Type</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step active">
+                        <div class="progress-dot active">2</div>
+                        <span class="progress-label">Data Source</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">3</div>
+                        <span class="progress-label">Location</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">4</div>
+                        <span class="progress-label">Complete</span>
+                    </div>
+                </div>
+
+                <h1 class="setup-title">Connect your data source</h1>
+                <p class="setup-subtitle">Import your sales data automatically from your POS or e-commerce platform (optional)</p>
+            </div>
+
+            <!-- Alerts -->
+            <div id="successAlert" class="alert alert-success">
+                <strong>Connected!</strong> <span id="successProvider"></span> has been connected successfully.
+            </div>
+            <div id="errorAlert" class="alert alert-error">
+                <strong>Error:</strong> <span id="errorMessage"></span>
+            </div>
+
+            <div class="integrations-grid">
+                <!-- Square -->
+                <div class="integration-card" data-provider="square" id="card-square">
+                    <div class="integration-header">
+                        <div class="integration-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <rect x="7" y="7" width="10" height="10" rx="1"/>
+                            </svg>
+                        </div>
+                        <div class="integration-name">Square</div>
+                    </div>
+                    <div class="integration-desc">POS and payment processing for restaurants and retail businesses</div>
+                    <div class="integration-status" id="status-square">
+                        <span class="status-dot"></span>
+                        <span>Not connected</span>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary btn-connect" onclick="connectProvider('square')">
+                            Connect
+                        </button>
+                        <button class="btn btn-disconnect" onclick="disconnectProvider('square')" style="display: none;" id="disconnect-square">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Toast -->
+                <div class="integration-card" data-provider="toast" id="card-toast">
+                    <div class="integration-header">
+                        <div class="integration-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M8 2v4M16 2v4M4 10h16" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="integration-name">Toast</div>
+                    </div>
+                    <div class="integration-desc">Restaurant-specific POS system with menu and order management</div>
+                    <div class="integration-status" id="status-toast">
+                        <span class="status-dot"></span>
+                        <span>Not connected</span>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary btn-connect" onclick="connectProvider('toast')">
+                            Connect
+                        </button>
+                        <button class="btn btn-disconnect" onclick="disconnectProvider('toast')" style="display: none;" id="disconnect-toast">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clover -->
+                <div class="integration-card" data-provider="clover" id="card-clover">
+                    <div class="integration-header">
+                        <div class="integration-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="8" cy="14" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="16" cy="14" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="integration-name">Clover</div>
+                    </div>
+                    <div class="integration-desc">Versatile POS system for retail, restaurants, and service businesses</div>
+                    <div class="integration-status" id="status-clover">
+                        <span class="status-dot"></span>
+                        <span>Not connected</span>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary btn-connect" onclick="connectProvider('clover')">
+                            Connect
+                        </button>
+                        <button class="btn btn-disconnect" onclick="disconnectProvider('clover')" style="display: none;" id="disconnect-clover">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shopify -->
+                <div class="integration-card" data-provider="shopify" id="card-shopify">
+                    <div class="integration-header">
+                        <div class="integration-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M15 3l2 4h4l-3 3 1 5-4-2-4 2 1-5-3-3h4l2-4z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M6 14v7h12v-7" fill="none" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="integration-name">Shopify</div>
+                    </div>
+                    <div class="integration-desc">E-commerce platform for online stores and retail</div>
+                    <div class="shopify-domain-input" id="shopify-domain-input">
+                        <input type="text" id="shopify-domain" placeholder="your-store.myshopify.com">
+                        <small>Enter your Shopify store domain</small>
+                    </div>
+                    <div class="integration-status" id="status-shopify">
+                        <span class="status-dot"></span>
+                        <span>Not connected</span>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary btn-connect" onclick="connectProvider('shopify')">
+                            Connect
+                        </button>
+                        <button class="btn btn-disconnect" onclick="disconnectProvider('shopify')" style="display: none;" id="disconnect-shopify">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-actions">
+                <button class="btn-skip" onclick="skipStep()">
+                    Skip for now (upload CSV later)
+                </button>
+                <button class="btn btn-primary btn-lg btn-continue" onclick="continueSetup()" id="continueBtn">
+                    Continue
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        let businessId = sessionStorage.getItem('setup_business_id');
+        let connectedIntegrations = {};
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        // Check if we have a business ID - if not, go back to business type selection
+        if (!businessId) {
+            console.warn('No business ID found, redirecting to business type selection');
+            window.location.href = '/frontend/pages/setup/business-type.html';
+        }
+
+        // Check for OAuth callback params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            const provider = urlParams.get('provider');
+            showSuccess(provider);
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (urlParams.get('error')) {
+            const error = urlParams.get('error');
+            const provider = urlParams.get('provider');
+            showError(error);
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Load current integration status
+        async function loadIntegrations() {
+            if (!businessId) return;
+
+            try {
+                const response = await api.request(`/integrations/businesses/${businessId}`);
+                connectedIntegrations = {};
+
+                response.forEach(integration => {
+                    if (integration.status === 'connected') {
+                        connectedIntegrations[integration.provider] = integration;
+                        updateCardStatus(integration.provider, true, integration.id);
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to load integrations:', error);
+            }
+        }
+
+        function updateCardStatus(provider, connected, integrationId = null) {
+            const card = document.getElementById(`card-${provider}`);
+            const status = document.getElementById(`status-${provider}`);
+            const disconnectBtn = document.getElementById(`disconnect-${provider}`);
+            const connectBtn = card.querySelector('.btn-connect');
+
+            if (connected) {
+                card.classList.add('connected');
+                status.classList.add('connected');
+                status.innerHTML = '<span class="status-dot connected"></span><span>Connected</span>';
+                connectBtn.textContent = 'Connected';
+                connectBtn.disabled = true;
+                disconnectBtn.style.display = 'block';
+                disconnectBtn.dataset.integrationId = integrationId;
+            } else {
+                card.classList.remove('connected');
+                status.classList.remove('connected');
+                status.innerHTML = '<span class="status-dot"></span><span>Not connected</span>';
+                connectBtn.textContent = 'Connect';
+                connectBtn.disabled = false;
+                disconnectBtn.style.display = 'none';
+            }
+        }
+
+        function showSuccess(provider) {
+            const alert = document.getElementById('successAlert');
+            const providerSpan = document.getElementById('successProvider');
+            providerSpan.textContent = provider.charAt(0).toUpperCase() + provider.slice(1);
+            alert.classList.add('show');
+
+            // Refresh integration status
+            loadIntegrations();
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            const messageSpan = document.getElementById('errorMessage');
+            messageSpan.textContent = decodeURIComponent(message);
+            alert.classList.add('show');
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        async function connectProvider(provider) {
+            // Re-check business ID in case it was set after page load
+            businessId = sessionStorage.getItem('setup_business_id');
+
+            if (!businessId) {
+                showError('No business ID found. Redirecting to start...');
+                setTimeout(() => {
+                    window.location.href = '/frontend/pages/setup/business-type.html';
+                }, 2000);
+                return;
+            }
+
+            // For Shopify, show domain input first
+            if (provider === 'shopify') {
+                const domainInput = document.getElementById('shopify-domain-input');
+                const shopDomain = document.getElementById('shopify-domain').value.trim();
+
+                if (!domainInput.classList.contains('visible')) {
+                    domainInput.classList.add('visible');
+                    return;
+                }
+
+                if (!shopDomain) {
+                    showError('Please enter your Shopify store domain');
+                    return;
+                }
+
+                // Open OAuth popup with shop domain
+                openOAuthPopup(provider, shopDomain);
+            } else {
+                openOAuthPopup(provider);
+            }
+        }
+
+        async function openOAuthPopup(provider, shopDomain = null) {
+            try {
+                let url = `/api/integrations/${provider}/authorize?business_id=${businessId}`;
+                if (shopDomain) {
+                    url += `&shop_domain=${encodeURIComponent(shopDomain)}`;
+                }
+
+                const response = await api.request(url);
+
+                // Open popup
+                const width = 600;
+                const height = 700;
+                const left = (window.screen.width - width) / 2;
+                const top = (window.screen.height - height) / 2;
+
+                const popup = window.open(
+                    response.authorization_url,
+                    `${provider}_oauth`,
+                    `width=${width},height=${height},left=${left},top=${top}`
+                );
+
+                // Poll for popup close
+                const checkPopup = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(checkPopup);
+                        // Refresh page to get updated status
+                        window.location.reload();
+                    }
+                }, 500);
+            } catch (error) {
+                showError(error.message || 'Failed to start OAuth flow');
+            }
+        }
+
+        async function disconnectProvider(provider) {
+            const btn = document.getElementById(`disconnect-${provider}`);
+            const integrationId = btn.dataset.integrationId;
+
+            if (!integrationId) return;
+
+            if (!confirm(`Are you sure you want to disconnect ${provider}?`)) {
+                return;
+            }
+
+            try {
+                await api.request(`/integrations/${integrationId}`, { method: 'DELETE' });
+                delete connectedIntegrations[provider];
+                updateCardStatus(provider, false);
+            } catch (error) {
+                showError(error.message || 'Failed to disconnect');
+            }
+        }
+
+        function skipStep() {
+            // Store that user skipped integrations
+            sessionStorage.setItem('setup_skipped_integrations', 'true');
+            window.location.href = '/frontend/pages/setup/location.html';
+        }
+
+        function continueSetup() {
+            // Store connected integrations info
+            sessionStorage.setItem('setup_integrations', JSON.stringify(Object.keys(connectedIntegrations)));
+            window.location.href = '/frontend/pages/setup/location.html';
+        }
+
+        // Initialize
+        loadIntegrations();
+    </script>
+</body>
+</html>
