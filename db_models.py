@@ -27,19 +27,29 @@ class Business(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String, nullable=False)
-    business_type = Column(String, nullable=False)  # 'restaurant', 'retail', 'service'
-    city = Column(String, nullable=False)
-    state = Column(String, nullable=False)
-    zipcode = Column(String, nullable=False)
+    business_type = Column(String, nullable=False)  # 'restaurant', 'retail', 'service', 'fashion', 'electronics', etc.
+
+    # Online store flag
+    is_online = Column(Boolean, default=False)
+
+    # Physical store location (nullable for online stores)
+    city = Column(String, nullable=True)
+    state = Column(String, nullable=True)
+    zipcode = Column(String, nullable=True)
     country = Column(String, default="US")
     timezone = Column(String, default="America/New_York")
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+
     # Store hours (stored as HH:MM format, e.g., "09:00")
     open_time = Column(String, default="09:00")
     close_time = Column(String, default="21:00")
     # Days open (stored as comma-separated, e.g., "mon,tue,wed,thu,fri,sat,sun")
     days_open = Column(String, default="mon,tue,wed,thu,fri,sat,sun")
+
+    # Online store marketing channels (comma-separated)
+    marketing_channels = Column(String, nullable=True)
+
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     setup_complete = Column(Boolean, default=False)

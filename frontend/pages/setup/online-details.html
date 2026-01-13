@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Store Details - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .setup-page {
+            min-height: 100vh;
+            background: var(--gray-50);
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .setup-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .setup-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-6);
+        }
+
+        .setup-logo svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary-600);
+        }
+
+        .setup-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .progress-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-600);
+            color: white;
+        }
+
+        .progress-dot.complete {
+            background: var(--success-500);
+            color: white;
+        }
+
+        .progress-dot.pending {
+            background: var(--gray-200);
+            color: var(--gray-500);
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--gray-900);
+        }
+
+        .progress-line {
+            width: 40px;
+            height: 2px;
+            background: var(--gray-200);
+        }
+
+        .progress-line.complete {
+            background: var(--success-500);
+        }
+
+        .setup-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .setup-subtitle {
+            font-size: 16px;
+            color: var(--gray-500);
+        }
+
+        .setup-form {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-5);
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .form-section-header svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-600);
+        }
+
+        .form-section-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        /* Marketing Channels Grid */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-3);
+        }
+
+        .channel-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .channel-option:hover {
+            border-color: var(--primary-300);
+            background: var(--primary-50);
+        }
+
+        .channel-option.selected {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+
+        .channel-option input {
+            display: none;
+        }
+
+        .channel-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: var(--radius-md);
+            color: var(--gray-500);
+        }
+
+        .channel-option.selected .channel-icon {
+            background: var(--primary-100);
+            color: var(--primary-600);
+        }
+
+        .channel-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .channel-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .channel-option.selected .channel-name {
+            color: var(--primary-700);
+        }
+
+        /* Business Name Input */
+        .business-name-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .setup-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        @media (max-width: 640px) {
+            .channels-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-page">
+        <div class="setup-container">
+            <div class="setup-header">
+                <div class="setup-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="setup-progress">
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Store Type</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Category</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Data Source</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step active">
+                        <div class="progress-dot active">4</div>
+                        <span class="progress-label">Details</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">5</div>
+                        <span class="progress-label">Complete</span>
+                    </div>
+                </div>
+
+                <h1 class="setup-title">Tell us about your online store</h1>
+                <p class="setup-subtitle">This helps us optimize predictions for your e-commerce business</p>
+            </div>
+
+            <form id="onlineDetailsForm" onsubmit="saveDetails(event)">
+                <!-- Business Name -->
+                <div class="setup-form business-name-section">
+                    <div class="form-section-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"/>
+                            <path d="M3 21h18"/>
+                            <path d="M9 7h6M9 11h6M9 15h4"/>
+                        </svg>
+                        <h3>Store Information</h3>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="businessName">Store Name *</label>
+                        <input type="text" class="input" id="businessName" placeholder="My Awesome Store" required>
+                        <p class="form-hint">The name of your online business</p>
+                    </div>
+                </div>
+
+                <!-- Timezone -->
+                <div class="setup-form">
+                    <div class="form-section-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <h3>Target Audience</h3>
+                    </div>
+                    <div class="form-group">
+                        <label class="label" for="timezone">Primary Customer Timezone *</label>
+                        <select class="input select" id="timezone" required>
+                            <option value="">Select timezone...</option>
+                            <optgroup label="United States">
+                                <option value="America/New_York">Eastern Time (ET)</option>
+                                <option value="America/Chicago">Central Time (CT)</option>
+                                <option value="America/Denver">Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                <option value="America/Anchorage">Alaska Time (AKT)</option>
+                                <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                            </optgroup>
+                            <optgroup label="International">
+                                <option value="Europe/London">UK (GMT/BST)</option>
+                                <option value="Europe/Paris">Central Europe (CET)</option>
+                                <option value="Europe/Berlin">Germany (CET)</option>
+                                <option value="Asia/Tokyo">Japan (JST)</option>
+                                <option value="Asia/Shanghai">China (CST)</option>
+                                <option value="Asia/Kolkata">India (IST)</option>
+                                <option value="Australia/Sydney">Australia Eastern (AEST)</option>
+                                <option value="Pacific/Auckland">New Zealand (NZST)</option>
+                            </optgroup>
+                            <optgroup label="Global">
+                                <option value="UTC">UTC (Coordinated Universal Time)</option>
+                            </optgroup>
+                        </select>
+                        <p class="form-hint">Where most of your customers are located</p>
+                    </div>
+                </div>
+
+                <!-- Marketing Channels -->
+                <div class="setup-form">
+                    <div class="form-section-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        <h3>Marketing Channels</h3>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Where do your customers find you? (Select all that apply)</label>
+                        <div class="channels-grid">
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="social_media">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Social Media</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="search_engines">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Search / SEO</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="paid_ads">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="3" y1="9" x2="21" y2="9"/>
+                                        <line x1="9" y1="21" x2="9" y2="9"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Paid Ads</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="email">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Email Marketing</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="marketplace">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                        <polyline points="9 22 9 12 15 12 15 22"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Marketplaces</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="influencer">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Influencers</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="referral">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="18" cy="5" r="3"/>
+                                        <circle cx="6" cy="12" r="3"/>
+                                        <circle cx="18" cy="19" r="3"/>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Referrals</span>
+                            </label>
+
+                            <label class="channel-option" onclick="toggleChannel(this)">
+                                <input type="checkbox" name="channels" value="direct">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="2" y1="12" x2="22" y2="12"/>
+                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                    </svg>
+                                </div>
+                                <span class="channel-name">Direct Traffic</span>
+                            </label>
+                        </div>
+                        <p class="form-hint">This helps us understand traffic patterns and seasonal trends</p>
+                    </div>
+                </div>
+
+                <div class="setup-actions">
+                    <button type="button" class="btn btn-ghost btn-back" onclick="goBack()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="continueBtn">
+                        Continue
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        // Check if store type is online
+        const storeType = sessionStorage.getItem('setup_store_type');
+        if (storeType !== 'online') {
+            // Redirect physical stores to location page
+            window.location.href = '/frontend/pages/setup/location.html';
+        }
+
+        // Check if business type was selected
+        const businessType = sessionStorage.getItem('setup_business_type');
+        if (!businessType) {
+            window.location.href = '/frontend/pages/setup/business-type.html';
+        }
+
+        function goBack() {
+            window.location.href = '/frontend/pages/setup/integrations.html';
+        }
+
+        function toggleChannel(element) {
+            const checkbox = element.querySelector('input');
+            checkbox.checked = !checkbox.checked;
+            element.classList.toggle('selected', checkbox.checked);
+        }
+
+        function getSelectedChannels() {
+            const checkboxes = document.querySelectorAll('input[name="channels"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value).join(',');
+        }
+
+        async function saveDetails(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('continueBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner spinner-sm"></div> Saving...';
+
+            try {
+                const existingBusinessId = sessionStorage.getItem('setup_business_id');
+                const storeName = document.getElementById('businessName').value;
+                const timezone = document.getElementById('timezone').value;
+                const channels = getSelectedChannels();
+
+                if (existingBusinessId) {
+                    // Update the existing business with online store details
+                    const updateData = {
+                        name: storeName,
+                        timezone: timezone,
+                        marketing_channels: channels,
+                        is_online: true
+                    };
+
+                    const business = await api.updateBusiness(existingBusinessId, updateData);
+                    if (business) {
+                        await api.completeBusinessSetup(business.id);
+                        sessionStorage.setItem('setup_business_id', business.id);
+
+                        // Navigate to complete page
+                        window.location.href = '/frontend/pages/setup/complete.html';
+                    }
+                } else {
+                    throw new Error('No business ID found. Please restart setup.');
+                }
+            } catch (error) {
+                console.error('Error saving business:', error);
+                alert(error.message || 'Failed to save business. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = 'Continue <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            }
+        }
+    </script>
+</body>
+</html>

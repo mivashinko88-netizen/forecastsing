@@ -36,20 +36,23 @@ class AuthResponse(BaseModel):
 # Business schemas
 class BusinessCreate(BaseModel):
     name: str
-    business_type: str  # 'restaurant', 'retail', 'service'
-    city: str
-    state: str
-    zipcode: str
+    business_type: str  # 'restaurant', 'retail', 'service', 'fashion', 'electronics', etc.
+    is_online: bool = False
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zipcode: Optional[str] = None
     country: str = "US"
     timezone: str = "America/New_York"
     open_time: str = "09:00"
     close_time: str = "21:00"
     days_open: str = "mon,tue,wed,thu,fri,sat,sun"
+    marketing_channels: Optional[str] = None
 
 
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
     business_type: Optional[str] = None
+    is_online: Optional[bool] = None
     city: Optional[str] = None
     state: Optional[str] = None
     zipcode: Optional[str] = None
@@ -58,6 +61,7 @@ class BusinessUpdate(BaseModel):
     open_time: Optional[str] = None
     close_time: Optional[str] = None
     days_open: Optional[str] = None
+    marketing_channels: Optional[str] = None
 
 
 class BusinessResponse(BaseModel):
@@ -65,16 +69,18 @@ class BusinessResponse(BaseModel):
     user_id: int
     name: str
     business_type: str
-    city: str
-    state: str
-    zipcode: str
-    country: str
-    timezone: str
+    is_online: bool = False
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zipcode: Optional[str] = None
+    country: Optional[str] = None
+    timezone: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     open_time: Optional[str] = "09:00"
     close_time: Optional[str] = "21:00"
     days_open: Optional[str] = "mon,tue,wed,thu,fri,sat,sun"
+    marketing_channels: Optional[str] = None
     setup_complete: bool
     created_at: datetime
 

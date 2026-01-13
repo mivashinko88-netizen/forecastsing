@@ -328,21 +328,30 @@
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </div>
-                        <span class="progress-label">Business Type</span>
+                        <span class="progress-label">Store Type</span>
+                    </div>
+                    <div class="progress-line complete"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot complete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <span class="progress-label">Category</span>
                     </div>
                     <div class="progress-line complete"></div>
                     <div class="progress-step active">
-                        <div class="progress-dot active">2</div>
+                        <div class="progress-dot active">3</div>
                         <span class="progress-label">Data Source</span>
                     </div>
                     <div class="progress-line"></div>
                     <div class="progress-step">
-                        <div class="progress-dot pending">3</div>
-                        <span class="progress-label">Location</span>
+                        <div class="progress-dot pending">4</div>
+                        <span class="progress-label" id="detailsLabel">Details</span>
                     </div>
                     <div class="progress-line"></div>
                     <div class="progress-step">
-                        <div class="progress-dot pending">4</div>
+                        <div class="progress-dot pending">5</div>
                         <span class="progress-label">Complete</span>
                     </div>
                 </div>
@@ -681,16 +690,32 @@
             }
         }
 
+        function getNextStepUrl() {
+            const storeType = sessionStorage.getItem('setup_store_type');
+            if (storeType === 'online') {
+                return '/frontend/pages/setup/online-details.html';
+            }
+            return '/frontend/pages/setup/location.html';
+        }
+
         function skipStep() {
             // Store that user skipped integrations
             sessionStorage.setItem('setup_skipped_integrations', 'true');
-            window.location.href = '/frontend/pages/setup/location.html';
+            window.location.href = getNextStepUrl();
         }
 
         function continueSetup() {
             // Store connected integrations info
             sessionStorage.setItem('setup_integrations', JSON.stringify(Object.keys(connectedIntegrations)));
-            window.location.href = '/frontend/pages/setup/location.html';
+            window.location.href = getNextStepUrl();
+        }
+
+        // Update label based on store type
+        const storeType = sessionStorage.getItem('setup_store_type');
+        if (storeType === 'online') {
+            document.getElementById('detailsLabel').textContent = 'Store Info';
+        } else {
+            document.getElementById('detailsLabel').textContent = 'Location';
         }
 
         // Initialize

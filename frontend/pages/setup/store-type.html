@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Type - Forecast Pro</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/components.css">
+    <style>
+        .setup-page {
+            min-height: 100vh;
+            background: var(--gray-50);
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .setup-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .setup-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-6);
+        }
+
+        .setup-logo svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary-600);
+        }
+
+        .setup-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .progress-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-600);
+            color: white;
+        }
+
+        .progress-dot.pending {
+            background: var(--gray-200);
+            color: var(--gray-500);
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--gray-900);
+        }
+
+        .progress-line {
+            width: 40px;
+            height: 2px;
+            background: var(--gray-200);
+        }
+
+        .setup-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .setup-subtitle {
+            font-size: 16px;
+            color: var(--gray-500);
+        }
+
+        .store-types-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+
+        .store-type-option {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .store-type-option:hover {
+            border-color: var(--primary-300);
+            box-shadow: var(--shadow-md);
+        }
+
+        .store-type-option.selected {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+
+        .store-type-option.selected .type-icon {
+            background: var(--primary-100);
+        }
+
+        .type-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto var(--space-4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-100);
+            border-radius: var(--radius-xl);
+            color: var(--primary-600);
+            transition: all var(--transition);
+        }
+
+        .type-icon svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .type-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .type-desc {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        .setup-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-continue {
+            min-width: 140px;
+        }
+
+        @media (max-width: 640px) {
+            .store-types-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-page">
+        <div class="setup-container">
+            <div class="setup-header">
+                <div class="setup-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 9l-5-6-4 8-3-2"/>
+                    </svg>
+                    Forecast Pro
+                </div>
+
+                <!-- Progress Steps (5 steps) -->
+                <div class="setup-progress">
+                    <div class="progress-step active">
+                        <div class="progress-dot active">1</div>
+                        <span class="progress-label">Store Type</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">2</div>
+                        <span class="progress-label">Category</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">3</div>
+                        <span class="progress-label">Data Source</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">4</div>
+                        <span class="progress-label">Details</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <div class="progress-dot pending">5</div>
+                        <span class="progress-label">Complete</span>
+                    </div>
+                </div>
+
+                <h1 class="setup-title">How do you sell?</h1>
+                <p class="setup-subtitle">This helps us tailor predictions to your business model</p>
+            </div>
+
+            <div class="store-types-grid">
+                <div class="store-type-option" data-type="physical" onclick="selectType(this)">
+                    <div class="type-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </div>
+                    <div class="type-name">Physical Store</div>
+                    <div class="type-desc">Brick & mortar location where customers visit in person</div>
+                </div>
+
+                <div class="store-type-option" data-type="online" onclick="selectType(this)">
+                    <div class="type-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </div>
+                    <div class="type-name">Online Store</div>
+                    <div class="type-desc">E-commerce business selling through website or platforms</div>
+                </div>
+            </div>
+
+            <div class="setup-actions">
+                <button class="btn btn-primary btn-lg btn-continue" onclick="continueSetup()" disabled id="continueBtn">
+                    Continue
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        let selectedType = null;
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = '/frontend/pages/login.html';
+        }
+
+        function selectType(element) {
+            // Remove selection from all
+            document.querySelectorAll('.store-type-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selection to clicked
+            element.classList.add('selected');
+            selectedType = element.dataset.type;
+
+            // Enable continue button
+            document.getElementById('continueBtn').disabled = false;
+        }
+
+        function continueSetup() {
+            if (!selectedType) return;
+
+            // Store selection in session
+            sessionStorage.setItem('setup_store_type', selectedType);
+
+            // Navigate to business category selection
+            window.location.href = '/frontend/pages/setup/business-type.html';
+        }
+    </script>
+</body>
+</html>

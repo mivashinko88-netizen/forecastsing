@@ -173,30 +173,88 @@
                 if (businesses && businesses.length > 0) {
                     const business = businesses[0]; // Primary business
 
-                    const typeNames = {
+                    // Physical store types
+                    const physicalTypes = {
                         'restaurant': 'Restaurant & Food',
                         'retail': 'Retail Store',
                         'service': 'Service Business'
                     };
-                    document.getElementById('summaryType').textContent = typeNames[business.business_type] || business.business_type;
 
-                    // Show number of locations
-                    document.getElementById('summaryLocations').textContent =
-                        businesses.length === 1 ? '1 location' : `${businesses.length} locations`;
+                    // Online store types
+                    const onlineTypes = {
+                        'fashion': 'Fashion & Apparel',
+                        'electronics': 'Electronics & Tech',
+                        'food_grocery': 'Food & Grocery',
+                        'home_garden': 'Home & Garden',
+                        'health_beauty': 'Health & Beauty',
+                        'other': 'Other'
+                    };
 
-                    // Show location list
+                    const allTypes = {...physicalTypes, ...onlineTypes};
+                    document.getElementById('summaryType').textContent = allTypes[business.business_type] || business.business_type;
+
                     const locList = document.getElementById('locationsList');
-                    locList.innerHTML = businesses.map((b, i) => `
-                        <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; ${i < businesses.length - 1 ? 'border-bottom: 1px solid var(--gray-100);' : ''}">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                <circle cx="12" cy="10" r="3"/>
-                            </svg>
-                            <span style="font-size: 14px; color: var(--gray-700);">${b.name}</span>
-                            <span style="font-size: 12px; color: var(--gray-400);">${b.city}, ${b.state}</span>
-                            ${i === 0 ? '<span style="font-size: 10px; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: 8px; margin-left: auto;">Primary</span>' : ''}
-                        </div>
-                    `).join('');
+                    const locLabel = document.querySelector('.summary-item .summary-label');
+
+                    // Check if this is an online store
+                    if (business.is_online) {
+                        // Online store - show timezone and channels instead of location
+                        document.getElementById('summaryLocations').textContent = business.timezone || 'Not set';
+
+                        // Update label
+                        if (locLabel && locLabel.textContent === 'Locations') {
+                            locLabel.textContent = 'Timezone';
+                        }
+
+                        // Show online store details
+                        locList.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                                <span style="font-size: 14px; color: var(--gray-700);">${business.name}</span>
+                                <span style="font-size: 10px; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: 8px; margin-left: auto;">Online Store</span>
+                            </div>
+                        `;
+
+                        // Show marketing channels if available
+                        if (business.marketing_channels) {
+                            const channelNames = {
+                                'social_media': 'Social Media',
+                                'search_engines': 'Search / SEO',
+                                'paid_ads': 'Paid Ads',
+                                'email': 'Email Marketing',
+                                'marketplace': 'Marketplaces',
+                                'influencer': 'Influencers',
+                                'referral': 'Referrals',
+                                'direct': 'Direct Traffic'
+                            };
+                            const channels = business.marketing_channels.split(',').map(c => channelNames[c] || c).join(', ');
+                            locList.innerHTML += `
+                                <div style="padding-top: var(--space-2); font-size: 13px; color: var(--gray-500);">
+                                    Marketing: ${channels}
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // Physical store - show locations
+                        document.getElementById('summaryLocations').textContent =
+                            businesses.length === 1 ? '1 location' : `${businesses.length} locations`;
+
+                        locList.innerHTML = businesses.map((b, i) => `
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; ${i < businesses.length - 1 ? 'border-bottom: 1px solid var(--gray-100);' : ''}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span style="font-size: 14px; color: var(--gray-700);">${b.name}</span>
+                                <span style="font-size: 12px; color: var(--gray-400);">${b.city || ''}, ${b.state || ''}</span>
+                                ${i === 0 ? '<span style="font-size: 10px; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: 8px; margin-left: auto;">Primary</span>' : ''}
+                            </div>
+                        `).join('');
+                    }
 
                     // Store current business ID
                     localStorage.setItem('current_business_id', business.id);
@@ -210,6 +268,7 @@
         loadIntegrations();
 
         // Clear setup session data
+        sessionStorage.removeItem('setup_store_type');
         sessionStorage.removeItem('setup_business_type');
         sessionStorage.removeItem('setup_business_id');
         sessionStorage.removeItem('setup_locations_count');
