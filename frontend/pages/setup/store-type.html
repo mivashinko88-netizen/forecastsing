@@ -56,6 +56,7 @@
 
         .progress-dot {
             width: 32px;
+            min-width: 32px;
             height: 32px;
             border-radius: 50%;
             display: flex;
@@ -86,9 +87,10 @@
         }
 
         .progress-line {
-            width: 40px;
+            width: 24px;
             height: 2px;
             background: var(--gray-200);
+            flex-shrink: 0;
         }
 
         .setup-title {

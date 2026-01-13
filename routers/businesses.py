@@ -52,21 +52,27 @@ async def create_business(
 ):
     """Create a new business"""
 
-    # Validate business type
-    valid_types = ["restaurant", "retail", "service"]
+    # Validate business type - physical and online types
+    physical_types = ["restaurant", "retail", "service"]
+    online_types = ["fashion", "electronics", "food_grocery", "home_garden", "health_beauty", "other_online"]
+    valid_types = physical_types + online_types
+
     if data.business_type not in valid_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid business type. Must be one of: {', '.join(valid_types)}"
         )
 
-    # Get coordinates
-    lat, lon = get_coordinates(data.zipcode, data.city, data.state, data.country)
+    # Get coordinates only for physical stores with location data
+    lat, lon = None, None
+    if data.city and data.zipcode and not data.is_online:
+        lat, lon = get_coordinates(data.zipcode, data.city, data.state, data.country)
 
     business = Business(
         user_id=current_user.id,
         name=data.name,
         business_type=data.business_type,
+        is_online=data.is_online,
         city=data.city,
         state=data.state,
         zipcode=data.zipcode,
@@ -76,7 +82,8 @@ async def create_business(
         longitude=lon,
         open_time=data.open_time,
         close_time=data.close_time,
-        days_open=data.days_open
+        days_open=data.days_open,
+        marketing_channels=data.marketing_channels
     )
 
     db.add(business)
@@ -131,7 +138,9 @@ async def update_business(
 
     # Validate business type if provided
     if "business_type" in update_data:
-        valid_types = ["restaurant", "retail", "service"]
+        physical_types = ["restaurant", "retail", "service"]
+        online_types = ["fashion", "electronics", "food_grocery", "home_garden", "health_beauty", "other_online"]
+        valid_types = physical_types + online_types
         if update_data["business_type"] not in valid_types:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
