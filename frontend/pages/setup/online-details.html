@@ -7,10 +7,22 @@
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
         .setup-page {
             min-height: 100vh;
-            background: var(--gray-50);
-            padding: var(--space-8) var(--space-6);
+            padding: 40px 24px;
         }
 
         .setup-container {
@@ -20,170 +32,221 @@
 
         .setup-header {
             text-align: center;
-            margin-bottom: var(--space-8);
+            margin-bottom: 48px;
         }
 
         .setup-logo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            font-size: 20px;
+            gap: 10px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: var(--space-6);
+            color: #ffffff;
+            margin-bottom: 32px;
         }
 
         .setup-logo svg {
-            width: 28px;
-            height: 28px;
-            color: var(--primary-600);
+            width: 32px;
+            height: 32px;
+            color: #818cf8;
         }
 
+        /* Progress Steps */
         .setup-progress {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-8);
+            gap: 8px;
+            margin-bottom: 48px;
         }
 
         .progress-step {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
         }
 
         .progress-dot {
-            width: 32px;
-            min-width: 32px;
-            height: 32px;
+            width: 36px;
+            min-width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .progress-dot.active {
-            background: var(--primary-600);
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
 
         .progress-dot.complete {
-            background: var(--success-500);
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             color: white;
         }
 
         .progress-dot.pending {
-            background: var(--gray-200);
-            color: var(--gray-500);
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .progress-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .progress-step.active .progress-label {
-            color: var(--gray-900);
+            color: #ffffff;
         }
 
         .progress-line {
-            width: 24px;
+            width: 20px;
             height: 2px;
-            background: var(--gray-200);
+            background: rgba(255, 255, 255, 0.2);
             flex-shrink: 0;
         }
 
         .progress-line.complete {
-            background: var(--success-500);
+            background: linear-gradient(90deg, #10b981, #34d399);
         }
 
         .setup-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-2);
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
         }
 
         .setup-subtitle {
             font-size: 16px;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.6);
         }
 
+        /* Form Sections */
         .setup-form {
-            background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-xl);
-            padding: var(--space-6);
-            margin-bottom: var(--space-6);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-section-header svg {
+            width: 22px;
+            height: 22px;
+            stroke: #818cf8;
+        }
+
+        .form-section-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
         }
 
         .form-group {
-            margin-bottom: var(--space-5);
+            margin-bottom: 20px;
         }
 
         .form-group:last-child {
             margin-bottom: 0;
         }
 
-        .form-section-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-4);
-            padding-bottom: var(--space-3);
-            border-bottom: 1px solid var(--gray-100);
+        .label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
         }
 
-        .form-section-header svg {
-            width: 20px;
-            height: 20px;
-            color: var(--primary-600);
+        .input, .select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 15px;
+            color: #ffffff;
+            transition: all 0.2s ease;
         }
 
-        .form-section-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gray-900);
+        .input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .input:focus, .select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23818cf8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .select option, .select optgroup {
+            background: #1a1a2e;
+            color: #ffffff;
         }
 
         .form-hint {
             font-size: 13px;
-            color: var(--gray-500);
-            margin-top: var(--space-1);
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 8px;
         }
 
         /* Marketing Channels Grid */
         .channels-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-3);
+            gap: 12px;
         }
 
         .channel-option {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-3) var(--space-4);
-            background: var(--gray-50);
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-lg);
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.2s ease;
         }
 
         .channel-option:hover {
-            border-color: var(--primary-300);
-            background: var(--primary-50);
+            border-color: rgba(129, 140, 248, 0.5);
+            background: rgba(99, 102, 241, 0.1);
         }
 
         .channel-option.selected {
-            border-color: var(--primary-500);
-            background: var(--primary-50);
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.2);
         }
 
         .channel-option input {
@@ -191,51 +254,101 @@
         }
 
         .channel-icon {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
-            border-radius: var(--radius-md);
-            color: var(--gray-500);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            transition: all 0.2s ease;
         }
 
         .channel-option.selected .channel-icon {
-            background: var(--primary-100);
-            color: var(--primary-600);
+            background: rgba(99, 102, 241, 0.3);
         }
 
         .channel-icon svg {
             width: 18px;
             height: 18px;
+            stroke: rgba(255, 255, 255, 0.6);
+        }
+
+        .channel-option.selected .channel-icon svg {
+            stroke: #a5b4fc;
         }
 
         .channel-name {
             font-size: 14px;
             font-weight: 500;
-            color: var(--gray-700);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .channel-option.selected .channel-name {
-            color: var(--primary-700);
+            color: #ffffff;
         }
 
-        /* Business Name Input */
-        .business-name-section {
-            margin-bottom: var(--space-6);
-        }
-
+        /* Actions */
         .setup-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .btn-back {
-            display: flex;
+        .btn {
+            display: inline-flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 640px) {
@@ -246,6 +359,10 @@
             .progress-label {
                 display: none;
             }
+
+            .setup-title {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
@@ -254,7 +371,7 @@
         <div class="setup-container">
             <div class="setup-header">
                 <div class="setup-logo">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2">
                         <path d="M3 3v18h18"/>
                         <path d="M18 9l-5-6-4 8-3-2"/>
                     </svg>
@@ -307,9 +424,9 @@
 
             <form id="onlineDetailsForm" onsubmit="saveDetails(event)">
                 <!-- Business Name -->
-                <div class="setup-form business-name-section">
+                <div class="setup-form">
                     <div class="form-section-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                             <path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"/>
                             <path d="M3 21h18"/>
                             <path d="M9 7h6M9 11h6M9 15h4"/>
@@ -326,7 +443,7 @@
                 <!-- Timezone -->
                 <div class="setup-form">
                     <div class="form-section-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
                             <polyline points="12 6 12 12 16 14"/>
                         </svg>
@@ -365,7 +482,7 @@
                 <!-- Marketing Channels -->
                 <div class="setup-form">
                     <div class="form-section-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                             <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                         </svg>
                         <h3>Marketing Channels</h3>
@@ -376,7 +493,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="social_media">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                                     </svg>
                                 </div>
@@ -386,7 +503,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="search_engines">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <circle cx="11" cy="11" r="8"/>
                                         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                                     </svg>
@@ -397,7 +514,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="paid_ads">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                                         <line x1="3" y1="9" x2="21" y2="9"/>
                                         <line x1="9" y1="21" x2="9" y2="9"/>
@@ -409,7 +526,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="email">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                                         <polyline points="22,6 12,13 2,6"/>
                                     </svg>
@@ -420,7 +537,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="marketplace">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                                         <polyline points="9 22 9 12 15 12 15 22"/>
                                     </svg>
@@ -431,7 +548,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="influencer">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                         <circle cx="9" cy="7" r="4"/>
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -444,7 +561,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="referral">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <circle cx="18" cy="5" r="3"/>
                                         <circle cx="6" cy="12" r="3"/>
                                         <circle cx="18" cy="19" r="3"/>
@@ -458,7 +575,7 @@
                             <label class="channel-option" onclick="toggleChannel(this)">
                                 <input type="checkbox" name="channels" value="direct">
                                 <div class="channel-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                         <circle cx="12" cy="12" r="10"/>
                                         <line x1="2" y1="12" x2="22" y2="12"/>
                                         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
@@ -472,13 +589,13 @@
                 </div>
 
                 <div class="setup-actions">
-                    <button type="button" class="btn btn-ghost btn-back" onclick="goBack()">
+                    <button type="button" class="btn btn-ghost" onclick="goBack()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 12H5M12 19l-7-7 7-7"/>
                         </svg>
                         Back
                     </button>
-                    <button type="submit" class="btn btn-primary btn-lg" id="continueBtn">
+                    <button type="submit" class="btn btn-primary" id="continueBtn">
                         Continue
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -529,7 +646,7 @@
 
             const btn = document.getElementById('continueBtn');
             btn.disabled = true;
-            btn.innerHTML = '<div class="spinner spinner-sm"></div> Saving...';
+            btn.innerHTML = '<div class="spinner"></div> Saving...';
 
             try {
                 const existingBusinessId = sessionStorage.getItem('setup_business_id');

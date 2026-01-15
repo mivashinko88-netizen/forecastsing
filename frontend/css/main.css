@@ -1020,6 +1020,41 @@ a:hover {
   color: #a5b4fc;
 }
 
+/* Detailed forecast table rows */
+[data-theme="dark"] .item-row {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .item-row:nth-child(even) {
+  background: #0f172a;
+}
+
+[data-theme="dark"] .item-row:hover,
+[data-theme="dark"] .item-row:nth-child(even):hover {
+  background: #334155;
+}
+
+[data-theme="dark"] .item-row > div,
+[data-theme="dark"] .item-row > span {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .item-name {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .item-qty {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .item-price {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .item-revenue {
+  color: #94a3b8;
+}
+
 /* Calendar page */
 [data-theme="dark"] .calendar-container {
   background: #1e293b;

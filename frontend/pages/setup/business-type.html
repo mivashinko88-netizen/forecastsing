@@ -7,10 +7,22 @@
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
         .setup-page {
             min-height: 100vh;
-            background: var(--gray-50);
-            padding: var(--space-8) var(--space-6);
+            padding: 40px 24px;
         }
 
         .setup-container {
@@ -20,178 +32,269 @@
 
         .setup-header {
             text-align: center;
-            margin-bottom: var(--space-8);
+            margin-bottom: 48px;
         }
 
         .setup-logo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            font-size: 20px;
+            gap: 10px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: var(--space-6);
+            color: #ffffff;
+            margin-bottom: 32px;
         }
 
         .setup-logo svg {
-            width: 28px;
-            height: 28px;
-            color: var(--primary-600);
+            width: 32px;
+            height: 32px;
+            color: #818cf8;
         }
 
+        /* Progress Steps */
         .setup-progress {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-8);
+            gap: 8px;
+            margin-bottom: 48px;
         }
 
         .progress-step {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
         }
 
         .progress-dot {
-            width: 32px;
-            min-width: 32px;
-            height: 32px;
+            width: 36px;
+            min-width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .progress-dot.active {
-            background: var(--primary-600);
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
 
         .progress-dot.complete {
-            background: var(--success-500);
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             color: white;
         }
 
         .progress-dot.pending {
-            background: var(--gray-200);
-            color: var(--gray-500);
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .progress-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .progress-step.active .progress-label {
-            color: var(--gray-900);
+            color: #ffffff;
         }
 
         .progress-line {
-            width: 24px;
+            width: 20px;
             height: 2px;
-            background: var(--gray-200);
+            background: rgba(255, 255, 255, 0.2);
             flex-shrink: 0;
         }
 
         .progress-line.complete {
-            background: var(--success-500);
+            background: linear-gradient(90deg, #10b981, #34d399);
         }
 
         .setup-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-2);
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
         }
 
         .setup-subtitle {
             font-size: 16px;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.6);
         }
 
+        /* Business Type Cards */
         .business-types-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-4);
-            margin-bottom: var(--space-8);
+            gap: 16px;
+            margin-bottom: 40px;
         }
 
         .business-type-option {
-            background: white;
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-xl);
-            padding: var(--space-6);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px 16px;
             text-align: center;
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .business-type-option:hover {
-            border-color: var(--primary-300);
-            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(129, 140, 248, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .business-type-option.selected {
-            border-color: var(--primary-500);
-            background: var(--primary-50);
-        }
-
-        .business-type-option.selected .type-icon {
-            background: var(--primary-100);
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
         }
 
         .type-icon {
             width: 64px;
             height: 64px;
-            margin: 0 auto var(--space-4);
+            margin: 0 auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--gray-100);
-            border-radius: var(--radius-xl);
-            color: var(--primary-600);
-            transition: all var(--transition);
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .business-type-option:hover .type-icon {
+            background: rgba(99, 102, 241, 0.25);
+        }
+
+        .business-type-option.selected .type-icon {
+            background: rgba(99, 102, 241, 0.3);
         }
 
         .type-icon svg {
             width: 32px;
             height: 32px;
+            stroke: #818cf8;
+            stroke-width: 1.5;
+            fill: none;
         }
 
         .type-name {
             font-size: 16px;
             font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-2);
+            color: #ffffff;
+            margin-bottom: 8px;
         }
 
         .type-desc {
-            font-size: 13px;
-            color: var(--gray-500);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
             line-height: 1.4;
         }
 
+        /* Actions */
         .setup-actions {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-back svg {
+            width: 20px;
+            height: 20px;
         }
 
         .btn-continue {
-            min-width: 140px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-continue:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-continue:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-continue svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 640px) {
             .business-types-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
 
             .progress-label {
                 display: none;
+            }
+
+            .setup-title {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .business-types-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -213,7 +316,7 @@
                     <div class="progress-step">
                         <div class="progress-dot complete">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
+                                <polyline points="20 6 9 17 4 12"/>
                             </svg>
                         </div>
                         <span class="progress-label">Store Type</span>
@@ -248,7 +351,7 @@
             <div class="business-types-grid" id="physicalCategories">
                 <div class="business-type-option" data-type="restaurant" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
                             <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
                             <line x1="6" y1="1" x2="6" y2="4"/>
@@ -262,7 +365,7 @@
 
                 <div class="business-type-option" data-type="retail" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                             <line x1="3" y1="6" x2="21" y2="6"/>
                             <path d="M16 10a4 4 0 0 1-8 0"/>
@@ -274,7 +377,7 @@
 
                 <div class="business-type-option" data-type="service" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                         </svg>
                     </div>
@@ -287,82 +390,82 @@
             <div class="business-types-grid" id="onlineCategories" style="display: none;">
                 <div class="business-type-option" data-type="fashion" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
                         </svg>
                     </div>
                     <div class="type-name">Fashion & Apparel</div>
-                    <div class="type-desc">Clothing, shoes, accessories, jewelry</div>
+                    <div class="type-desc">Clothing, shoes, accessories</div>
                 </div>
 
                 <div class="business-type-option" data-type="electronics" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
                             <line x1="8" y1="21" x2="16" y2="21"/>
                             <line x1="12" y1="17" x2="12" y2="21"/>
                         </svg>
                     </div>
                     <div class="type-name">Electronics & Tech</div>
-                    <div class="type-desc">Gadgets, computers, phones, accessories</div>
+                    <div class="type-desc">Gadgets, computers, phones</div>
                 </div>
 
                 <div class="business-type-option" data-type="food_grocery" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
-                            <path d="M3 3h18v18H3z"/>
-                            <path d="M7 7h10v10H7z"/>
-                            <circle cx="12" cy="12" r="2"/>
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 0 1-8 0"/>
                         </svg>
                     </div>
                     <div class="type-name">Food & Grocery</div>
-                    <div class="type-desc">Packaged food, beverages, specialty items</div>
+                    <div class="type-desc">Packaged food, beverages</div>
                 </div>
 
                 <div class="business-type-option" data-type="home_garden" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                             <polyline points="9 22 9 12 15 12 15 22"/>
                         </svg>
                     </div>
                     <div class="type-name">Home & Garden</div>
-                    <div class="type-desc">Furniture, decor, plants, tools</div>
+                    <div class="type-desc">Furniture, decor, plants</div>
                 </div>
 
                 <div class="business-type-option" data-type="health_beauty" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                         </svg>
                     </div>
                     <div class="type-name">Health & Beauty</div>
-                    <div class="type-desc">Cosmetics, skincare, supplements, wellness</div>
+                    <div class="type-desc">Cosmetics, skincare, wellness</div>
                 </div>
 
                 <div class="business-type-option" data-type="other_online" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/>
                             <line x1="12" y1="8" x2="12" y2="12"/>
                             <line x1="12" y1="16" x2="12.01" y2="16"/>
                         </svg>
                     </div>
                     <div class="type-name">Other</div>
-                    <div class="type-desc">Digital products, crafts, specialty items</div>
+                    <div class="type-desc">Digital products, crafts</div>
                 </div>
             </div>
 
             <div class="setup-actions">
-                <button class="btn btn-ghost" onclick="goBack()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="btn-back" onclick="goBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                     Back
                 </button>
-                <button class="btn btn-primary btn-lg btn-continue" onclick="continueSetup()" disabled id="continueBtn">
+                <button class="btn-continue" onclick="continueSetup()" disabled id="continueBtn">
                     Continue
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </button>
@@ -416,7 +519,7 @@
 
             const btn = document.getElementById('continueBtn');
             btn.disabled = true;
-            btn.innerHTML = '<div class="spinner spinner-sm"></div> Setting up...';
+            btn.innerHTML = '<div class="spinner"></div> Setting up...';
 
             try {
                 // Create a placeholder business
@@ -450,7 +553,7 @@
                 console.error('Error creating business:', error);
                 alert(error.message || 'Failed to set up. Please try again.');
                 btn.disabled = false;
-                btn.innerHTML = 'Continue <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                btn.innerHTML = 'Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
             }
         }
     </script>

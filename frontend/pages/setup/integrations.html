@@ -7,144 +7,182 @@
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
         .setup-page {
             min-height: 100vh;
-            background: var(--gray-50);
-            padding: var(--space-8) var(--space-6);
+            padding: 40px 24px;
         }
 
         .setup-container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
         .setup-header {
             text-align: center;
-            margin-bottom: var(--space-8);
+            margin-bottom: 48px;
         }
 
         .setup-logo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            font-size: 20px;
+            gap: 10px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: var(--space-6);
+            color: #ffffff;
+            margin-bottom: 32px;
         }
 
         .setup-logo svg {
-            width: 28px;
-            height: 28px;
-            color: var(--primary-600);
+            width: 32px;
+            height: 32px;
+            color: #818cf8;
         }
 
+        /* Progress Steps */
         .setup-progress {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-8);
+            gap: 8px;
+            margin-bottom: 48px;
         }
 
         .progress-step {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
         }
 
         .progress-dot {
-            width: 32px;
-            min-width: 32px;
-            height: 32px;
+            width: 36px;
+            min-width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .progress-dot.active {
-            background: var(--primary-600);
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
 
         .progress-dot.complete {
-            background: var(--success-500);
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             color: white;
         }
 
         .progress-dot.pending {
-            background: var(--gray-200);
-            color: var(--gray-500);
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .progress-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .progress-step.active .progress-label {
-            color: var(--gray-900);
+            color: #ffffff;
         }
 
         .progress-line {
-            width: 24px;
+            width: 20px;
             height: 2px;
-            background: var(--gray-200);
+            background: rgba(255, 255, 255, 0.2);
             flex-shrink: 0;
         }
 
         .progress-line.complete {
-            background: var(--success-500);
+            background: linear-gradient(90deg, #10b981, #34d399);
         }
 
         .setup-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-2);
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
         }
 
         .setup-subtitle {
             font-size: 16px;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.6);
         }
 
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* Integration Cards */
         .integrations-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-4);
-            margin-bottom: var(--space-8);
+            gap: 16px;
+            margin-bottom: 40px;
         }
 
         .integration-card {
-            background: white;
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-xl);
-            padding: var(--space-5);
-            position: relative;
-            transition: all var(--transition);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .integration-card:hover {
-            border-color: var(--primary-300);
-            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(129, 140, 248, 0.3);
+            transform: translateY(-2px);
         }
 
         .integration-card.connected {
-            border-color: var(--success-500);
-            background: var(--success-50);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .integration-header {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            margin-bottom: var(--space-3);
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .integration-icon {
@@ -153,106 +191,139 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--gray-100);
-            border-radius: var(--radius-lg);
-            font-size: 24px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
         }
 
         .integration-card.connected .integration-icon {
-            background: var(--success-100);
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .integration-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #818cf8;
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .integration-card.connected .integration-icon svg {
+            stroke: #34d399;
         }
 
         .integration-name {
             font-size: 18px;
             font-weight: 600;
-            color: var(--gray-900);
+            color: #ffffff;
         }
 
         .integration-desc {
             font-size: 14px;
-            color: var(--gray-500);
-            margin-bottom: var(--space-4);
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 16px;
             line-height: 1.5;
         }
 
         .integration-status {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
             font-size: 13px;
-            color: var(--gray-500);
-            margin-bottom: var(--space-3);
-        }
-
-        .integration-status.connected {
-            color: var(--success-600);
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 16px;
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--gray-300);
+            background: rgba(255, 255, 255, 0.3);
         }
 
-        .status-dot.connected {
-            background: var(--success-500);
+        .integration-card.connected .status-dot {
+            background: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
         }
 
-        .integration-actions {
-            display: flex;
-            gap: var(--space-2);
+        .integration-card.connected .integration-status {
+            color: #34d399;
         }
 
-        .btn-connect {
-            flex: 1;
-            padding: var(--space-2) var(--space-4);
-            font-size: 14px;
-        }
-
-        .btn-disconnect {
-            padding: var(--space-2);
-            background: transparent;
-            border: 1px solid var(--gray-300);
-            color: var(--gray-600);
-        }
-
-        .btn-disconnect:hover {
-            background: var(--gray-100);
-            border-color: var(--gray-400);
-        }
-
-        /* Shopify domain input */
         .shopify-domain-input {
-            display: none;
-            margin-bottom: var(--space-3);
-        }
-
-        .shopify-domain-input.visible {
-            display: block;
+            margin-bottom: 16px;
         }
 
         .shopify-domain-input input {
             width: 100%;
-            padding: var(--space-2) var(--space-3);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
             font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
         }
 
         .shopify-domain-input input:focus {
-            outline: none;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 3px rgba(var(--primary-500-rgb), 0.1);
+            border-color: #6366f1;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .shopify-domain-input input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
         }
 
         .shopify-domain-input small {
             display: block;
-            margin-top: var(--space-1);
+            margin-top: 8px;
             font-size: 12px;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.4);
         }
 
+        .integration-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-connect {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-connect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-disconnect {
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            color: #f87171;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-disconnect:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-disconnect svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Actions */
         .setup-actions {
             display: flex;
             justify-content: space-between;
@@ -260,43 +331,46 @@
         }
 
         .btn-skip {
-            color: var(--gray-500);
+            padding: 14px 24px;
             background: transparent;
-            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .btn-skip:hover {
-            color: var(--gray-700);
-            text-decoration: underline;
+            color: white;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .btn-continue {
-            min-width: 140px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .alert {
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            margin-bottom: var(--space-6);
-            display: none;
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
         }
 
-        .alert.show {
-            display: block;
-        }
-
-        .alert-success {
-            background: var(--success-50);
-            border: 1px solid var(--success-200);
-            color: var(--success-700);
-        }
-
-        .alert-error {
-            background: var(--danger-50);
-            border: 1px solid var(--danger-200);
-            color: var(--danger-700);
+        .btn-continue svg {
+            width: 20px;
+            height: 20px;
         }
 
         @media (max-width: 640px) {
@@ -306,6 +380,10 @@
 
             .progress-label {
                 display: none;
+            }
+
+            .setup-title {
+                font-size: 26px;
             }
         }
     </style>
@@ -327,7 +405,7 @@
                     <div class="progress-step">
                         <div class="progress-dot complete">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
+                                <polyline points="20 6 9 17 4 12"/>
                             </svg>
                         </div>
                         <span class="progress-label">Store Type</span>
@@ -336,7 +414,7 @@
                     <div class="progress-step">
                         <div class="progress-dot complete">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
+                                <polyline points="20 6 9 17 4 12"/>
                             </svg>
                         </div>
                         <span class="progress-label">Category</span>
@@ -375,26 +453,24 @@
                 <div class="integration-card" data-provider="square" id="card-square">
                     <div class="integration-header">
                         <div class="integration-icon">
-                            <svg width="28" height="28" viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#4F46E5" stroke-width="2"/>
-                                <rect x="7" y="7" width="10" height="10" rx="1" fill="#4F46E5"/>
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <rect x="7" y="7" width="10" height="10" rx="1"/>
                             </svg>
                         </div>
                         <div class="integration-name">Square</div>
                     </div>
-                    <div class="integration-desc">POS and payment processing for restaurants and retail businesses</div>
+                    <div class="integration-desc">POS and payment processing for restaurants and retail</div>
                     <div class="integration-status" id="status-square">
                         <span class="status-dot"></span>
                         <span>Not connected</span>
                     </div>
                     <div class="integration-actions">
-                        <button class="btn btn-primary btn-connect" onclick="connectProvider('square')">
-                            Connect
-                        </button>
-                        <button class="btn btn-disconnect" onclick="disconnectProvider('square')" style="display: none;" id="disconnect-square">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <button class="btn-connect" onclick="connectProvider('square')">Connect</button>
+                        <button class="btn-disconnect" onclick="disconnectProvider('square')" style="display: none;" id="disconnect-square">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
                         </button>
                     </div>
@@ -404,26 +480,24 @@
                 <div class="integration-card" data-provider="toast" id="card-toast">
                     <div class="integration-header">
                         <div class="integration-icon">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
-                                <path d="M4 6h16v12H4z"/>
+                            <svg viewBox="0 0 24 24">
+                                <rect x="4" y="6" width="16" height="12" rx="1"/>
                                 <path d="M8 2v4M16 2v4M4 10h16"/>
                             </svg>
                         </div>
                         <div class="integration-name">Toast</div>
                     </div>
-                    <div class="integration-desc">Restaurant-specific POS system with menu and order management</div>
+                    <div class="integration-desc">Restaurant-specific POS with menu management</div>
                     <div class="integration-status" id="status-toast">
                         <span class="status-dot"></span>
                         <span>Not connected</span>
                     </div>
                     <div class="integration-actions">
-                        <button class="btn btn-primary btn-connect" onclick="connectProvider('toast')">
-                            Connect
-                        </button>
-                        <button class="btn btn-disconnect" onclick="disconnectProvider('toast')" style="display: none;" id="disconnect-toast">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <button class="btn-connect" onclick="connectProvider('toast')">Connect</button>
+                        <button class="btn-disconnect" onclick="disconnectProvider('toast')" style="display: none;" id="disconnect-toast">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
                         </button>
                     </div>
@@ -433,7 +507,7 @@
                 <div class="integration-card" data-provider="clover" id="card-clover">
                     <div class="integration-header">
                         <div class="integration-icon">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                            <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="8" r="4"/>
                                 <circle cx="8" cy="14" r="4"/>
                                 <circle cx="16" cy="14" r="4"/>
@@ -441,19 +515,17 @@
                         </div>
                         <div class="integration-name">Clover</div>
                     </div>
-                    <div class="integration-desc">Versatile POS system for retail, restaurants, and service businesses</div>
+                    <div class="integration-desc">Versatile POS for retail and service businesses</div>
                     <div class="integration-status" id="status-clover">
                         <span class="status-dot"></span>
                         <span>Not connected</span>
                     </div>
                     <div class="integration-actions">
-                        <button class="btn btn-primary btn-connect" onclick="connectProvider('clover')">
-                            Connect
-                        </button>
-                        <button class="btn btn-disconnect" onclick="disconnectProvider('clover')" style="display: none;" id="disconnect-clover">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <button class="btn-connect" onclick="connectProvider('clover')">Connect</button>
+                        <button class="btn-disconnect" onclick="disconnectProvider('clover')" style="display: none;" id="disconnect-clover">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
                         </button>
                     </div>
@@ -463,14 +535,15 @@
                 <div class="integration-card" data-provider="shopify" id="card-shopify">
                     <div class="integration-header">
                         <div class="integration-icon">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
-                                <path d="M15 3l2 4h4l-3 3 1 5-4-2-4 2 1-5-3-3h4l2-4z"/>
-                                <path d="M6 14v7h12v-7"/>
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/>
+                                <path d="M12 22V12"/>
+                                <path d="M22 7L12 12 2 7"/>
                             </svg>
                         </div>
                         <div class="integration-name">Shopify</div>
                     </div>
-                    <div class="integration-desc">E-commerce platform for online stores and retail</div>
+                    <div class="integration-desc">E-commerce platform for online stores</div>
                     <div class="shopify-domain-input" id="shopify-domain-input">
                         <input type="text" id="shopify-domain" placeholder="your-store.myshopify.com">
                         <small>Enter your Shopify store domain</small>
@@ -480,13 +553,11 @@
                         <span>Not connected</span>
                     </div>
                     <div class="integration-actions">
-                        <button class="btn btn-primary btn-connect" onclick="connectProvider('shopify')">
-                            Connect
-                        </button>
-                        <button class="btn btn-disconnect" onclick="disconnectProvider('shopify')" style="display: none;" id="disconnect-shopify">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <button class="btn-connect" onclick="connectProvider('shopify')">Connect</button>
+                        <button class="btn-disconnect" onclick="disconnectProvider('shopify')" style="display: none;" id="disconnect-shopify">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
                         </button>
                     </div>
@@ -494,12 +565,10 @@
             </div>
 
             <div class="setup-actions">
-                <button class="btn-skip" onclick="skipStep()">
-                    Skip for now (upload CSV later)
-                </button>
-                <button class="btn btn-primary btn-lg btn-continue" onclick="continueSetup()" id="continueBtn">
+                <button class="btn-skip" onclick="skipStep()">Skip for now</button>
+                <button class="btn-continue" onclick="continueSetup()">
                     Continue
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </button>
@@ -509,184 +578,135 @@
 
     <script src="/frontend/js/api.js"></script>
     <script>
-        let businessId = sessionStorage.getItem('setup_business_id');
-        let connectedIntegrations = {};
-
         // Check authentication
         if (!api.isAuthenticated()) {
             window.location.href = '/frontend/pages/login.html';
         }
 
-        // Check if we have a business ID - if not, go back to business type selection
+        // Check for business ID
+        const businessId = sessionStorage.getItem('setup_business_id');
         if (!businessId) {
-            console.warn('No business ID found, redirecting to business type selection');
             window.location.href = '/frontend/pages/setup/business-type.html';
         }
 
-        // Check for OAuth callback params
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true') {
-            const provider = urlParams.get('provider');
-            showSuccess(provider);
-            // Clean URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-        } else if (urlParams.get('error')) {
-            const error = urlParams.get('error');
-            const provider = urlParams.get('provider');
-            showError(error);
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+        let connectedIntegrations = {};
 
-        // Load current integration status
+        // Load existing integrations
         async function loadIntegrations() {
-            if (!businessId) return;
-
             try {
-                const response = await api.request(`/integrations/businesses/${businessId}`);
-                connectedIntegrations = {};
-
-                response.forEach(integration => {
-                    if (integration.status === 'connected') {
-                        connectedIntegrations[integration.provider] = integration;
-                        updateCardStatus(integration.provider, true, integration.id);
+                const response = await fetch(`/api/integrations/businesses/${businessId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                     }
                 });
+                if (response.ok) {
+                    const integrations = await response.json();
+                    integrations.forEach(integration => {
+                        if (integration.status === 'connected') {
+                            markConnected(integration.provider, integration);
+                        }
+                    });
+                }
             } catch (error) {
-                console.error('Failed to load integrations:', error);
+                console.error('Error loading integrations:', error);
             }
         }
 
-        function updateCardStatus(provider, connected, integrationId = null) {
+        function markConnected(provider, integration) {
+            connectedIntegrations[provider] = integration;
             const card = document.getElementById(`card-${provider}`);
             const status = document.getElementById(`status-${provider}`);
             const disconnectBtn = document.getElementById(`disconnect-${provider}`);
             const connectBtn = card.querySelector('.btn-connect');
 
-            if (connected) {
-                card.classList.add('connected');
-                status.classList.add('connected');
-                status.innerHTML = '<span class="status-dot connected"></span><span>Connected</span>';
-                connectBtn.textContent = 'Connected';
-                connectBtn.disabled = true;
-                disconnectBtn.style.display = 'block';
-                disconnectBtn.dataset.integrationId = integrationId;
-            } else {
-                card.classList.remove('connected');
-                status.classList.remove('connected');
-                status.innerHTML = '<span class="status-dot"></span><span>Not connected</span>';
-                connectBtn.textContent = 'Connect';
-                connectBtn.disabled = false;
-                disconnectBtn.style.display = 'none';
+            card.classList.add('connected');
+            status.innerHTML = '<span class="status-dot"></span><span>Connected</span>';
+            connectBtn.style.display = 'none';
+            disconnectBtn.style.display = 'block';
+
+            if (provider === 'shopify') {
+                document.getElementById('shopify-domain-input').style.display = 'none';
             }
         }
 
         function showSuccess(provider) {
             const alert = document.getElementById('successAlert');
-            const providerSpan = document.getElementById('successProvider');
-            providerSpan.textContent = provider.charAt(0).toUpperCase() + provider.slice(1);
-            alert.classList.add('show');
-
-            // Refresh integration status
-            loadIntegrations();
-
-            setTimeout(() => {
-                alert.classList.remove('show');
-            }, 5000);
+            document.getElementById('successProvider').textContent = provider.charAt(0).toUpperCase() + provider.slice(1);
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
         }
 
         function showError(message) {
             const alert = document.getElementById('errorAlert');
-            const messageSpan = document.getElementById('errorMessage');
-            messageSpan.textContent = decodeURIComponent(message);
-            alert.classList.add('show');
-
-            setTimeout(() => {
-                alert.classList.remove('show');
-            }, 5000);
+            document.getElementById('errorMessage').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
         }
 
         async function connectProvider(provider) {
-            // Re-check business ID in case it was set after page load
-            businessId = sessionStorage.getItem('setup_business_id');
-
             if (!businessId) {
-                showError('No business ID found. Redirecting to start...');
-                setTimeout(() => {
-                    window.location.href = '/frontend/pages/setup/business-type.html';
-                }, 2000);
+                showError('No business ID found. Please restart the setup process.');
                 return;
             }
 
-            // For Shopify, show domain input first
+            let authUrl = `/api/integrations/${provider}/authorize?business_id=${businessId}`;
+
             if (provider === 'shopify') {
-                const domainInput = document.getElementById('shopify-domain-input');
-                const shopDomain = document.getElementById('shopify-domain').value.trim();
-
-                if (!domainInput.classList.contains('visible')) {
-                    domainInput.classList.add('visible');
-                    return;
-                }
-
-                if (!shopDomain) {
+                const domain = document.getElementById('shopify-domain').value.trim();
+                if (!domain) {
                     showError('Please enter your Shopify store domain');
                     return;
                 }
-
-                // Open OAuth popup with shop domain
-                openOAuthPopup(provider, shopDomain);
-            } else {
-                openOAuthPopup(provider);
+                authUrl += `&shop_domain=${encodeURIComponent(domain)}`;
             }
-        }
 
-        async function openOAuthPopup(provider, shopDomain = null) {
-            try {
-                let url = `/api/integrations/${provider}/authorize?business_id=${businessId}`;
-                if (shopDomain) {
-                    url += `&shop_domain=${encodeURIComponent(shopDomain)}`;
+            const width = 600;
+            const height = 700;
+            const left = (window.innerWidth - width) / 2;
+            const top = (window.innerHeight - height) / 2;
+
+            const popup = window.open(
+                authUrl,
+                `Connect ${provider}`,
+                `width=${width},height=${height},left=${left},top=${top}`
+            );
+
+            const checkClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    loadIntegrations();
                 }
-
-                const response = await api.request(url);
-
-                // Open popup
-                const width = 600;
-                const height = 700;
-                const left = (window.screen.width - width) / 2;
-                const top = (window.screen.height - height) / 2;
-
-                const popup = window.open(
-                    response.authorization_url,
-                    `${provider}_oauth`,
-                    `width=${width},height=${height},left=${left},top=${top}`
-                );
-
-                // Poll for popup close
-                const checkPopup = setInterval(() => {
-                    if (popup.closed) {
-                        clearInterval(checkPopup);
-                        // Refresh page to get updated status
-                        window.location.reload();
-                    }
-                }, 500);
-            } catch (error) {
-                showError(error.message || 'Failed to start OAuth flow');
-            }
+            }, 1000);
         }
 
         async function disconnectProvider(provider) {
-            const btn = document.getElementById(`disconnect-${provider}`);
-            const integrationId = btn.dataset.integrationId;
-
-            if (!integrationId) return;
-
-            if (!confirm(`Are you sure you want to disconnect ${provider}?`)) {
-                return;
-            }
+            const integration = connectedIntegrations[provider];
+            if (!integration) return;
 
             try {
-                await api.request(`/integrations/${integrationId}`, { method: 'DELETE' });
-                delete connectedIntegrations[provider];
-                updateCardStatus(provider, false);
+                const response = await fetch(`/api/integrations/${integration.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    delete connectedIntegrations[provider];
+                    const card = document.getElementById(`card-${provider}`);
+                    const status = document.getElementById(`status-${provider}`);
+                    const disconnectBtn = document.getElementById(`disconnect-${provider}`);
+                    const connectBtn = card.querySelector('.btn-connect');
+
+                    card.classList.remove('connected');
+                    status.innerHTML = '<span class="status-dot"></span><span>Not connected</span>';
+                    connectBtn.style.display = 'block';
+                    disconnectBtn.style.display = 'none';
+
+                    if (provider === 'shopify') {
+                        document.getElementById('shopify-domain-input').style.display = 'block';
+                    }
+                }
             } catch (error) {
                 showError(error.message || 'Failed to disconnect');
             }
@@ -701,13 +721,11 @@
         }
 
         function skipStep() {
-            // Store that user skipped integrations
             sessionStorage.setItem('setup_skipped_integrations', 'true');
             window.location.href = getNextStepUrl();
         }
 
         function continueSetup() {
-            // Store connected integrations info
             sessionStorage.setItem('setup_integrations', JSON.stringify(Object.keys(connectedIntegrations)));
             window.location.href = getNextStepUrl();
         }

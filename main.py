@@ -18,6 +18,21 @@ import json
 import math
 from datetime import datetime
 from pathlib import Path
+import logging
+
+# Settings and monitoring
+from settings import get_settings
+settings = get_settings()
+
+# Initialize Sentry error monitoring (if configured)
+if settings.SENTRY_DSN:
+    import sentry_sdk
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        environment=settings.ENVIRONMENT,
+        traces_sample_rate=0.1,  # 10% sampling for performance (free tier friendly)
+    )
+    print(f"Sentry initialized for {settings.ENVIRONMENT} environment")
 
 # Database initialization
 from database import engine, Base, init_db
@@ -26,20 +41,35 @@ from db_models import User, Business, TrainedModel, Upload, Prediction
 # Import routers
 from routers import auth, businesses, models, llm, integrations
 
+# Import scheduler
+from scheduler import start_scheduler, shutdown_scheduler
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = FastAPI(title="Forecast Pro", version="1.0.0")
 
-# Initialize database tables on startup
+# Initialize database and scheduler on startup
 @app.on_event("startup")
 async def startup_event():
     Base.metadata.create_all(bind=engine)
-    print("Database tables created")
+    logger.info("Database tables created")
+    start_scheduler()
+    logger.info("Background scheduler started")
 
+@app.on_event("shutdown")
+async def shutdown_event():
+    shutdown_scheduler()
+    logger.info("Background scheduler stopped")
+
+# CORS configuration - use environment-specific origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Include API routers

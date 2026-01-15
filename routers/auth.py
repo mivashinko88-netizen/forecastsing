@@ -1,4 +1,5 @@
-# routers/auth.py - Authentication endpoints (Simple email/password)
+# routers/auth.py - Authentication endpoints with bcrypt password hashing
+import secrets
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -9,6 +10,7 @@ from db_models import User
 from auth import (
     hash_password,
     verify_password,
+    verify_legacy_password,
     create_access_token,
     create_refresh_token,
     verify_token,
@@ -53,18 +55,15 @@ async def sign_up(request: SignUpRequest, db: Session = Depends(get_db)):
             detail="Password must be at least 6 characters"
         )
 
-    # Create new user
+    # Create new user with bcrypt hashed password
     user = User(
-        google_id=f"local_{hash_password(request.email)[:16]}",  # Generate unique ID
+        google_id=f"local_{secrets.token_hex(8)}",  # Generate unique ID
         email=request.email,
         name=request.name,
         picture_url=None,
+        password_hash=hash_password(request.password),  # Proper password storage
         last_login=datetime.utcnow()
     )
-
-    # Store hashed password in picture_url field (repurposing for simplicity)
-    # In production, add a proper password_hash column
-    user.picture_url = f"pwd:{hash_password(request.password)}"
 
     db.add(user)
     db.commit()
@@ -99,15 +98,26 @@ async def sign_in(request: SignInRequest, db: Session = Depends(get_db)):
             detail="Invalid email or password"
         )
 
-    # Verify password (stored in picture_url with pwd: prefix)
-    if not user.picture_url or not user.picture_url.startswith("pwd:"):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
-        )
-
-    stored_hash = user.picture_url[4:]  # Remove "pwd:" prefix
-    if not verify_password(request.password, stored_hash):
+    # Check password - try new bcrypt hash first, then legacy migration
+    if user.password_hash:
+        # New bcrypt password
+        if not verify_password(request.password, user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+    elif user.picture_url and user.picture_url.startswith("pwd:"):
+        # Legacy password stored in picture_url - migrate on successful login
+        old_hash = user.picture_url[4:]  # Remove "pwd:" prefix
+        if not verify_legacy_password(request.password, old_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        # Migrate to bcrypt
+        user.password_hash = hash_password(request.password)
+        user.picture_url = None  # Clear legacy storage
+    else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
@@ -128,7 +138,7 @@ async def sign_in(request: SignInRequest, db: Session = Depends(get_db)):
             id=user.id,
             email=user.email,
             name=user.name,
-            picture_url=None,
+            picture_url=user.picture_url if user.picture_url and not user.picture_url.startswith("pwd:") else None,
             created_at=user.created_at
         )
     )
@@ -170,7 +180,7 @@ async def get_me(current_user: User = Depends(get_current_user)):
         id=current_user.id,
         email=current_user.email,
         name=current_user.name,
-        picture_url=None,
+        picture_url=current_user.picture_url if current_user.picture_url and not current_user.picture_url.startswith("pwd:") else None,
         created_at=current_user.created_at
     )
 

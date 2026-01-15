@@ -7,10 +7,22 @@
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
         .setup-page {
             min-height: 100vh;
-            background: var(--gray-50);
-            padding: var(--space-8) var(--space-6);
+            padding: 40px 24px;
         }
 
         .setup-container {
@@ -20,161 +32,211 @@
 
         .setup-header {
             text-align: center;
-            margin-bottom: var(--space-8);
+            margin-bottom: 48px;
         }
 
         .setup-logo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            font-size: 20px;
+            gap: 10px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: var(--space-6);
+            color: #ffffff;
+            margin-bottom: 32px;
         }
 
         .setup-logo svg {
-            width: 28px;
-            height: 28px;
-            color: var(--primary-600);
+            width: 32px;
+            height: 32px;
+            color: #818cf8;
         }
 
+        /* Progress Steps */
         .setup-progress {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-8);
+            gap: 8px;
+            margin-bottom: 48px;
         }
 
         .progress-step {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
         }
 
         .progress-dot {
-            width: 32px;
-            min-width: 32px;
-            height: 32px;
+            width: 36px;
+            min-width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .progress-dot.active {
-            background: var(--primary-600);
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .progress-dot.complete {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             color: white;
         }
 
         .progress-dot.pending {
-            background: var(--gray-200);
-            color: var(--gray-500);
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .progress-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .progress-step.active .progress-label {
-            color: var(--gray-900);
+            color: #ffffff;
         }
 
         .progress-line {
-            width: 24px;
+            width: 20px;
             height: 2px;
-            background: var(--gray-200);
+            background: rgba(255, 255, 255, 0.2);
             flex-shrink: 0;
         }
 
+        .progress-line.complete {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
         .setup-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-2);
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
         }
 
         .setup-subtitle {
             font-size: 16px;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.6);
         }
 
+        /* Store Type Cards */
         .store-types-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-4);
-            margin-bottom: var(--space-8);
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
         .store-type-option {
-            background: white;
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-xl);
-            padding: var(--space-6);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px 24px;
             text-align: center;
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .store-type-option:hover {
-            border-color: var(--primary-300);
-            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(129, 140, 248, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .store-type-option.selected {
-            border-color: var(--primary-500);
-            background: var(--primary-50);
-        }
-
-        .store-type-option.selected .type-icon {
-            background: var(--primary-100);
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
         }
 
         .type-icon {
-            width: 72px;
-            height: 72px;
-            margin: 0 auto var(--space-4);
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--gray-100);
-            border-radius: var(--radius-xl);
-            color: var(--primary-600);
-            transition: all var(--transition);
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .store-type-option:hover .type-icon {
+            background: rgba(99, 102, 241, 0.25);
+        }
+
+        .store-type-option.selected .type-icon {
+            background: rgba(99, 102, 241, 0.3);
         }
 
         .type-icon svg {
-            width: 36px;
-            height: 36px;
-            stroke: currentColor;
+            width: 40px;
+            height: 40px;
+            stroke: #818cf8;
+            stroke-width: 1.5;
+            fill: none;
         }
 
         .type-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-2);
+            color: #ffffff;
+            margin-bottom: 8px;
         }
 
         .type-desc {
             font-size: 14px;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.6);
             line-height: 1.5;
         }
 
+        /* Actions */
         .setup-actions {
             display: flex;
             justify-content: flex-end;
         }
 
         .btn-continue {
-            min-width: 140px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-continue:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-continue:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-continue svg {
+            width: 20px;
+            height: 20px;
         }
 
         @media (max-width: 640px) {
@@ -184,6 +246,10 @@
 
             .progress-label {
                 display: none;
+            }
+
+            .setup-title {
+                font-size: 26px;
             }
         }
     </style>
@@ -200,7 +266,7 @@
                     Forecast Pro
                 </div>
 
-                <!-- Progress Steps (5 steps) -->
+                <!-- Progress Steps -->
                 <div class="setup-progress">
                     <div class="progress-step active">
                         <div class="progress-dot active">1</div>
@@ -235,7 +301,7 @@
             <div class="store-types-grid">
                 <div class="store-type-option" data-type="physical" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                             <polyline points="9 22 9 12 15 12 15 22"/>
                         </svg>
@@ -246,7 +312,7 @@
 
                 <div class="store-type-option" data-type="online" onclick="selectType(this)">
                     <div class="type-icon">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                        <svg viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/>
                             <line x1="2" y1="12" x2="22" y2="12"/>
                             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
@@ -258,9 +324,9 @@
             </div>
 
             <div class="setup-actions">
-                <button class="btn btn-primary btn-lg btn-continue" onclick="continueSetup()" disabled id="continueBtn">
+                <button class="btn-continue" onclick="continueSetup()" disabled id="continueBtn">
                     Continue
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </button>

@@ -7,13 +7,25 @@
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
         .setup-page {
             min-height: 100vh;
-            background: var(--gray-50);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: var(--space-8) var(--space-6);
+            padding: 40px 24px;
         }
 
         .complete-container {
@@ -22,10 +34,11 @@
         }
 
         .success-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto var(--space-6);
-            background: var(--success-100);
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 32px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.2) 100%);
+            border: 2px solid rgba(16, 185, 129, 0.3);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -34,9 +47,9 @@
         }
 
         .success-icon svg {
-            width: 40px;
-            height: 40px;
-            color: var(--success-600);
+            width: 48px;
+            height: 48px;
+            stroke: #34d399;
         }
 
         @keyframes scaleIn {
@@ -46,42 +59,43 @@
         }
 
         .complete-title {
-            font-size: 32px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-3);
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
         }
 
         .complete-subtitle {
             font-size: 16px;
-            color: var(--gray-500);
-            margin-bottom: var(--space-8);
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
             line-height: 1.6;
         }
 
         .summary-card {
-            background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-xl);
-            padding: var(--space-6);
-            margin-bottom: var(--space-8);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 32px;
             text-align: left;
+            backdrop-filter: blur(10px);
         }
 
         .summary-title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.5);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: var(--space-4);
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
         }
 
         .summary-item {
             display: flex;
             justify-content: space-between;
-            padding: var(--space-3) 0;
-            border-bottom: 1px solid var(--gray-100);
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .summary-item:last-child {
@@ -89,25 +103,142 @@
         }
 
         .summary-label {
-            color: var(--gray-500);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
         }
 
         .summary-value {
-            color: var(--gray-900);
+            color: #ffffff;
             font-weight: 500;
             font-size: 14px;
+        }
+
+        #locationsList {
+            margin-top: 16px;
+        }
+
+        .location-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .location-item:last-child {
+            border-bottom: none;
+        }
+
+        .location-item svg {
+            width: 18px;
+            height: 18px;
+            stroke: #818cf8;
+            flex-shrink: 0;
+        }
+
+        .location-item .name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .location-item .city {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-left: auto;
+        }
+
+        .location-badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            margin-left: 8px;
+        }
+
+        .online-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .integration-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .integration-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: #34d399;
+        }
+
+        .integration-item .name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .integration-item .status {
+            font-size: 12px;
+            color: #34d399;
+            margin-left: auto;
+        }
+
+        .marketing-info {
+            padding-top: 12px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .complete-actions {
             display: flex;
             flex-direction: column;
-            gap: var(--space-3);
+            gap: 12px;
         }
 
-        .btn-lg {
-            width: 100%;
+        .btn {
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
         }
     </style>
 </head>
@@ -115,7 +246,7 @@
     <div class="setup-page">
         <div class="complete-container">
             <div class="success-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12"/>
                 </svg>
             </div>
@@ -132,27 +263,27 @@
                     <span class="summary-value" id="summaryType">-</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Locations</span>
+                    <span class="summary-label" id="locationsLabel">Locations</span>
                     <span class="summary-value" id="summaryLocations">-</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Data Sources</span>
                     <span class="summary-value" id="summaryIntegrations">None connected</span>
                 </div>
-                <div id="locationsList" style="margin-top: var(--space-4);"></div>
-                <div id="integrationsList" style="margin-top: var(--space-2);"></div>
+                <div id="locationsList"></div>
+                <div id="integrationsList"></div>
             </div>
 
             <div class="complete-actions">
-                <a href="/frontend/pages/upload.html" class="btn btn-primary btn-lg">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <a href="/frontend/pages/upload.html" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="17 8 12 3 7 8"/>
                         <line x1="12" y1="3" x2="12" y2="15"/>
                     </svg>
                     Upload Sales Data
                 </a>
-                <a href="/frontend/pages/dashboard.html" class="btn btn-secondary btn-lg">
+                <a href="/frontend/pages/dashboard.html" class="btn btn-secondary">
                     Go to Dashboard
                 </a>
             </div>
@@ -187,14 +318,14 @@
                         'food_grocery': 'Food & Grocery',
                         'home_garden': 'Home & Garden',
                         'health_beauty': 'Health & Beauty',
-                        'other': 'Other'
+                        'other_online': 'Other'
                     };
 
                     const allTypes = {...physicalTypes, ...onlineTypes};
                     document.getElementById('summaryType').textContent = allTypes[business.business_type] || business.business_type;
 
                     const locList = document.getElementById('locationsList');
-                    const locLabel = document.querySelector('.summary-item .summary-label');
+                    const locLabel = document.getElementById('locationsLabel');
 
                     // Check if this is an online store
                     if (business.is_online) {
@@ -202,20 +333,20 @@
                         document.getElementById('summaryLocations').textContent = business.timezone || 'Not set';
 
                         // Update label
-                        if (locLabel && locLabel.textContent === 'Locations') {
+                        if (locLabel) {
                             locLabel.textContent = 'Timezone';
                         }
 
                         // Show online store details
                         locList.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2">
+                            <div class="location-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <line x1="2" y1="12" x2="22" y2="12"/>
                                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                                 </svg>
-                                <span style="font-size: 14px; color: var(--gray-700);">${business.name}</span>
-                                <span style="font-size: 10px; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: 8px; margin-left: auto;">Online Store</span>
+                                <span class="name">${business.name}</span>
+                                <span class="location-badge online-badge">Online Store</span>
                             </div>
                         `;
 
@@ -233,7 +364,7 @@
                             };
                             const channels = business.marketing_channels.split(',').map(c => channelNames[c] || c).join(', ');
                             locList.innerHTML += `
-                                <div style="padding-top: var(--space-2); font-size: 13px; color: var(--gray-500);">
+                                <div class="marketing-info">
                                     Marketing: ${channels}
                                 </div>
                             `;
@@ -244,14 +375,14 @@
                             businesses.length === 1 ? '1 location' : `${businesses.length} locations`;
 
                         locList.innerHTML = businesses.map((b, i) => `
-                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; ${i < businesses.length - 1 ? 'border-bottom: 1px solid var(--gray-100);' : ''}">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2">
+                            <div class="location-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                                     <circle cx="12" cy="10" r="3"/>
                                 </svg>
-                                <span style="font-size: 14px; color: var(--gray-700);">${b.name}</span>
-                                <span style="font-size: 12px; color: var(--gray-400);">${b.city || ''}, ${b.state || ''}</span>
-                                ${i === 0 ? '<span style="font-size: 10px; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: 8px; margin-left: auto;">Primary</span>' : ''}
+                                <span class="name">${b.name}</span>
+                                ${i === 0 ? '<span class="location-badge">Primary</span>' : ''}
+                                <span class="city">${b.city || ''}, ${b.state || ''}</span>
                             </div>
                         `).join('');
                     }
@@ -289,13 +420,13 @@
 
                         // Show integration list
                         const intList = document.getElementById('integrationsList');
-                        intList.innerHTML = connected.map((integration, i) => `
-                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; ${i < connected.length - 1 ? 'border-bottom: 1px solid var(--gray-100);' : ''}">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success-500)" stroke-width="2">
+                        intList.innerHTML = connected.map(integration => `
+                            <div class="integration-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"/>
                                 </svg>
-                                <span style="font-size: 14px; color: var(--gray-700);">${integration.provider.charAt(0).toUpperCase() + integration.provider.slice(1)}</span>
-                                <span style="font-size: 12px; color: var(--success-500);">Connected</span>
+                                <span class="name">${integration.provider.charAt(0).toUpperCase() + integration.provider.slice(1)}</span>
+                                <span class="status">Connected</span>
                             </div>
                         `).join('');
                     }
