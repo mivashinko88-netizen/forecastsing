@@ -80,6 +80,12 @@ services:
       - key: SHOPIFY_API_SECRET
         sync: false
 
+      # OpenRouter AI - set manually in Render dashboard
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_SITE_URL
+        value: https://trucastai.com
+
       # Sentry error monitoring - set manually in Render dashboard
       - key: SENTRY_DSN
         sync: false

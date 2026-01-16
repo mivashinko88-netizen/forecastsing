@@ -1177,7 +1177,7 @@
                 } else if (result && !result.available) {
                     container.innerHTML = `
                         <div class="ai-insights-error">
-                            AI insights unavailable. Start Ollama to enable AI analysis.
+                            AI insights unavailable. Configure OpenRouter API key to enable AI.
                         </div>
                     `;
                 } else {
@@ -1191,7 +1191,7 @@
                 console.error('Dashboard AI insights error:', error);
                 container.innerHTML = `
                     <div class="ai-insights-error">
-                        AI insights unavailable. Start Ollama with 'ollama serve' to enable AI analysis.
+                        AI insights unavailable. Configure OpenRouter API key to enable AI.
                     </div>
                 `;
             }

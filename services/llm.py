@@ -1,29 +1,48 @@
-# services/llm.py - Ollama LLM integration service
+# services/llm.py - OpenRouter LLM integration service
 import httpx
+import os
 from typing import Optional, List, Dict, Any
 
-OLLAMA_BASE_URL = "http://localhost:11434"
-DEFAULT_MODEL = "llama3.2"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_MODEL = "meta-llama/llama-3.1-8b-instruct:free"  # Free model available on OpenRouter
+
+def get_api_key() -> Optional[str]:
+    """Get OpenRouter API key from environment"""
+    return os.getenv("OPENROUTER_API_KEY")
 
 
-async def check_ollama_available() -> bool:
-    """Check if Ollama is running and accessible"""
+async def check_openrouter_available() -> bool:
+    """Check if OpenRouter API is accessible with valid key"""
+    api_key = get_api_key()
+    if not api_key:
+        return False
+
     try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{OPENROUTER_BASE_URL}/models",
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
             return response.status_code == 200
     except Exception:
         return False
 
 
-async def get_available_models() -> List[str]:
-    """Get list of available models from Ollama"""
+async def get_available_models() -> List[Dict[str, Any]]:
+    """Get list of available models from OpenRouter"""
+    api_key = get_api_key()
+    if not api_key:
+        return []
+
     try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{OPENROUTER_BASE_URL}/models",
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
             if response.status_code == 200:
                 data = response.json()
-                return [model["name"] for model in data.get("models", [])]
+                return data.get("data", [])
     except Exception:
         pass
     return []
@@ -36,7 +55,11 @@ async def generate_response(
     temperature: float = 0.7,
     max_tokens: int = 500
 ) -> Optional[str]:
-    """Generate a response from Ollama"""
+    """Generate a response from OpenRouter"""
+    api_key = get_api_key()
+    if not api_key:
+        return None
+
     try:
         messages = []
         if system_prompt:
@@ -46,23 +69,32 @@ async def generate_response(
         payload = {
             "model": model,
             "messages": messages,
-            "stream": False,
-            "options": {
-                "temperature": temperature,
-                "num_predict": max_tokens
-            }
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": os.getenv("OPENROUTER_SITE_URL", "https://trucastai.com"),
+            "X-Title": "TrucastAI"
         }
 
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
-                f"{OLLAMA_BASE_URL}/api/chat",
-                json=payload
+                f"{OPENROUTER_BASE_URL}/chat/completions",
+                json=payload,
+                headers=headers
             )
             if response.status_code == 200:
                 data = response.json()
-                return data.get("message", {}).get("content", "")
+                choices = data.get("choices", [])
+                if choices:
+                    return choices[0].get("message", {}).get("content", "")
+            else:
+                print(f"OpenRouter error: {response.status_code} - {response.text}")
     except Exception as e:
-        print(f"Ollama error: {e}")
+        print(f"OpenRouter error: {e}")
     return None
 
 
@@ -83,7 +115,7 @@ async def generate_day_summary(
         temp_min = weather.get("temp_min", "N/A")
         precip = weather.get("precipitation", 0)
         conditions = get_weather_description(weather.get("weather_code", 0))
-        context_parts.append(f"Weather: {conditions}, High {temp_max}°F, Low {temp_min}°F, Precipitation: {precip}mm")
+        context_parts.append(f"Weather: {conditions}, High {temp_max}F, Low {temp_min}F, Precipitation: {precip}mm")
 
     # Events
     holidays = events.get("holidays", [])
@@ -127,7 +159,7 @@ Provide a concise summary of what to expect for business operations on this day.
     response = await generate_response(prompt, system_prompt=system_prompt, max_tokens=200)
 
     if not response:
-        return "AI summary unavailable. Make sure Ollama is running locally."
+        return "AI summary unavailable. Check your OpenRouter API configuration."
 
     return response
 
@@ -181,7 +213,7 @@ Provide key insights about the forecast period and any recommendations for busin
     response = await generate_response(prompt, system_prompt=system_prompt, max_tokens=250)
 
     if not response:
-        return "AI insights unavailable. Make sure Ollama is running locally."
+        return "AI insights unavailable. Check your OpenRouter API configuration."
 
     return response
 
@@ -224,7 +256,7 @@ Keep it to 2-3 sentences, focusing on the most important insight."""
     response = await generate_response(prompt, system_prompt=system_prompt, max_tokens=150)
 
     if not response:
-        return "AI insights unavailable. Make sure Ollama is running locally."
+        return "AI insights unavailable. Check your OpenRouter API configuration."
 
     return response
 
@@ -235,6 +267,9 @@ async def chat_response(
     business_context: Optional[Dict[str, Any]] = None
 ) -> str:
     """Generate a chat response with business context"""
+    api_key = get_api_key()
+    if not api_key:
+        return "AI chat is unavailable. Please configure your OpenRouter API key."
 
     system_prompt = """You are an AI assistant for TrucastAI, a sales forecasting application.
 You help business owners understand their sales predictions, analyze factors affecting sales, and provide actionable advice.
@@ -282,25 +317,34 @@ If you don't have specific data, explain what information would help answer the 
         payload = {
             "model": DEFAULT_MODEL,
             "messages": messages,
-            "stream": False,
-            "options": {
-                "temperature": 0.7,
-                "num_predict": 500
-            }
+            "temperature": 0.7,
+            "max_tokens": 500
+        }
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": os.getenv("OPENROUTER_SITE_URL", "https://trucastai.com"),
+            "X-Title": "TrucastAI"
         }
 
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
-                f"{OLLAMA_BASE_URL}/api/chat",
-                json=payload
+                f"{OPENROUTER_BASE_URL}/chat/completions",
+                json=payload,
+                headers=headers
             )
             if response.status_code == 200:
                 data = response.json()
-                return data.get("message", {}).get("content", "I couldn't generate a response.")
+                choices = data.get("choices", [])
+                if choices:
+                    return choices[0].get("message", {}).get("content", "I couldn't generate a response.")
+            else:
+                print(f"OpenRouter chat error: {response.status_code}")
     except Exception as e:
         print(f"Chat error: {e}")
 
-    return "I'm currently unavailable. Please make sure Ollama is running locally with `ollama serve`."
+    return "I'm currently unavailable. Please check your OpenRouter API configuration."
 
 
 def get_weather_description(code: int) -> str:

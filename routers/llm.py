@@ -8,7 +8,7 @@ from database import get_db
 from db_models import User, Business, TrainedModel
 from auth import get_current_user
 from services.llm import (
-    check_ollama_available,
+    check_openrouter_available,
     get_available_models,
     generate_day_summary,
     generate_forecast_summary,
@@ -51,14 +51,17 @@ class LLMResponse(BaseModel):
 
 @router.get("/status")
 async def get_llm_status():
-    """Check if Ollama LLM is available"""
-    available = await check_ollama_available()
+    """Check if OpenRouter LLM is available"""
+    available = await check_openrouter_available()
     models = await get_available_models() if available else []
+
+    # Return just model IDs for simpler response
+    model_ids = [m.get("id", "") for m in models[:20]] if models else []
 
     return {
         "available": available,
-        "models": models,
-        "message": "Ollama is running" if available else "Ollama is not available. Run 'ollama serve' to start it."
+        "models": model_ids,
+        "message": "OpenRouter AI is connected" if available else "OpenRouter API key not configured. Add OPENROUTER_API_KEY to enable AI features."
     }
 
 
@@ -68,12 +71,12 @@ async def summarize_day(
     current_user: User = Depends(get_current_user)
 ):
     """Generate an AI summary for a specific day"""
-    available = await check_ollama_available()
+    available = await check_openrouter_available()
 
     if not available:
         return LLMResponse(
             success=False,
-            content="AI summary unavailable. Start Ollama with 'ollama serve' to enable AI features.",
+            content="AI summary unavailable. Configure OpenRouter API key to enable AI features.",
             available=False
         )
 
@@ -97,12 +100,12 @@ async def summarize_forecast(
     current_user: User = Depends(get_current_user)
 ):
     """Generate an AI summary for a forecast period"""
-    available = await check_ollama_available()
+    available = await check_openrouter_available()
 
     if not available:
         return LLMResponse(
             success=False,
-            content="AI insights unavailable. Start Ollama with 'ollama serve' to enable AI features.",
+            content="AI insights unavailable. Configure OpenRouter API key to enable AI features.",
             available=False
         )
 
@@ -125,12 +128,12 @@ async def summarize_dashboard(
     current_user: User = Depends(get_current_user)
 ):
     """Generate AI insights for the dashboard"""
-    available = await check_ollama_available()
+    available = await check_openrouter_available()
 
     if not available:
         return LLMResponse(
             success=False,
-            content="AI insights unavailable. Start Ollama with 'ollama serve' to enable AI features.",
+            content="AI insights unavailable. Configure OpenRouter API key to enable AI features.",
             available=False
         )
 
@@ -153,12 +156,12 @@ async def chat(
     db: Session = Depends(get_db)
 ):
     """Chat with the AI assistant"""
-    available = await check_ollama_available()
+    available = await check_openrouter_available()
 
     if not available:
         return LLMResponse(
             success=False,
-            content="Chat unavailable. Start Ollama with 'ollama serve' to enable AI features.",
+            content="Chat unavailable. Configure OpenRouter API key to enable AI features.",
             available=False
         )
 

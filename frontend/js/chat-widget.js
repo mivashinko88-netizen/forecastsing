@@ -532,7 +532,7 @@ class ChatWidget {
                     content: result.content
                 });
             } else if (result && !result.available) {
-                this.addMessage('error', 'AI chat is currently unavailable. Please start Ollama with "ollama serve" to enable AI features.');
+                this.addMessage('error', 'AI chat is currently unavailable. OpenRouter API may not be configured.');
             } else {
                 this.addMessage('error', 'Unable to get a response. Please try again.');
             }
