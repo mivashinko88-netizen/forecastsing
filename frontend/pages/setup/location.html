@@ -204,6 +204,11 @@
             box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
         }
 
+        .input:disabled {
+            background: #f8fafc;
+            color: #64748b;
+        }
+
         .select {
             cursor: pointer;
             appearance: none;
@@ -217,6 +222,189 @@
         .select option {
             background: #ffffff;
             color: #1e293b;
+        }
+
+        /* Address Search Autocomplete */
+        .address-search-container {
+            position: relative;
+        }
+
+        .address-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        .address-search-input {
+            padding-left: 44px !important;
+        }
+
+        .address-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            max-height: 280px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .address-dropdown.active {
+            display: block;
+        }
+
+        .address-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .address-option:last-child {
+            border-bottom: none;
+        }
+
+        .address-option:hover {
+            background: #f8fafc;
+        }
+
+        .address-option-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(20, 184, 166, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .address-option-icon svg {
+            width: 18px;
+            height: 18px;
+            color: #14B8A6;
+        }
+
+        .address-option-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .address-option-main {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .address-option-secondary {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .address-loading {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .address-loading .spinner-sm {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #14B8A6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .address-empty {
+            padding: 20px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .selected-address-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(20, 184, 166, 0.05);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .selected-address-preview.hidden {
+            display: none;
+        }
+
+        .selected-address-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(20, 184, 166, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .selected-address-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #0D9488;
+        }
+
+        .selected-address-content {
+            flex: 1;
+        }
+
+        .selected-address-main {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .selected-address-secondary {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .btn-change-address {
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-change-address:hover {
+            background: #f8fafc;
+            border-color: #14B8A6;
+            color: #0D9488;
         }
 
         /* Store Hours Section */
@@ -541,7 +729,7 @@
                 </div>
 
                 <h1 class="setup-title">Add your business locations</h1>
-                <p class="setup-subtitle">Add one or more locations. You can always add more later.</p>
+                <p class="setup-subtitle">Search for your address and we'll auto-fill the details.</p>
             </div>
 
             <!-- Saved Locations List -->
@@ -570,37 +758,47 @@
                     <input type="text" class="input" id="businessName" placeholder="Downtown Coffee Shop" required>
                 </div>
 
-                <div class="form-group">
-                    <label class="label" for="address">Street Address *</label>
-                    <input type="text" class="input" id="address" placeholder="123 Main Street" required>
+                <!-- Selected Address Preview -->
+                <div class="selected-address-preview hidden" id="selectedAddressPreview">
+                    <div class="selected-address-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="selected-address-content">
+                        <div class="selected-address-main" id="selectedAddressMain">123 Main St</div>
+                        <div class="selected-address-secondary" id="selectedAddressSecondary">Denver, CO 80202</div>
+                    </div>
+                    <button type="button" class="btn-change-address" onclick="changeAddress()">Change</button>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="label" for="city">City *</label>
-                        <input type="text" class="input" id="city" placeholder="Denver" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="label" for="state">State *</label>
-                        <input type="text" class="input" id="state" placeholder="CO" maxlength="2" required>
+                <!-- Address Search -->
+                <div class="form-group" id="addressSearchGroup">
+                    <label class="label" for="addressSearch">Search Address *</label>
+                    <div class="address-search-container">
+                        <svg class="address-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" class="input address-search-input" id="addressSearch"
+                               placeholder="Start typing an address..."
+                               autocomplete="off"
+                               oninput="handleAddressSearch(this.value)">
+                        <div class="address-dropdown" id="addressDropdown">
+                            <!-- Results will appear here -->
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="label" for="zipcode">ZIP Code *</label>
-                        <input type="text" class="input" id="zipcode" placeholder="80202" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="label" for="country">Country</label>
-                        <select class="input select" id="country">
-                            <option value="US" selected>United States</option>
-                            <option value="CA">Canada</option>
-                            <option value="GB">United Kingdom</option>
-                            <option value="AU">Australia</option>
-                        </select>
-                    </div>
-                </div>
+                <!-- Hidden fields for address components -->
+                <input type="hidden" id="address">
+                <input type="hidden" id="city">
+                <input type="hidden" id="state">
+                <input type="hidden" id="zipcode">
+                <input type="hidden" id="country" value="US">
+                <input type="hidden" id="latitude">
+                <input type="hidden" id="longitude">
 
                 <div class="form-group">
                     <label class="label" for="timezone">Timezone</label>
@@ -664,7 +862,7 @@
 
                 <div class="form-buttons">
                     <button type="button" class="btn btn-ghost" onclick="cancelLocationForm()" id="cancelBtn" style="display: none;">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="addLocationBtn2">
+                    <button type="submit" class="btn btn-primary" id="addLocationBtn2" disabled>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"/>
                             <line x1="5" y1="12" x2="19" y2="12"/>
@@ -713,10 +911,216 @@
         // Store locations temporarily
         let locations = [];
         let editingIndex = -1;
+        let searchTimeout = null;
+        let addressSelected = false;
 
         function goBack() {
             window.location.href = '/frontend/pages/setup/integrations.html';
         }
+
+        // Address search using Nominatim (OpenStreetMap) - free geocoding
+        async function handleAddressSearch(query) {
+            const dropdown = document.getElementById('addressDropdown');
+
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            if (query.length < 3) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // Show loading
+            dropdown.innerHTML = '<div class="address-loading"><span class="spinner-sm"></span>Searching...</div>';
+            dropdown.classList.add('active');
+
+            // Debounce the search
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=us,ca,gb,au&q=${encodeURIComponent(query)}`,
+                        {
+                            headers: {
+                                'Accept': 'application/json',
+                                'User-Agent': 'TrucastAI/1.0'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) throw new Error('Search failed');
+
+                    const results = await response.json();
+
+                    if (results.length === 0) {
+                        dropdown.innerHTML = '<div class="address-empty">No addresses found. Try a different search.</div>';
+                        return;
+                    }
+
+                    // Filter and format results
+                    const formatted = results
+                        .filter(r => r.address && (r.address.city || r.address.town || r.address.village || r.address.municipality))
+                        .slice(0, 6)
+                        .map(r => {
+                            const addr = r.address;
+                            const street = [addr.house_number, addr.road].filter(Boolean).join(' ');
+                            const city = addr.city || addr.town || addr.village || addr.municipality || '';
+                            const state = addr.state || addr.county || '';
+                            const stateCode = getStateCode(state);
+                            const zipcode = addr.postcode || '';
+                            const country = addr.country_code?.toUpperCase() || 'US';
+
+                            return {
+                                display_name: r.display_name,
+                                street: street,
+                                city: city,
+                                state: stateCode,
+                                zipcode: zipcode,
+                                country: country,
+                                lat: r.lat,
+                                lon: r.lon
+                            };
+                        });
+
+                    if (formatted.length === 0) {
+                        dropdown.innerHTML = '<div class="address-empty">No valid addresses found. Try adding more details.</div>';
+                        return;
+                    }
+
+                    dropdown.innerHTML = formatted.map((addr, i) => `
+                        <div class="address-option" onclick="selectAddress(${i})">
+                            <div class="address-option-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                            </div>
+                            <div class="address-option-content">
+                                <div class="address-option-main">${addr.street || addr.city}</div>
+                                <div class="address-option-secondary">${addr.city}, ${addr.state} ${addr.zipcode}</div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Store results for selection
+                    window.searchResults = formatted;
+
+                } catch (error) {
+                    console.error('Address search error:', error);
+                    dropdown.innerHTML = '<div class="address-empty">Search failed. Please try again.</div>';
+                }
+            }, 400);
+        }
+
+        // Convert full state name to abbreviation
+        function getStateCode(stateName) {
+            const states = {
+                'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR', 'california': 'CA',
+                'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE', 'florida': 'FL', 'georgia': 'GA',
+                'hawaii': 'HI', 'idaho': 'ID', 'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA',
+                'kansas': 'KS', 'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+                'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS', 'missouri': 'MO',
+                'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ',
+                'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH',
+                'oklahoma': 'OK', 'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+                'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT', 'vermont': 'VT',
+                'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV', 'wisconsin': 'WI', 'wyoming': 'WY',
+                'district of columbia': 'DC'
+            };
+            const lower = stateName.toLowerCase();
+            return states[lower] || stateName.substring(0, 2).toUpperCase();
+        }
+
+        function selectAddress(index) {
+            const addr = window.searchResults[index];
+
+            // Fill hidden fields
+            document.getElementById('address').value = addr.street;
+            document.getElementById('city').value = addr.city;
+            document.getElementById('state').value = addr.state;
+            document.getElementById('zipcode').value = addr.zipcode;
+            document.getElementById('country').value = addr.country;
+            document.getElementById('latitude').value = addr.lat;
+            document.getElementById('longitude').value = addr.lon;
+
+            // Auto-select timezone based on state
+            autoSelectTimezone(addr.state);
+
+            // Show selected address preview
+            document.getElementById('selectedAddressMain').textContent = addr.street || addr.city;
+            document.getElementById('selectedAddressSecondary').textContent = `${addr.city}, ${addr.state} ${addr.zipcode}`;
+            document.getElementById('selectedAddressPreview').classList.remove('hidden');
+            document.getElementById('addressSearchGroup').style.display = 'none';
+
+            // Close dropdown and clear search
+            document.getElementById('addressDropdown').classList.remove('active');
+            document.getElementById('addressSearch').value = '';
+
+            addressSelected = true;
+            validateForm();
+        }
+
+        function changeAddress() {
+            document.getElementById('selectedAddressPreview').classList.add('hidden');
+            document.getElementById('addressSearchGroup').style.display = 'block';
+            document.getElementById('addressSearch').focus();
+            addressSelected = false;
+            validateForm();
+        }
+
+        function autoSelectTimezone(state) {
+            const timezones = {
+                // Eastern
+                'CT': 'America/New_York', 'DE': 'America/New_York', 'FL': 'America/New_York',
+                'GA': 'America/New_York', 'IN': 'America/New_York', 'KY': 'America/New_York',
+                'ME': 'America/New_York', 'MD': 'America/New_York', 'MA': 'America/New_York',
+                'MI': 'America/New_York', 'NH': 'America/New_York', 'NJ': 'America/New_York',
+                'NY': 'America/New_York', 'NC': 'America/New_York', 'OH': 'America/New_York',
+                'PA': 'America/New_York', 'RI': 'America/New_York', 'SC': 'America/New_York',
+                'VT': 'America/New_York', 'VA': 'America/New_York', 'WV': 'America/New_York',
+                'DC': 'America/New_York',
+                // Central
+                'AL': 'America/Chicago', 'AR': 'America/Chicago', 'IL': 'America/Chicago',
+                'IA': 'America/Chicago', 'KS': 'America/Chicago', 'LA': 'America/Chicago',
+                'MN': 'America/Chicago', 'MS': 'America/Chicago', 'MO': 'America/Chicago',
+                'NE': 'America/Chicago', 'ND': 'America/Chicago', 'OK': 'America/Chicago',
+                'SD': 'America/Chicago', 'TN': 'America/Chicago', 'TX': 'America/Chicago',
+                'WI': 'America/Chicago',
+                // Mountain
+                'AZ': 'America/Denver', 'CO': 'America/Denver', 'ID': 'America/Denver',
+                'MT': 'America/Denver', 'NM': 'America/Denver', 'UT': 'America/Denver',
+                'WY': 'America/Denver',
+                // Pacific
+                'CA': 'America/Los_Angeles', 'NV': 'America/Los_Angeles', 'OR': 'America/Los_Angeles',
+                'WA': 'America/Los_Angeles',
+                // Alaska
+                'AK': 'America/Anchorage',
+                // Hawaii
+                'HI': 'Pacific/Honolulu'
+            };
+
+            const tz = timezones[state];
+            if (tz) {
+                document.getElementById('timezone').value = tz;
+            }
+        }
+
+        function validateForm() {
+            const name = document.getElementById('businessName').value.trim();
+            const btn = document.getElementById('addLocationBtn2');
+            btn.disabled = !name || !addressSelected;
+        }
+
+        // Add input listener for business name
+        document.getElementById('businessName').addEventListener('input', validateForm);
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const container = document.querySelector('.address-search-container');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('addressDropdown').classList.remove('active');
+            }
+        });
 
         function renderLocations() {
             const container = document.getElementById('locationsList');
@@ -793,6 +1197,8 @@
                 state: document.getElementById('state').value.toUpperCase(),
                 zipcode: document.getElementById('zipcode').value,
                 country: document.getElementById('country').value,
+                latitude: parseFloat(document.getElementById('latitude').value) || null,
+                longitude: parseFloat(document.getElementById('longitude').value) || null,
                 timezone: document.getElementById('timezone').value,
                 open_time: document.getElementById('openTime').value,
                 close_time: document.getElementById('closeTime').value,
@@ -821,10 +1227,19 @@
             document.getElementById('state').value = loc.state;
             document.getElementById('zipcode').value = loc.zipcode;
             document.getElementById('country').value = loc.country;
+            document.getElementById('latitude').value = loc.latitude || '';
+            document.getElementById('longitude').value = loc.longitude || '';
             document.getElementById('timezone').value = loc.timezone;
             document.getElementById('openTime').value = loc.open_time || '09:00';
             document.getElementById('closeTime').value = loc.close_time || '21:00';
             setSelectedDays(loc.days_open || 'mon,tue,wed,thu,fri,sat,sun');
+
+            // Show selected address preview
+            document.getElementById('selectedAddressMain').textContent = loc.address || loc.city;
+            document.getElementById('selectedAddressSecondary').textContent = `${loc.city}, ${loc.state} ${loc.zipcode}`;
+            document.getElementById('selectedAddressPreview').classList.remove('hidden');
+            document.getElementById('addressSearchGroup').style.display = 'none';
+            addressSelected = true;
 
             document.getElementById('formTitle').textContent = 'Edit Location';
             document.getElementById('addLocationBtn2').innerHTML = `
@@ -833,6 +1248,7 @@
                 </svg>
                 Save Changes
             `;
+            document.getElementById('addLocationBtn2').disabled = false;
 
             showLocationForm();
         }
@@ -875,6 +1291,13 @@
                 </svg>
                 Add Location
             `;
+            document.getElementById('addLocationBtn2').disabled = true;
+
+            // Reset address selection
+            document.getElementById('selectedAddressPreview').classList.add('hidden');
+            document.getElementById('addressSearchGroup').style.display = 'block';
+            addressSelected = false;
+
             // Reset store hours to defaults
             document.getElementById('openTime').value = '09:00';
             document.getElementById('closeTime').value = '21:00';
@@ -905,6 +1328,8 @@
                         state: firstLoc.state,
                         zipcode: firstLoc.zipcode,
                         country: firstLoc.country,
+                        latitude: firstLoc.latitude,
+                        longitude: firstLoc.longitude,
                         timezone: firstLoc.timezone,
                         open_time: firstLoc.open_time,
                         close_time: firstLoc.close_time,
@@ -929,6 +1354,8 @@
                         state: loc.state,
                         zipcode: loc.zipcode,
                         country: loc.country,
+                        latitude: loc.latitude,
+                        longitude: loc.longitude,
                         timezone: loc.timezone,
                         open_time: loc.open_time,
                         close_time: loc.close_time,
