@@ -6,8 +6,22 @@
     <title>Calendar - TrucastAI</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Weather Effects Container */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        /* Weather Effects Container - Subtle */
         .weather-effects {
             position: fixed;
             top: 0;
@@ -17,41 +31,42 @@
             pointer-events: none;
             z-index: 0;
             overflow: hidden;
+            opacity: 0.4;
         }
 
         /* Sunny Effect */
         .weather-sunny .main-content {
-            background: linear-gradient(180deg, #87CEEB 0%, #E0F4FF 30%, var(--gray-50) 60%);
+            background: linear-gradient(180deg, #f0fdfa 0%, #f8fafc 30%);
         }
 
         .weather-sunny .sun {
             position: absolute;
             top: 20px;
             right: 100px;
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             background: radial-gradient(circle, #FFD700, #FFA500);
             border-radius: 50%;
-            box-shadow: 0 0 60px 20px rgba(255, 215, 0, 0.4);
-            animation: pulse-sun 3s ease-in-out infinite;
+            box-shadow: 0 0 40px 15px rgba(255, 215, 0, 0.3);
+            animation: pulse-sun 4s ease-in-out infinite;
         }
 
         @keyframes pulse-sun {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 60px 20px rgba(255, 215, 0, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 80px 30px rgba(255, 215, 0, 0.5); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
         }
 
         /* Cloudy Effect */
         .weather-cloudy .main-content {
-            background: linear-gradient(180deg, #B0BEC5 0%, #CFD8DC 30%, var(--gray-100) 60%);
+            background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 30%);
         }
 
         .cloud {
             position: absolute;
             background: white;
             border-radius: 50%;
-            opacity: 0.9;
-            filter: blur(2px);
+            opacity: 0.7;
+            filter: blur(3px);
         }
 
         .cloud::before, .cloud::after {
@@ -61,17 +76,17 @@
             border-radius: 50%;
         }
 
-        .cloud-1 { width: 100px; height: 40px; top: 40px; left: 10%; animation: float-cloud 25s linear infinite; }
-        .cloud-1::before { width: 50px; height: 50px; top: -25px; left: 15px; }
-        .cloud-1::after { width: 60px; height: 60px; top: -30px; left: 45px; }
+        .cloud-1 { width: 80px; height: 32px; top: 30px; left: 10%; animation: float-cloud 30s linear infinite; }
+        .cloud-1::before { width: 40px; height: 40px; top: -20px; left: 12px; }
+        .cloud-1::after { width: 48px; height: 48px; top: -24px; left: 36px; }
 
-        .cloud-2 { width: 80px; height: 32px; top: 80px; left: 50%; animation: float-cloud 30s linear infinite; animation-delay: -10s; }
-        .cloud-2::before { width: 40px; height: 40px; top: -20px; left: 10px; }
-        .cloud-2::after { width: 50px; height: 50px; top: -25px; left: 35px; }
+        .cloud-2 { width: 64px; height: 26px; top: 60px; left: 50%; animation: float-cloud 35s linear infinite; animation-delay: -12s; }
+        .cloud-2::before { width: 32px; height: 32px; top: -16px; left: 8px; }
+        .cloud-2::after { width: 40px; height: 40px; top: -20px; left: 28px; }
 
-        .cloud-3 { width: 120px; height: 48px; top: 30px; left: 70%; animation: float-cloud 35s linear infinite; animation-delay: -20s; }
-        .cloud-3::before { width: 60px; height: 60px; top: -30px; left: 20px; }
-        .cloud-3::after { width: 70px; height: 70px; top: -35px; left: 55px; }
+        .cloud-3 { width: 96px; height: 38px; top: 25px; left: 70%; animation: float-cloud 40s linear infinite; animation-delay: -24s; }
+        .cloud-3::before { width: 48px; height: 48px; top: -24px; left: 16px; }
+        .cloud-3::after { width: 56px; height: 56px; top: -28px; left: 44px; }
 
         @keyframes float-cloud {
             0% { transform: translateX(0); }
@@ -80,7 +95,7 @@
 
         /* Rain Effect */
         .weather-rainy .main-content {
-            background: linear-gradient(180deg, #546E7A 0%, #78909C 30%, #B0BEC5 60%);
+            background: linear-gradient(180deg, #e2e8f0 0%, #f1f5f9 30%);
         }
 
         .rain {
@@ -91,134 +106,127 @@
 
         .rain-drop {
             position: absolute;
-            width: 2px;
-            height: 20px;
-            background: linear-gradient(transparent, rgba(174, 194, 224, 0.8));
+            width: 1px;
+            height: 15px;
+            background: linear-gradient(transparent, rgba(148, 163, 184, 0.6));
             animation: rain-fall linear infinite;
         }
 
         @keyframes rain-fall {
             0% { transform: translateY(-100px); opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0.3; }
+            100% { transform: translateY(100vh); opacity: 0.2; }
         }
 
         /* Snow Effect */
         .weather-snowy .main-content {
-            background: linear-gradient(180deg, #90A4AE 0%, #CFD8DC 30%, #ECEFF1 60%);
+            background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 30%);
         }
 
         .snowflake {
             position: absolute;
-            color: white;
-            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+            color: #94a3b8;
+            text-shadow: 0 0 3px rgba(255,255,255,0.6);
             animation: snow-fall linear infinite;
-            opacity: 0.8;
+            opacity: 0.6;
         }
 
         @keyframes snow-fall {
             0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0.3; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0.2; }
         }
 
         /* Night Effect */
         .weather-night .main-content {
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 30%, #1f2937 60%);
+            background: linear-gradient(180deg, #1e293b 0%, #334155 30%, #475569 60%);
         }
 
         .weather-night .page-header,
-        .weather-night .calendar-card,
-        .weather-night .controls-bar .view-toggle,
-        .weather-night .month-nav-btn {
-            background: rgba(30, 41, 59, 0.9);
+        .weather-night .calendar-card {
+            background: rgba(30, 41, 59, 0.95);
             border-color: rgba(71, 85, 105, 0.5);
         }
 
         .weather-night .page-header h1,
         .weather-night .current-month,
         .weather-night .calendar-header-cell {
-            color: #E2E8F0;
+            color: #f1f5f9;
         }
 
-        .weather-night .page-header p,
-        .weather-night .view-toggle-btn,
-        .weather-night .legend-item {
-            color: #94A3B8;
+        .weather-night .page-header p {
+            color: #94a3b8;
         }
 
         .weather-night .calendar-cell {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(30, 41, 59, 0.6);
             border-color: rgba(71, 85, 105, 0.3);
         }
 
         .weather-night .calendar-cell:hover {
-            background: rgba(51, 65, 85, 0.7);
+            background: rgba(51, 65, 85, 0.8);
         }
 
         .weather-night .day-number {
-            color: #E2E8F0;
-        }
-
-        .weather-night .calendar-cell.other-month {
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        .weather-night .calendar-cell.other-month .day-number {
-            color: #64748B;
+            color: #f1f5f9;
         }
 
         .star {
             position: absolute;
-            width: 3px;
-            height: 3px;
+            width: 2px;
+            height: 2px;
             background: white;
             border-radius: 50%;
-            animation: twinkle 2s ease-in-out infinite;
+            animation: twinkle 3s ease-in-out infinite;
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
         }
 
         .moon {
             position: absolute;
-            top: 30px;
-            right: 120px;
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle at 30% 30%, #F5F5DC, #E8E8C8);
+            top: 25px;
+            right: 100px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #f5f5dc, #e8e8c8);
             border-radius: 50%;
-            box-shadow: 0 0 30px 10px rgba(255, 255, 220, 0.3);
+            box-shadow: 0 0 20px 8px rgba(255, 255, 220, 0.2);
         }
 
-        /* Weather indicator badge */
+        /* Weather Badge */
         .weather-badge {
             position: fixed;
-            top: 80px;
+            top: 90px;
             right: 24px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 8px 16px;
-            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-size: 13px;
             font-weight: 500;
-            color: var(--gray-700);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #475569;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(226, 232, 240, 0.8);
             z-index: 100;
         }
 
         .weather-night .weather-badge {
             background: rgba(30, 41, 59, 0.95);
-            color: #E2E8F0;
+            color: #e2e8f0;
+            border-color: rgba(71, 85, 105, 0.5);
         }
 
         .weather-badge svg {
             width: 18px;
             height: 18px;
+            color: #14b8a6;
         }
 
+        /* Layout */
         .app-layout {
             display: flex;
             min-height: 100vh;
@@ -228,125 +236,188 @@
 
         .main-content {
             flex: 1;
-            margin-left: var(--sidebar-width);
-            background: var(--gray-50);
+            margin-left: var(--sidebar-width, 240px);
+            min-height: 100vh;
             transition: background 0.5s ease;
         }
 
+        /* Page Header */
         .page-header {
             background: white;
-            border-bottom: 1px solid var(--gray-200);
-            padding: var(--space-6);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 24px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .page-content {
-            padding: var(--space-6);
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
         }
 
+        .page-header p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Page Content */
+        .page-content {
+            padding: 24px 32px;
+        }
+
+        /* Controls Bar */
         .controls-bar {
             display: flex;
-            gap: var(--space-3);
-            margin-bottom: var(--space-6);
+            gap: 16px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .controls-left {
+            display: flex;
+            gap: 16px;
             align-items: center;
         }
 
+        /* View Toggle */
         .view-toggle {
             display: flex;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
+            background: white;
+            border-radius: 10px;
             padding: 4px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
 
         .view-toggle-btn {
-            padding: var(--space-2) var(--space-4);
+            padding: 8px 16px;
             border: none;
             background: transparent;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            color: var(--gray-600);
+            color: #64748b;
             cursor: pointer;
-            border-radius: var(--radius);
-            transition: all var(--transition-fast);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-toggle-btn:hover {
+            color: #1e293b;
         }
 
         .view-toggle-btn.active {
-            background: white;
-            color: var(--gray-900);
-            box-shadow: var(--shadow-sm);
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
         }
 
+        .view-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Month Navigation */
         .month-nav {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
+            gap: 12px;
         }
 
         .month-nav-btn {
-            width: 36px;
-            height: 36px;
-            border: 1px solid var(--gray-200);
+            width: 40px;
+            height: 40px;
+            border: 1px solid #e2e8f0;
             background: white;
-            border-radius: var(--radius-md);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all 0.2s ease;
         }
 
         .month-nav-btn:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-300);
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
         }
 
         .month-nav-btn svg {
             width: 20px;
             height: 20px;
-            color: var(--gray-600);
+            color: #64748b;
         }
 
         .current-month {
             font-size: 18px;
             font-weight: 600;
-            color: var(--gray-900);
+            color: #1e293b;
             min-width: 180px;
             text-align: center;
         }
 
-        .calendar-card {
+        .btn-today {
+            padding: 10px 20px;
             background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        /* Calendar Grid Styles */
+        .btn-today:hover {
+            background: #f8fafc;
+            border-color: #14b8a6;
+            color: #0d9488;
+        }
+
+        /* Calendar Card */
+        .calendar-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Calendar Grid */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
         }
 
         .calendar-header-cell {
-            padding: var(--space-3);
+            padding: 16px 12px;
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--gray-500);
-            background: var(--gray-50);
-            border-bottom: 1px solid var(--gray-200);
+            color: #64748b;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .calendar-cell {
-            min-height: 100px;
-            padding: var(--space-2);
-            border-right: 1px solid var(--gray-100);
-            border-bottom: 1px solid var(--gray-100);
+            min-height: 110px;
+            padding: 12px;
+            border-right: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
-            transition: background var(--transition-fast);
+            transition: all 0.2s ease;
+            position: relative;
         }
 
         .calendar-cell:nth-child(7n) {
@@ -354,111 +425,224 @@
         }
 
         .calendar-cell:hover {
-            background: var(--gray-50);
+            background: #f8fafc;
+            transform: scale(1.02);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
         }
 
         .calendar-cell.other-month {
-            background: var(--gray-50);
+            background: #fafbfc;
         }
 
         .calendar-cell.other-month .day-number {
-            color: var(--gray-400);
+            color: #cbd5e1;
         }
 
         .calendar-cell.today {
-            background: var(--primary-50);
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
         }
 
         .calendar-cell.today .day-number {
-            background: var(--primary-600);
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(20, 184, 166, 0.4);
         }
 
-        /* Past days styling */
         .calendar-cell.past-day {
-            background: var(--gray-100);
-            opacity: 0.7;
+            background: #fafbfc;
         }
 
         .calendar-cell.past-day .day-number {
-            color: var(--gray-400);
-        }
-
-        .calendar-cell.past-day .event-dot {
-            opacity: 0.5;
-        }
-
-        .calendar-cell.past-day .event-count {
-            color: var(--gray-400);
+            color: #94a3b8;
         }
 
         .calendar-cell.past-day:hover {
-            background: var(--gray-150);
-            opacity: 0.8;
+            background: #f1f5f9;
         }
 
         .day-number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             font-size: 14px;
-            font-weight: 500;
-            color: var(--gray-900);
-            margin-bottom: var(--space-1);
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
         }
 
+        .calendar-cell:hover .day-number {
+            background: rgba(20, 184, 166, 0.1);
+            color: #0d9488;
+        }
+
+        .calendar-cell.today:hover .day-number {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            color: white;
+        }
+
+        /* Event Dots */
         .event-dots {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
-            margin-top: var(--space-1);
+            margin-top: 6px;
         }
 
         .event-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         }
 
-        .event-dot.holiday { background: var(--error-500); }
-        .event-dot.sports { background: var(--success-500); }
-        .event-dot.payday { background: var(--warning-500); }
-        .event-dot.school { background: var(--primary-500); }
-
-        .event-preview {
-            font-size: 11px;
-            color: var(--gray-600);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 2px;
-            display: none; /* Hide text previews for cleaner look */
-        }
+        .event-dot.holiday { background: linear-gradient(135deg, #ef4444, #f87171); }
+        .event-dot.sports { background: linear-gradient(135deg, #22c55e, #4ade80); }
+        .event-dot.payday { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .event-dot.school { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
 
         .event-count {
             font-size: 11px;
-            color: var(--gray-500);
+            color: #64748b;
             margin-top: 4px;
+            font-weight: 500;
         }
 
-        /* Day Detail Modal */
+        /* Day Prediction Badge */
+        .day-prediction {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 6px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .day-prediction.low { background: rgba(20, 184, 166, 0.1); color: #0f766e; }
+        .day-prediction.medium { background: rgba(20, 184, 166, 0.2); color: #0d9488; }
+        .day-prediction.high { background: rgba(20, 184, 166, 0.35); color: #115e59; }
+
+        /* Heatmap Colors */
+        .calendar-cell.heatmap-1 { background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); }
+        .calendar-cell.heatmap-2 { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); }
+        .calendar-cell.heatmap-3 { background: linear-gradient(135deg, #99f6e4 0%, #5eead4 100%); }
+        .calendar-cell.heatmap-4 { background: linear-gradient(135deg, #5eead4 0%, #2dd4bf 100%); }
+        .calendar-cell.heatmap-5 { background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%); }
+        .calendar-cell.heatmap-6 { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+        .calendar-cell.heatmap-7 { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); }
+        .calendar-cell.heatmap-8 { background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); }
+        .calendar-cell.heatmap-9 { background: linear-gradient(135deg, #115e59 0%, #134e4a 100%); }
+        .calendar-cell.heatmap-10 { background: linear-gradient(135deg, #134e4a 0%, #042f2e 100%); }
+
+        .calendar-cell.heatmap-6 .day-number,
+        .calendar-cell.heatmap-7 .day-number,
+        .calendar-cell.heatmap-8 .day-number,
+        .calendar-cell.heatmap-9 .day-number,
+        .calendar-cell.heatmap-10 .day-number {
+            color: white;
+        }
+
+        .calendar-cell.heatmap-6 .event-count,
+        .calendar-cell.heatmap-7 .event-count,
+        .calendar-cell.heatmap-8 .event-count,
+        .calendar-cell.heatmap-9 .event-count,
+        .calendar-cell.heatmap-10 .event-count {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .calendar-cell.heatmap-6 .day-prediction,
+        .calendar-cell.heatmap-7 .day-prediction,
+        .calendar-cell.heatmap-8 .day-prediction,
+        .calendar-cell.heatmap-9 .day-prediction,
+        .calendar-cell.heatmap-10 .day-prediction {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 24px;
+            padding: 16px 24px;
+            border-top: 1px solid #f1f5f9;
+            background: #fafbfc;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Heatmap Legend */
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            border-top: 1px solid #f1f5f9;
+            background: #fafbfc;
+        }
+
+        .heatmap-legend-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .heatmap-scale {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        .heatmap-scale-bar {
+            flex: 1;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg,
+                #f0fdfa 0%,
+                #99f6e4 25%,
+                #14b8a6 50%,
+                #0f766e 75%,
+                #134e4a 100%
+            );
+        }
+
+        .heatmap-scale-min,
+        .heatmap-scale-max {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .modal-overlay.active {
@@ -468,70 +652,75 @@
 
         .modal {
             background: white;
-            border-radius: var(--radius-xl);
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
+            max-width: 520px;
+            max-height: 85vh;
             overflow: hidden;
-            transform: scale(0.9);
-            transition: transform 0.2s ease;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         .modal-overlay.active .modal {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
         }
 
         .modal-header {
-            padding: var(--space-6);
-            border-bottom: 1px solid var(--gray-100);
+            padding: 24px;
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            background: linear-gradient(135deg, #f8fafc 0%, #f0fdfa 100%);
         }
 
         .modal-date {
             font-size: 24px;
             font-weight: 700;
-            color: var(--gray-900);
+            color: #1e293b;
         }
 
         .modal-weekday {
             font-size: 14px;
-            color: var(--gray-500);
+            color: #64748b;
             margin-top: 4px;
+            font-weight: 500;
         }
 
         .modal-close {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
+            background: white;
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.15s;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         }
 
         .modal-close:hover {
-            background: var(--gray-200);
+            background: #f1f5f9;
+            transform: scale(1.05);
         }
 
         .modal-close svg {
             width: 18px;
             height: 18px;
-            color: var(--gray-600);
+            color: #64748b;
         }
 
         .modal-body {
-            padding: var(--space-6);
+            padding: 24px;
             overflow-y: auto;
-            max-height: calc(80vh - 120px);
+            max-height: calc(85vh - 100px);
         }
 
         .modal-section {
-            margin-bottom: var(--space-6);
+            margin-bottom: 24px;
         }
 
         .modal-section:last-child {
@@ -539,44 +728,87 @@
         }
 
         .modal-section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
-            color: var(--gray-500);
-            margin-bottom: var(--space-3);
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
         }
 
         .modal-section-title svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
 
+        /* AI Summary Card */
+        .ai-summary {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #e0f7fa 100%);
+            border-radius: 14px;
+            border: 1px solid #ccfbf1;
+        }
+
+        .ai-summary-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #0d9488;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-summary-label svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ai-summary-text {
+            font-size: 14px;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .ai-summary-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Weather Card */
         .weather-card {
             display: flex;
             align-items: center;
-            gap: var(--space-4);
-            padding: var(--space-4);
-            background: var(--info-50);
-            border-radius: var(--radius-lg);
+            gap: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 14px;
+            border: 1px solid #bfdbfe;
         }
 
         .weather-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--info-100);
-            border-radius: var(--radius-md);
+            width: 52px;
+            height: 52px;
+            background: white;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .weather-icon svg {
-            width: 24px;
-            height: 24px;
-            color: var(--info-600);
+            width: 26px;
+            height: 26px;
+            color: #3b82f6;
         }
 
         .weather-details {
@@ -586,173 +818,171 @@
         .weather-temp {
             font-size: 18px;
             font-weight: 600;
-            color: var(--gray-900);
+            color: #1e293b;
         }
 
         .weather-desc {
             font-size: 13px;
-            color: var(--gray-600);
+            color: #64748b;
+            margin-top: 2px;
         }
 
+        /* Event Card */
         .event-card {
             display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-3);
-            background: var(--gray-50);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--space-2);
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px;
+            background: #fafbfc;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
         }
 
         .event-card:last-child {
             margin-bottom: 0;
         }
 
+        .event-card:hover {
+            background: white;
+            border-color: #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
         .event-card-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-md);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
-        .event-card-icon.holiday { background: var(--error-100); color: var(--error-600); }
-        .event-card-icon.sports { background: var(--success-100); color: var(--success-600); }
-        .event-card-icon.payday { background: var(--warning-100); color: var(--warning-600); }
-        .event-card-icon.school { background: var(--primary-100); color: var(--primary-600); }
+        .event-card-icon.holiday { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
+        .event-card-icon.sports { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+        .event-card-icon.payday { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; }
+        .event-card-icon.school { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
 
         .event-card-icon svg {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
         }
 
         .event-card-content {
             flex: 1;
         }
 
-        .event-card-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--gray-900);
-        }
-
-        .event-card-type {
-            font-size: 12px;
-            color: var(--gray-500);
-            text-transform: capitalize;
-        }
-
         .event-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: var(--space-2);
-            margin-bottom: var(--space-1);
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .event-card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
         }
 
         .event-card-badge {
             font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
-            padding: 2px 8px;
-            border-radius: 10px;
+            letter-spacing: 0.3px;
+            padding: 3px 8px;
+            border-radius: 6px;
         }
 
-        .event-card-badge.holiday { background: var(--error-100); color: var(--error-700); }
-        .event-card-badge.sports { background: var(--success-100); color: var(--success-700); }
-        .event-card-badge.payday { background: var(--warning-100); color: var(--warning-700); }
-        .event-card-badge.school { background: var(--primary-100); color: var(--primary-700); }
+        .event-card-badge.holiday { background: #fee2e2; color: #b91c1c; }
+        .event-card-badge.sports { background: #dcfce7; color: #15803d; }
+        .event-card-badge.payday { background: #fef3c7; color: #b45309; }
+        .event-card-badge.school { background: #dbeafe; color: #1d4ed8; }
 
         .event-card-teams {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 8px;
             font-size: 13px;
-            margin-top: var(--space-1);
+            margin-top: 4px;
         }
 
         .event-card-teams .team {
             font-weight: 600;
-            color: var(--gray-800);
+            color: #475569;
         }
 
-        .event-card-teams .team.home {
-            color: var(--success-700);
-        }
-
-        .event-card-teams .team.away {
-            color: var(--primary-700);
-        }
-
+        .event-card-teams .team.home { color: #16a34a; }
+        .event-card-teams .team.away { color: #2563eb; }
         .event-card-teams .vs {
             font-size: 11px;
             font-weight: 500;
-            color: var(--gray-400);
-            text-transform: uppercase;
+            color: #94a3b8;
         }
 
-        .event-card-venue {
-            font-size: 12px;
-            color: var(--gray-500);
-            margin-top: var(--space-1);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .event-card-venue::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            background: var(--gray-400);
-            border-radius: 50%;
-        }
-
+        .event-card-venue,
         .event-card-description {
             font-size: 12px;
-            color: var(--gray-500);
-            margin-top: var(--space-1);
-        }
-
-        .ai-summary {
-            padding: var(--space-4);
-            background: linear-gradient(135deg, var(--primary-50), var(--info-50));
-            border-radius: var(--radius-lg);
-            border-left: 3px solid var(--primary-500);
-        }
-
-        .ai-summary-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--primary-600);
-            margin-bottom: var(--space-2);
-            display: flex;
-            align-items: center;
-            gap: var(--space-1);
-        }
-
-        .ai-summary-text {
-            font-size: 14px;
-            color: var(--gray-700);
-            line-height: 1.5;
-        }
-
-        .ai-summary-loading {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            color: var(--gray-500);
-            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
         }
 
         .no-events {
             text-align: center;
-            padding: var(--space-4);
-            color: var(--gray-500);
+            padding: 24px;
+            color: #94a3b8;
             font-size: 14px;
+        }
+
+        /* Prediction Card */
+        .prediction-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border-radius: 14px;
+            border: 1px solid #99f6e4;
+        }
+
+        .prediction-card .weather-icon {
+            background: #ccfbf1;
+        }
+
+        .prediction-card .weather-icon svg {
+            color: #0d9488;
+        }
+
+        /* View Forecast Button */
+        .btn-view-forecast {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view-forecast:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.35);
+        }
+
+        .btn-view-forecast svg {
+            width: 18px;
+            height: 18px;
         }
 
         /* List View Styles */
@@ -765,8 +995,8 @@
         }
 
         .event-group {
-            padding: var(--space-4) var(--space-6);
-            border-bottom: 1px solid var(--gray-100);
+            padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .event-group:last-child {
@@ -776,179 +1006,129 @@
         .event-group-date {
             font-size: 14px;
             font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: var(--space-3);
+            color: #1e293b;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: 10px;
         }
 
         .event-group-weekday {
             font-size: 13px;
             font-weight: 400;
-            color: var(--gray-500);
+            color: #94a3b8;
         }
 
         .event-list-item {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-2) 0;
+            gap: 12px;
+            padding: 8px 0;
         }
 
         .event-type-badge {
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--radius);
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .event-type-badge.holiday { background: var(--error-100); color: var(--error-700); }
-        .event-type-badge.sports { background: var(--success-100); color: var(--success-700); }
-        .event-type-badge.payday { background: var(--warning-100); color: var(--warning-700); }
-        .event-type-badge.school { background: var(--primary-100); color: var(--primary-700); }
+        .event-type-badge.holiday { background: #fee2e2; color: #b91c1c; }
+        .event-type-badge.sports { background: #dcfce7; color: #15803d; }
+        .event-type-badge.payday { background: #fef3c7; color: #b45309; }
+        .event-type-badge.school { background: #dbeafe; color: #1d4ed8; }
 
         .event-name {
             font-size: 14px;
-            color: var(--gray-900);
+            color: #1e293b;
         }
 
         .empty-state {
             text-align: center;
-            padding: var(--space-12);
+            padding: 64px 24px;
         }
 
         .empty-state svg {
             width: 64px;
             height: 64px;
-            color: var(--gray-300);
-            margin-bottom: var(--space-4);
+            color: #cbd5e1;
+            margin-bottom: 16px;
         }
 
-        .legend {
-            display: flex;
-            gap: var(--space-4);
-            padding: var(--space-4) var(--space-6);
-            border-top: 1px solid var(--gray-100);
-            background: var(--gray-50);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-size: 13px;
-            color: var(--gray-600);
-        }
-
-        /* Heatmap Legend */
-        .heatmap-legend {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-4) var(--space-6);
-            border-top: 1px solid var(--gray-100);
-            background: var(--gray-50);
-        }
-
-        .heatmap-legend-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--gray-600);
-        }
-
-        .heatmap-scale {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .heatmap-scale-bar {
-            flex: 1;
-            height: 12px;
-            border-radius: 6px;
-            background: linear-gradient(90deg,
-                #F0FDFA 0%,
-                #99F6E4 20%,
-                #5EEAD4 40%,
-                #14B8A6 60%,
-                #0D9488 80%,
-                #0F766E 100%
-            );
-        }
-
-        .heatmap-scale-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: var(--gray-500);
-            margin-top: 2px;
-        }
-
-        .heatmap-scale-min,
-        .heatmap-scale-max {
-            font-size: 11px;
-            color: var(--gray-500);
-            white-space: nowrap;
-        }
-
-        /* Heatmap cell coloring - Teal theme */
-        .calendar-cell.heatmap-1 { background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); }
-        .calendar-cell.heatmap-2 { background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%); }
-        .calendar-cell.heatmap-3 { background: linear-gradient(135deg, #99F6E4 0%, #5EEAD4 100%); }
-        .calendar-cell.heatmap-4 { background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%); }
-        .calendar-cell.heatmap-5 { background: linear-gradient(135deg, #2DD4BF 0%, #14B8A6 100%); }
-        .calendar-cell.heatmap-6 { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
-        .calendar-cell.heatmap-7 { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); }
-        .calendar-cell.heatmap-8 { background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); }
-        .calendar-cell.heatmap-9 { background: linear-gradient(135deg, #115E59 0%, #134E4A 100%); }
-        .calendar-cell.heatmap-10 { background: linear-gradient(135deg, #134E4A 0%, #042F2E 100%); }
-
-        .calendar-cell.heatmap-1:hover { background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%); }
-        .calendar-cell.heatmap-2:hover { background: linear-gradient(135deg, #99F6E4 0%, #5EEAD4 100%); }
-        .calendar-cell.heatmap-3:hover { background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%); }
-        .calendar-cell.heatmap-4:hover { background: linear-gradient(135deg, #2DD4BF 0%, #14B8A6 100%); }
-        .calendar-cell.heatmap-5:hover { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
-        .calendar-cell.heatmap-6:hover { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); }
-        .calendar-cell.heatmap-7:hover { background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); }
-        .calendar-cell.heatmap-8:hover { background: linear-gradient(135deg, #115E59 0%, #134E4A 100%); }
-        .calendar-cell.heatmap-9:hover { background: linear-gradient(135deg, #134E4A 0%, #042F2E 100%); }
-        .calendar-cell.heatmap-10:hover { background: linear-gradient(135deg, #042F2E 0%, #022C22 100%); }
-
-        /* Prediction indicator on day cell */
-        .day-prediction {
-            font-size: 10px;
+        .empty-state h3 {
+            font-size: 16px;
             font-weight: 600;
-            margin-top: 4px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: inline-block;
+            color: #475569;
+            margin-bottom: 8px;
         }
 
-        .day-prediction.low { background: rgba(20, 184, 166, 0.15); color: #0F766E; }
-        .day-prediction.medium { background: rgba(20, 184, 166, 0.25); color: #0D9488; }
-        .day-prediction.high { background: rgba(20, 184, 166, 0.4); color: #115E59; }
-
-        /* No prediction state */
-        .calendar-cell.no-prediction {
-            background: var(--gray-50);
+        .empty-state p {
+            font-size: 14px;
+            color: #94a3b8;
         }
 
+        /* Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #14b8a6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .main-content {
                 margin-left: 0;
             }
+
             .sidebar {
                 display: none;
             }
-            .calendar-cell {
-                min-height: 60px;
+
+            .page-header {
+                padding: 20px;
             }
-            .event-preview {
+
+            .page-content {
+                padding: 16px;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-left {
+                flex-wrap: wrap;
+            }
+
+            .calendar-cell {
+                min-height: 70px;
+                padding: 8px;
+            }
+
+            .day-number {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .day-prediction {
                 display: none;
+            }
+
+            .weather-badge {
+                top: auto;
+                bottom: 16px;
+                right: 16px;
             }
         }
     </style>
@@ -1037,35 +1217,37 @@
             <div class="page-header">
                 <div>
                     <h1>Events Calendar</h1>
-                    <p class="text-gray-500 mt-1">View upcoming events that may affect your sales</p>
+                    <p>View upcoming events and predicted sales patterns</p>
                 </div>
             </div>
 
             <div class="page-content">
                 <!-- Controls -->
                 <div class="controls-bar">
-                    <!-- View Toggle -->
-                    <div class="view-toggle">
-                        <button class="view-toggle-btn active" id="gridViewBtn" onclick="setView('grid')">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
-                                <rect x="3" y="3" width="7" height="7"/>
-                                <rect x="14" y="3" width="7" height="7"/>
-                                <rect x="14" y="14" width="7" height="7"/>
-                                <rect x="3" y="14" width="7" height="7"/>
-                            </svg>
-                            Grid
-                        </button>
-                        <button class="view-toggle-btn" id="listViewBtn" onclick="setView('list')">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
-                                <line x1="8" y1="6" x2="21" y2="6"/>
-                                <line x1="8" y1="12" x2="21" y2="12"/>
-                                <line x1="8" y1="18" x2="21" y2="18"/>
-                                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                                <line x1="3" y1="18" x2="3.01" y2="18"/>
-                            </svg>
-                            List
-                        </button>
+                    <div class="controls-left">
+                        <!-- View Toggle -->
+                        <div class="view-toggle">
+                            <button class="view-toggle-btn active" id="gridViewBtn" onclick="setView('grid')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                </svg>
+                                Grid
+                            </button>
+                            <button class="view-toggle-btn" id="listViewBtn" onclick="setView('list')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                                List
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Month Navigation -->
@@ -1081,7 +1263,7 @@
                                 <path d="M9 18l6-6-6-6"/>
                             </svg>
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="goToToday()">Today</button>
+                        <button class="btn-today" onclick="goToToday()">Today</button>
                     </div>
                 </div>
 
@@ -1096,7 +1278,7 @@
 
                     <!-- List View -->
                     <div class="events-list" id="listView">
-                        <div id="eventsList">
+                        <div id="eventsListContent">
                             <!-- Events list will be rendered here -->
                         </div>
                     </div>
@@ -1155,7 +1337,7 @@
                 <div class="modal-section" id="aiSummarySection">
                     <div class="ai-summary">
                         <div class="ai-summary-label">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
                                 <path d="M12 2a10 10 0 0 1 10 10"/>
                                 <circle cx="12" cy="12" r="3"/>
@@ -1164,7 +1346,7 @@
                         </div>
                         <div class="ai-summary-text" id="aiSummaryText">
                             <div class="ai-summary-loading">
-                                <div class="spinner spinner-sm"></div>
+                                <div class="spinner"></div>
                                 Analyzing day factors...
                             </div>
                         </div>
@@ -1188,7 +1370,7 @@
                             </svg>
                         </div>
                         <div class="weather-details">
-                            <div class="weather-temp" id="weatherTemp">72°F / 58°F</div>
+                            <div class="weather-temp" id="weatherTemp">72F / 58F</div>
                             <div class="weather-desc" id="weatherDesc">Clear skies, no precipitation</div>
                         </div>
                     </div>
@@ -1204,7 +1386,7 @@
                         </svg>
                         Events
                     </div>
-                    <div id="eventsList">
+                    <div id="modalEventsList">
                         <!-- Events will be populated here -->
                     </div>
                 </div>
@@ -1218,9 +1400,9 @@
                         </svg>
                         Predicted Sales
                     </div>
-                    <div id="predictionCard" class="weather-card" style="background: linear-gradient(135deg, #F0FDFA, #CCFBF1);">
-                        <div class="weather-icon" style="background: #CCFBF1;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #0D9488;">
+                    <div id="predictionCard" class="prediction-card">
+                        <div class="weather-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 3v18h18"/>
                                 <path d="M18 9l-5-6-4 8-3-2"/>
                             </svg>
@@ -1234,9 +1416,9 @@
 
                 <!-- View Forecast Button -->
                 <div class="modal-section">
-                    <a href="#" id="viewForecastBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <a href="#" id="viewForecastBtn" class="btn-view-forecast">
                         View Sales Forecast
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="margin-left: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
                     </a>
@@ -1256,8 +1438,8 @@
         let currentView = 'grid';
         let businessId = null;
         let eventsData = {};
-        let predictionsData = {}; // Store predictions by date
-        let predictionRange = { min: 0, max: 0 }; // For heatmap scaling
+        let predictionsData = {};
+        let predictionRange = { min: 0, max: 0 };
 
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                            'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1297,9 +1479,7 @@
                     eventsData = { holidays: [], sports: [], paydays: [], school: [] };
                 }
 
-                // Also load predictions for heatmap
                 await loadPredictions();
-
                 renderCalendar();
             } catch (error) {
                 console.error('Failed to load events:', error);
@@ -1312,7 +1492,6 @@
             if (!businessId) return;
 
             try {
-                // Get active model for the business
                 const modelsResponse = await fetch(
                     `/api/businesses/${businessId}/models`,
                     { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } }
@@ -1332,7 +1511,6 @@
                     return;
                 }
 
-                // Calculate days to predict (rest of month from today, or full month if viewing future)
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
                 const today = new Date();
@@ -1341,12 +1519,10 @@
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
 
-                // Start from today if viewing current month, otherwise from first of month
                 const startPrediction = (year === today.getFullYear() && month === today.getMonth())
                     ? today
                     : firstDay;
 
-                // Calculate number of days to predict
                 const daysToPredict = Math.ceil((lastDay - startPrediction) / (1000 * 60 * 60 * 24)) + 1;
 
                 if (daysToPredict <= 0) {
@@ -1355,7 +1531,6 @@
                     return;
                 }
 
-                // Get predictions from API
                 const predictResponse = await fetch(
                     `/api/models/${activeModel.id}/predict`,
                     {
@@ -1376,7 +1551,6 @@
                 const predictData = await predictResponse.json();
                 const predictions = predictData.predictions || [];
 
-                // Aggregate predictions by date (sum all items for each day)
                 predictionsData = {};
                 predictions.forEach(p => {
                     const date = p.date;
@@ -1388,7 +1562,6 @@
                     predictionsData[date].items.push(p);
                 });
 
-                // Calculate min/max for scaling
                 const totals = Object.values(predictionsData).map(d => d.totalQty);
                 if (totals.length > 0) {
                     predictionRange.min = Math.min(...totals);
@@ -1412,7 +1585,6 @@
             const range = predictionRange.max - predictionRange.min;
             const normalized = (value - predictionRange.min) / range;
 
-            // Return 1-10 scale
             return Math.max(1, Math.min(10, Math.ceil(normalized * 10)));
         }
 
@@ -1528,7 +1700,6 @@
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
 
-            // Header row
             dayNames.forEach(day => {
                 const cell = document.createElement('div');
                 cell.className = 'calendar-header-cell';
@@ -1543,7 +1714,6 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            // Days from previous month
             const startDayOfWeek = firstDay.getDay();
             const prevMonthLastDay = new Date(year, month, 0).getDate();
 
@@ -1553,7 +1723,6 @@
                 grid.appendChild(cell);
             }
 
-            // Days of current month
             for (let day = 1; day <= lastDay.getDate(); day++) {
                 const date = new Date(year, month, day);
                 date.setHours(0, 0, 0, 0);
@@ -1565,7 +1734,6 @@
                 grid.appendChild(cell);
             }
 
-            // Days from next month
             const endDayOfWeek = lastDay.getDay();
             for (let i = 1; i < 7 - endDayOfWeek; i++) {
                 const cell = createDayCell(i, true, false);
@@ -1580,7 +1748,6 @@
             if (isToday) cell.className += ' today';
             if (isPast && !isToday) cell.className += ' past-day';
 
-            // Apply heatmap coloring for future dates (not past, not other month)
             if (!isOtherMonth && !isPast && dateStr) {
                 const heatmapLevel = getHeatmapLevel(dateStr);
                 if (heatmapLevel > 0) {
@@ -1597,11 +1764,9 @@
                     html += `<div class="event-dot ${type}"></div>`;
                 });
                 html += '</div>';
-                // Show event count instead of text
                 html += `<div class="event-count">${events.length} event${events.length > 1 ? 's' : ''}</div>`;
             }
 
-            // Add prediction indicator for future dates
             if (!isOtherMonth && !isPast && dateStr) {
                 const predLabel = getPredictionLabel(dateStr);
                 if (predLabel) {
@@ -1622,37 +1787,31 @@
             const date = new Date(dateStr + 'T00:00:00');
             const fullDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-            // Update modal header
             document.getElementById('modalDate').textContent =
                 `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
             document.getElementById('modalWeekday').textContent = fullDayNames[date.getDay()] +
                 (isPast && !isToday ? ' (Past)' : isToday ? ' (Today)' : '');
 
-            // Update forecast link
             document.getElementById('viewForecastBtn').href = `/frontend/pages/forecast.html?date=${dateStr}`;
 
-            // Render events
             renderModalEvents(events);
 
-            // Show loading state for AI summary
             document.getElementById('aiSummaryText').innerHTML = `
                 <div class="ai-summary-loading">
-                    <div class="spinner spinner-sm"></div>
+                    <div class="spinner"></div>
                     Analyzing day factors...
                 </div>
             `;
 
-            // Weather section visibility - only show for current day
             const weatherSection = document.getElementById('weatherSection');
             if (isToday) {
                 weatherSection.style.display = 'block';
-                document.getElementById('weatherTemp').textContent = '--°F / --°F';
+                document.getElementById('weatherTemp').textContent = '--F / --F';
                 document.getElementById('weatherDesc').textContent = 'Loading weather data...';
             } else {
                 weatherSection.style.display = 'none';
             }
 
-            // Prediction section - show for future dates
             const predictionSection = document.getElementById('predictionSection');
             const prediction = predictionsData[dateStr];
 
@@ -1660,35 +1819,33 @@
                 predictionSection.style.display = 'block';
                 document.getElementById('predictionQty').textContent = `${prediction.totalQty} units`;
 
-                // Build description based on level - Teal theme
                 const level = getHeatmapLevel(dateStr);
                 let levelDesc = 'Normal';
-                let bgColor = '#F0FDFA, #CCFBF1';
-                let iconBg = '#CCFBF1';
-                let iconColor = '#0D9488';
+                let bgColor = '#f0fdfa, #ccfbf1';
+                let iconBg = '#ccfbf1';
+                let iconColor = '#0d9488';
 
                 if (level >= 8) {
                     levelDesc = 'Very Busy Day';
-                    bgColor = '#0D9488, #0F766E';
-                    iconBg = '#14B8A6';
-                    iconColor = '#042F2E';
+                    bgColor = '#0d9488, #0f766e';
+                    iconBg = '#14b8a6';
+                    iconColor = '#042f2e';
                 } else if (level >= 6) {
                     levelDesc = 'Busy Day';
-                    bgColor = '#14B8A6, #0D9488';
-                    iconBg = '#2DD4BF';
-                    iconColor = '#0F766E';
+                    bgColor = '#14b8a6, #0d9488';
+                    iconBg = '#2dd4bf';
+                    iconColor = '#0f766e';
                 } else if (level >= 4) {
                     levelDesc = 'Moderate Traffic';
-                    bgColor = '#5EEAD4, #2DD4BF';
-                    iconBg = '#99F6E4';
-                    iconColor = '#0D9488';
+                    bgColor = '#5eead4, #2dd4bf';
+                    iconBg = '#99f6e4';
+                    iconColor = '#0d9488';
                 } else if (level >= 2) {
                     levelDesc = 'Light Traffic';
                 } else {
                     levelDesc = 'Slow Day';
                 }
 
-                // Format revenue if available
                 let revenueText = '';
                 if (prediction.totalRevenue > 0) {
                     revenueText = ` | Est. Revenue: $${prediction.totalRevenue.toLocaleString()}`;
@@ -1696,7 +1853,6 @@
 
                 document.getElementById('predictionDesc').textContent = `${levelDesc}${revenueText}`;
 
-                // Update card styling based on intensity
                 const predCard = document.getElementById('predictionCard');
                 predCard.style.background = `linear-gradient(135deg, ${bgColor})`;
                 predCard.querySelector('.weather-icon').style.background = iconBg;
@@ -1705,10 +1861,8 @@
                 predictionSection.style.display = 'none';
             }
 
-            // Show modal
             document.getElementById('dayModal').classList.add('active');
 
-            // Fetch detailed data for this day
             fetchDayDetails(dateStr, events, isToday);
         }
 
@@ -1718,7 +1872,7 @@
         }
 
         function renderModalEvents(events) {
-            const container = document.getElementById('eventsList');
+            const container = document.getElementById('modalEventsList');
 
             if (!events || events.length === 0) {
                 container.innerHTML = '<div class="no-events">No special events on this day</div>';
@@ -1733,7 +1887,6 @@
             };
 
             container.innerHTML = events.map(e => {
-                // Build detailed content based on event type
                 let detailsHtml = '';
 
                 if (e.type === 'sports' && e.home_team && e.away_team) {
@@ -1769,7 +1922,6 @@
         }
 
         async function fetchDayDetails(dateStr, events, isToday = false) {
-            // Only fetch weather for current day
             if (isToday) {
                 try {
                     const response = await fetch(
@@ -1780,11 +1932,10 @@
                     if (response.ok) {
                         const data = await response.json();
 
-                        // Update weather if available
                         if (data.weather && data.weather.length > 0) {
                             const weather = data.weather[0];
                             document.getElementById('weatherTemp').textContent =
-                                `${weather.temp_max || '--'}°F / ${weather.temp_min || '--'}°F`;
+                                `${weather.temp_max || '--'}F / ${weather.temp_min || '--'}F`;
                             document.getElementById('weatherDesc').textContent =
                                 weather.precipitation > 0 ? `${weather.precipitation}" precipitation expected` : 'No precipitation expected';
                         } else {
@@ -1797,13 +1948,11 @@
                 }
             }
 
-            // Try to get AI summary
             fetchAISummary(dateStr, events);
         }
 
         async function fetchAISummary(dateStr, events) {
             try {
-                // Format events for the API
                 const eventsPayload = {
                     holidays: events.filter(e => e.type === 'holiday'),
                     sports: events.filter(e => e.type === 'sports'),
@@ -1828,16 +1977,15 @@
 
         function showAIUnavailable() {
             document.getElementById('aiSummaryText').innerHTML =
-                '<span style="color: var(--gray-500);">AI insights unavailable. Start Ollama to enable AI summaries.</span>';
+                '<span style="color: #94a3b8;">AI insights unavailable. Configure OpenRouter API key to enable AI summaries.</span>';
         }
 
-        // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeDayModal();
         });
 
         function renderListView() {
-            const container = document.getElementById('eventsList');
+            const container = document.getElementById('eventsListContent');
             container.innerHTML = '';
 
             const year = currentDate.getFullYear();
@@ -1887,8 +2035,8 @@
                             <line x1="8" y1="2" x2="8" y2="6"/>
                             <line x1="3" y1="10" x2="21" y2="10"/>
                         </svg>
-                        <h3 class="text-lg font-semibold text-gray-900">No events this month</h3>
-                        <p class="text-gray-500 mt-2">There are no special events scheduled for this month.</p>
+                        <h3>No events this month</h3>
+                        <p>There are no special events scheduled for this month.</p>
                     </div>
                 `;
             }
@@ -1897,13 +2045,12 @@
         function showEmptyState(message) {
             document.getElementById('calendarGrid').innerHTML = `
                 <div class="empty-state" style="grid-column: 1/-1;">
-                    <p class="text-gray-500">${message}</p>
+                    <p style="color: #94a3b8;">${message}</p>
                 </div>
             `;
         }
 
-        // =============== WEATHER VISUAL EFFECTS ===============
-
+        // Weather Visual Effects
         const weatherIcons = {
             sunny: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
             cloudy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
@@ -1913,51 +2060,50 @@
         };
 
         function getWeatherType(weatherCode, isNight) {
-            // Weather codes based on Open-Meteo WMO codes
             if (isNight && weatherCode < 3) return 'night';
             if (weatherCode === 0 || weatherCode === 1) return 'sunny';
             if (weatherCode >= 2 && weatherCode <= 3) return 'cloudy';
-            if (weatherCode >= 45 && weatherCode <= 48) return 'cloudy'; // fog
+            if (weatherCode >= 45 && weatherCode <= 48) return 'cloudy';
             if (weatherCode >= 51 && weatherCode <= 67) return 'rainy';
             if (weatherCode >= 71 && weatherCode <= 77) return 'snowy';
             if (weatherCode >= 80 && weatherCode <= 82) return 'rainy';
             if (weatherCode >= 85 && weatherCode <= 86) return 'snowy';
-            if (weatherCode >= 95) return 'rainy'; // thunderstorm
+            if (weatherCode >= 95) return 'rainy';
             return 'sunny';
         }
 
-        function createRainDrops(container, count = 50) {
+        function createRainDrops(container, count = 40) {
             for (let i = 0; i < count; i++) {
                 const drop = document.createElement('div');
                 drop.className = 'rain-drop';
                 drop.style.left = Math.random() * 100 + '%';
-                drop.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+                drop.style.animationDuration = (0.6 + Math.random() * 0.4) + 's';
                 drop.style.animationDelay = Math.random() * 2 + 's';
                 container.appendChild(drop);
             }
         }
 
-        function createSnowflakes(container, count = 40) {
-            const snowChars = ['*', '❄', '❅', '❆'];
+        function createSnowflakes(container, count = 30) {
+            const snowChars = ['*', '+', '.'];
             for (let i = 0; i < count; i++) {
                 const flake = document.createElement('div');
                 flake.className = 'snowflake';
                 flake.textContent = snowChars[Math.floor(Math.random() * snowChars.length)];
                 flake.style.left = Math.random() * 100 + '%';
-                flake.style.fontSize = (10 + Math.random() * 15) + 'px';
-                flake.style.animationDuration = (5 + Math.random() * 10) + 's';
+                flake.style.fontSize = (8 + Math.random() * 10) + 'px';
+                flake.style.animationDuration = (6 + Math.random() * 8) + 's';
                 flake.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(flake);
             }
         }
 
-        function createStars(container, count = 50) {
+        function createStars(container, count = 40) {
             for (let i = 0; i < count; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 40 + '%';
-                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.top = Math.random() * 35 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
                 container.appendChild(star);
             }
         }
@@ -1971,11 +2117,9 @@
         }
 
         async function applyWeatherEffects() {
-            // Check if we have business coordinates
             if (!businessId) return;
 
             try {
-                // Get today's date for weather fetch
                 const today = new Date().toISOString().split('T')[0];
                 const response = await fetch(
                     `/api/businesses/${businessId}/events?date=${today}`,
@@ -1989,21 +2133,15 @@
 
                 if (!weather) return;
 
-                // Determine if it's night (between 7pm and 6am)
                 const hour = new Date().getHours();
                 const isNight = hour >= 19 || hour < 6;
 
-                // Get weather type
                 const weatherCode = weather.weather_code || 0;
                 const weatherType = getWeatherType(weatherCode, isNight);
 
-                // Remove any existing weather classes
                 document.body.classList.remove('weather-sunny', 'weather-cloudy', 'weather-rainy', 'weather-snowy', 'weather-night');
-
-                // Apply weather class
                 document.body.classList.add(`weather-${weatherType}`);
 
-                // Create visual effects
                 const effectsContainer = document.getElementById('weatherEffects');
                 effectsContainer.innerHTML = '';
 
@@ -2016,26 +2154,25 @@
                 } else if (weatherType === 'rainy') {
                     const rain = document.createElement('div');
                     rain.className = 'rain';
-                    createRainDrops(rain, 60);
+                    createRainDrops(rain, 40);
                     effectsContainer.appendChild(rain);
                     createClouds(effectsContainer);
                 } else if (weatherType === 'snowy') {
-                    createSnowflakes(effectsContainer, 50);
+                    createSnowflakes(effectsContainer, 30);
                     createClouds(effectsContainer);
                 } else if (weatherType === 'night') {
-                    createStars(effectsContainer, 60);
+                    createStars(effectsContainer, 40);
                     const moon = document.createElement('div');
                     moon.className = 'moon';
                     effectsContainer.appendChild(moon);
                 }
 
-                // Show weather badge
                 const badge = document.getElementById('weatherBadge');
                 const badgeIcon = document.getElementById('weatherBadgeIcon');
                 const badgeText = document.getElementById('weatherBadgeText');
 
                 badgeIcon.innerHTML = weatherIcons[weatherType];
-                const tempF = weather.temp_max ? `${Math.round(weather.temp_max)}°F` : '--';
+                const tempF = weather.temp_max ? `${Math.round(weather.temp_max)}F` : '--';
                 const descriptions = {
                     sunny: 'Clear & Sunny',
                     cloudy: 'Cloudy',
@@ -2051,7 +2188,6 @@
             }
         }
 
-        // Apply weather effects after init
         init();
         setTimeout(applyWeatherEffects, 500);
     </script>
