@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     # Sentry Error Monitoring
     SENTRY_DSN: Optional[str] = None
 
+    # OpenRouter AI
+    OPENROUTER_API_KEY: Optional[str] = None
+    OPENROUTER_SITE_URL: str = "https://trucastai.com"
+
     # Scheduler
     SYNC_SCHEDULE_HOUR: int = 2  # 2 AM UTC daily sync
     SYNC_ENABLED: bool = True
