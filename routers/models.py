@@ -213,8 +213,8 @@ async def predict(
     if not business:
         raise HTTPException(status_code=404, detail="Model not found")
 
-    # Check if model file exists
-    if not model.model_path:
+    # Check if model data exists (either in database or file)
+    if not model.model_data and not model.model_path:
         raise HTTPException(status_code=400, detail="Model not trained yet")
 
     # Load the trained model and generate predictions
@@ -288,7 +288,14 @@ async def predict(
 
         # Load forecaster and generate predictions
         forecaster = SalesForecaster(config)
-        forecaster.load_model(model.model_path)
+
+        # Load model from database (preferred) or file (legacy)
+        if model.model_data:
+            forecaster.load_model_from_bytes(model.model_data)
+        elif model.model_path:
+            forecaster.load_model(model.model_path)
+        else:
+            raise HTTPException(status_code=400, detail="No model data available")
 
         predictions_df = forecaster.predict(
             future_dates=future_dates,

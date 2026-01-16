@@ -72,6 +72,24 @@ def run_migrations():
                 conn.execute(text("ALTER TABLE businesses ADD COLUMN address VARCHAR"))
                 conn.commit()
                 logger.info("Column 'address' added successfully")
+
+            # Check if model_data column exists in trained_models
+            result = conn.execute(text("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_name = 'trained_models' AND column_name = 'model_data'
+            """))
+            if not result.fetchone():
+                logger.info("Adding missing 'model_data' column to trained_models table...")
+                conn.execute(text("ALTER TABLE trained_models ADD COLUMN model_data BYTEA"))
+                conn.commit()
+                logger.info("Column 'model_data' added successfully")
+
+            # Make model_path nullable if not already (ignore errors)
+            try:
+                conn.execute(text("ALTER TABLE trained_models ALTER COLUMN model_path DROP NOT NULL"))
+                conn.commit()
+            except:
+                pass  # Column may already be nullable
     except Exception as e:
         logger.warning(f"Direct column check/add failed (may be OK): {e}")
 
@@ -410,25 +428,20 @@ async def train_model(
         from database import SessionLocal
         db = SessionLocal()
         try:
-            # Create models directory if it doesn't exist
-            models_dir = Path(__file__).resolve().parent / "data" / "models"
-            models_dir.mkdir(parents=True, exist_ok=True)
-
-            # Save model file
-            model_filename = f"model_{business_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.joblib"
-            model_path = str(models_dir / model_filename)
-            forecaster.save_model(model_path)
+            # Serialize model to bytes for database storage (cloud-persistent)
+            model_bytes = forecaster.serialize_model()
 
             # Deactivate existing models for this business
             db.query(TrainedModel).filter(
                 TrainedModel.business_id == business_id
             ).update({"is_active": False})
 
-            # Create new model record
+            # Create new model record with binary data
             trained_model = TrainedModel(
                 business_id=business_id,
                 model_name="xgboost",
-                model_path=model_path,
+                model_path=None,  # No longer using file path
+                model_data=model_bytes,  # Store serialized model in database
                 train_mae=results.get("train_mae"),
                 test_mae=results.get("test_mae"),
                 train_mape=results.get("train_mape"),

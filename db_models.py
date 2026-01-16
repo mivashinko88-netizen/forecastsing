@@ -1,5 +1,5 @@
 # db_models.py
-from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text, ForeignKey, Date, LargeBinary
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
@@ -68,7 +68,8 @@ class TrainedModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     business_id = Column(Integer, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     model_name = Column(String, nullable=False)
-    model_path = Column(String, nullable=False)
+    model_path = Column(String, nullable=True)  # Legacy - now using model_data
+    model_data = Column(LargeBinary, nullable=True)  # Serialized model binary for cloud persistence
     training_rows = Column(Integer)
     test_rows = Column(Integer)
     train_mae = Column(Float)

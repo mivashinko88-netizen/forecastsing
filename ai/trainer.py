@@ -812,6 +812,24 @@ class SalesForecaster:
             "sales_history": self.sales_history
         }, filepath)
 
+    def serialize_model(self) -> bytes:
+        """Serialize trained model to bytes for database storage"""
+        import io
+        buffer = io.BytesIO()
+        joblib.dump({
+            "model": self.model,
+            "feature_columns": self.feature_columns,
+            "item_mapping": self.item_mapping,
+            "item_metadata": self.item_metadata,
+            "hourly_patterns": self.hourly_patterns,
+            "categories": getattr(self, 'categories', {}),
+            "config": self.config,
+            "global_avg_quantity": self.global_avg_quantity,
+            "category_avg_quantity": self.category_avg_quantity,
+            "sales_history": self.sales_history
+        }, buffer)
+        return buffer.getvalue()
+
     def load_model(self, filepath: str):
         """Load trained model from file"""
 
@@ -823,6 +841,21 @@ class SalesForecaster:
         self.hourly_patterns = data.get("hourly_patterns", {})
         self.categories = data.get("categories", {})
         # New fields for improved model
+        self.global_avg_quantity = data.get("global_avg_quantity", 0)
+        self.category_avg_quantity = data.get("category_avg_quantity", {})
+        self.sales_history = data.get("sales_history", None)
+
+    def load_model_from_bytes(self, model_bytes: bytes):
+        """Load trained model from bytes (from database)"""
+        import io
+        buffer = io.BytesIO(model_bytes)
+        data = joblib.load(buffer)
+        self.model = data["model"]
+        self.feature_columns = data["feature_columns"]
+        self.item_mapping = data["item_mapping"]
+        self.item_metadata = data.get("item_metadata", {})
+        self.hourly_patterns = data.get("hourly_patterns", {})
+        self.categories = data.get("categories", {})
         self.global_avg_quantity = data.get("global_avg_quantity", 0)
         self.category_avg_quantity = data.get("category_avg_quantity", {})
         self.sales_history = data.get("sales_history", None)
