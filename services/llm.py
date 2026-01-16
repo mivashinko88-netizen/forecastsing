@@ -287,26 +287,30 @@ async def chat_response(
     system_prompt = """You are an AI assistant for TrucastAI, a sales forecasting application.
 You help business owners understand their sales predictions, analyze factors affecting sales, and provide actionable advice.
 
-You have access to:
-- Sales forecasts and predictions
-- Weather data and its impact on sales
-- Local events (holidays, sports, school calendar)
-- Payday cycles
+IMPORTANT: You have access to the business's actual forecast data provided in the context below.
+When answering questions about busiest days, slowest days, or forecasts, USE THE DATA PROVIDED.
+Do not say you don't have access to data if it's provided in the context.
 
 Be helpful, concise, and focus on practical business insights.
-If you don't have specific data, explain what information would help answer the question."""
+Give specific answers based on the forecast data when available."""
 
     # Build context from business data
     context_parts = []
     if business_context:
         if business_context.get("business_name"):
             context_parts.append(f"Business: {business_context['business_name']}")
+        if business_context.get("business_type"):
+            context_parts.append(f"Business Type: {business_context['business_type']}")
         if business_context.get("location"):
             context_parts.append(f"Location: {business_context['location']}")
-        if business_context.get("recent_forecast"):
-            context_parts.append(f"Recent forecast summary: {business_context['recent_forecast']}")
-        if business_context.get("upcoming_events"):
-            context_parts.append(f"Upcoming events: {business_context['upcoming_events']}")
+        if business_context.get("model_accuracy"):
+            context_parts.append(f"Model Accuracy: {business_context['model_accuracy']}")
+        if business_context.get("busiest_day"):
+            context_parts.append(f"Predicted Busiest Day: {business_context['busiest_day']}")
+        if business_context.get("slowest_day"):
+            context_parts.append(f"Predicted Slowest Day: {business_context['slowest_day']}")
+        if business_context.get("forecast_next_14_days"):
+            context_parts.append(f"\nForecast for next 14 days:\n{business_context['forecast_next_14_days']}")
 
     # Build messages
     messages = []
