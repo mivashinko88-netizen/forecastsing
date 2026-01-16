@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 logger = logging.getLogger(__name__)
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "meta-llama/llama-3.1-8b-instruct:free"  # Free model available on OpenRouter
+DEFAULT_MODEL = "nvidia/nemotron-3-nano-30b-a3b:free"  # Free general-purpose model
 
 def get_api_key() -> Optional[str]:
     """Get OpenRouter API key from environment"""
@@ -353,9 +353,11 @@ If you don't have specific data, explain what information would help answer the 
                 if choices:
                     return choices[0].get("message", {}).get("content", "I couldn't generate a response.")
             else:
-                print(f"OpenRouter chat error: {response.status_code}")
+                logger.error(f"OpenRouter chat error: {response.status_code} - {response.text}")
+                return f"API error ({response.status_code}). Please try again."
     except Exception as e:
-        print(f"Chat error: {e}")
+        logger.error(f"Chat error: {e}")
+        return f"Connection error: {str(e)[:100]}"
 
     return "I'm currently unavailable. Please check your OpenRouter API configuration."
 
