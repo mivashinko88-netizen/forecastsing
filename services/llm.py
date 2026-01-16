@@ -1,20 +1,29 @@
 # services/llm.py - OpenRouter LLM integration service
 import httpx
 import os
+import logging
 from typing import Optional, List, Dict, Any
+
+logger = logging.getLogger(__name__)
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_MODEL = "meta-llama/llama-3.1-8b-instruct:free"  # Free model available on OpenRouter
 
 def get_api_key() -> Optional[str]:
     """Get OpenRouter API key from environment"""
-    return os.getenv("OPENROUTER_API_KEY")
+    key = os.getenv("OPENROUTER_API_KEY")
+    if key:
+        logger.info(f"OpenRouter API key found (starts with: {key[:20]}...)")
+    else:
+        logger.warning("OPENROUTER_API_KEY not found in environment variables")
+    return key
 
 
 async def check_openrouter_available() -> bool:
     """Check if OpenRouter API is accessible with valid key"""
     api_key = get_api_key()
     if not api_key:
+        logger.warning("OpenRouter check failed: No API key")
         return False
 
     try:
@@ -23,8 +32,12 @@ async def check_openrouter_available() -> bool:
                 f"{OPENROUTER_BASE_URL}/models",
                 headers={"Authorization": f"Bearer {api_key}"}
             )
+            logger.info(f"OpenRouter API response status: {response.status_code}")
+            if response.status_code != 200:
+                logger.error(f"OpenRouter API error: {response.text[:200]}")
             return response.status_code == 200
-    except Exception:
+    except Exception as e:
+        logger.error(f"OpenRouter connection error: {e}")
         return False
 
 
