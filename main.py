@@ -48,24 +48,39 @@ from scheduler import start_scheduler, shutdown_scheduler
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Get the directory where main.py is located (needed for migrations)
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(title="TrucastAI", version="1.0.0")
 
 
 def run_migrations():
     """Run Alembic migrations to ensure database schema is up to date."""
+    import traceback
     try:
         from alembic.config import Config
         from alembic import command
 
-        # Create Alembic config
-        alembic_cfg = Config("alembic.ini")
+        # Get absolute path to alembic.ini
+        alembic_ini_path = BASE_DIR / "alembic.ini"
+        logger.info(f"Looking for alembic.ini at: {alembic_ini_path}")
+
+        if not alembic_ini_path.exists():
+            raise FileNotFoundError(f"alembic.ini not found at {alembic_ini_path}")
+
+        # Create Alembic config with absolute path
+        alembic_cfg = Config(str(alembic_ini_path))
+        alembic_cfg.set_main_option("script_location", str(BASE_DIR / "alembic"))
 
         # Run migrations
+        logger.info("Running Alembic migrations...")
         command.upgrade(alembic_cfg, "head")
         logger.info("Database migrations completed successfully")
     except Exception as e:
-        logger.warning(f"Migration failed, falling back to create_all: {e}")
-        # Fallback to create_all for fresh databases
+        logger.error(f"Migration failed: {e}")
+        logger.error(traceback.format_exc())
+        # Fallback to create_all for fresh databases only
+        logger.info("Falling back to create_all...")
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables created via create_all")
 
@@ -98,8 +113,7 @@ app.include_router(models.router, prefix="/api")
 app.include_router(llm.router, prefix="/api")
 app.include_router(integrations.router, prefix="/api")
 
-# Get the directory where main.py is located
-BASE_DIR = Path(__file__).resolve().parent
+# Frontend directory for static files
 FRONTEND_DIR = BASE_DIR / "frontend"
 
 # Mount static files for CSS and JS
