@@ -38,6 +38,7 @@ class BusinessCreate(BaseModel):
     name: str
     business_type: str  # 'restaurant', 'retail', 'service', 'fashion', 'electronics', etc.
     is_online: bool = False
+    address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
     zipcode: Optional[str] = None
@@ -53,6 +54,7 @@ class BusinessUpdate(BaseModel):
     name: Optional[str] = None
     business_type: Optional[str] = None
     is_online: Optional[bool] = None
+    address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
     zipcode: Optional[str] = None
@@ -70,6 +72,7 @@ class BusinessResponse(BaseModel):
     name: str
     business_type: str
     is_online: bool = False
+    address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
     zipcode: Optional[str] = None

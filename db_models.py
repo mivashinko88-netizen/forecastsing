@@ -34,6 +34,7 @@ class Business(Base):
     is_online = Column(Boolean, default=False)
 
     # Physical store location (nullable for online stores)
+    address = Column(String, nullable=True)  # Street address
     city = Column(String, nullable=True)
     state = Column(String, nullable=True)
     zipcode = Column(String, nullable=True)

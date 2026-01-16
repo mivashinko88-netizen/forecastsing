@@ -569,6 +569,11 @@
                     <input type="text" class="input" id="businessName" placeholder="Downtown Coffee Shop" required>
                 </div>
 
+                <div class="form-group">
+                    <label class="label" for="address">Street Address *</label>
+                    <input type="text" class="input" id="address" placeholder="123 Main Street" required>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="label" for="city">City *</label>
@@ -744,7 +749,7 @@
                                 ${loc.name}
                                 ${index === 0 ? '<span class="location-badge">Primary</span>' : ''}
                             </h4>
-                            <p>${loc.city}, ${loc.state} ${loc.zipcode}</p>
+                            <p>${loc.address ? loc.address + ', ' : ''}${loc.city}, ${loc.state} ${loc.zipcode}</p>
                         </div>
                     </div>
                     <div class="location-actions">
@@ -782,6 +787,7 @@
 
             const locationData = {
                 name: document.getElementById('businessName').value,
+                address: document.getElementById('address').value,
                 city: document.getElementById('city').value,
                 state: document.getElementById('state').value.toUpperCase(),
                 zipcode: document.getElementById('zipcode').value,
@@ -809,6 +815,7 @@
             editingIndex = index;
 
             document.getElementById('businessName').value = loc.name;
+            document.getElementById('address').value = loc.address || '';
             document.getElementById('city').value = loc.city;
             document.getElementById('state').value = loc.state;
             document.getElementById('zipcode').value = loc.zipcode;
@@ -892,6 +899,7 @@
                 if (existingBusinessId) {
                     const updateData = {
                         name: firstLoc.name,
+                        address: firstLoc.address,
                         city: firstLoc.city,
                         state: firstLoc.state,
                         zipcode: firstLoc.zipcode,
@@ -915,6 +923,7 @@
                     const businessData = {
                         name: loc.name,
                         business_type: businessType,
+                        address: loc.address,
                         city: loc.city,
                         state: loc.state,
                         zipcode: loc.zipcode,
