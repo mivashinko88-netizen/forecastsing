@@ -50,11 +50,30 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="TrucastAI", version="1.0.0")
 
+
+def run_migrations():
+    """Run Alembic migrations to ensure database schema is up to date."""
+    try:
+        from alembic.config import Config
+        from alembic import command
+
+        # Create Alembic config
+        alembic_cfg = Config("alembic.ini")
+
+        # Run migrations
+        command.upgrade(alembic_cfg, "head")
+        logger.info("Database migrations completed successfully")
+    except Exception as e:
+        logger.warning(f"Migration failed, falling back to create_all: {e}")
+        # Fallback to create_all for fresh databases
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created via create_all")
+
+
 # Initialize database and scheduler on startup
 @app.on_event("startup")
 async def startup_event():
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created")
+    run_migrations()
     start_scheduler()
     logger.info("Background scheduler started")
 
