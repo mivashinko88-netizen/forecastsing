@@ -57,6 +57,25 @@ app = FastAPI(title="TrucastAI", version="1.0.0")
 def run_migrations():
     """Run Alembic migrations to ensure database schema is up to date."""
     import traceback
+    from sqlalchemy import text
+
+    # First, try to apply any missing columns directly (handles edge cases)
+    try:
+        with engine.connect() as conn:
+            # Check if address column exists
+            result = conn.execute(text("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_name = 'businesses' AND column_name = 'address'
+            """))
+            if not result.fetchone():
+                logger.info("Adding missing 'address' column to businesses table...")
+                conn.execute(text("ALTER TABLE businesses ADD COLUMN address VARCHAR"))
+                conn.commit()
+                logger.info("Column 'address' added successfully")
+    except Exception as e:
+        logger.warning(f"Direct column check/add failed (may be OK): {e}")
+
+    # Then try Alembic migrations
     try:
         from alembic.config import Config
         from alembic import command
