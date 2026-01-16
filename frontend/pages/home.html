@@ -230,6 +230,22 @@
             box-shadow: var(--shadow-lg), 0 0 0 1px rgba(13, 148, 136, 0.2);
         }
 
+        .hero-note {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+        }
+
+        .hero-note svg {
+            width: 16px;
+            height: 16px;
+            color: #10b981;
+        }
+
         /* Trusted By Section */
         .trusted {
             padding: 3rem 2rem;
@@ -271,17 +287,22 @@
             margin-top: 0.25rem;
         }
 
-        /* Features Section */
-        .features {
+        /* ROI Calculator Section */
+        .roi-section {
             padding: 5rem 2rem;
-            max-width: 1200px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #f8fafc 100%);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .roi-content {
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         .section-header {
             text-align: center;
             max-width: 600px;
-            margin: 0 auto 3.5rem;
+            margin: 0 auto 3rem;
         }
 
         .section-header h2 {
@@ -294,6 +315,150 @@
         .section-header p {
             color: var(--text-secondary);
             font-size: 1.05rem;
+        }
+
+        .roi-calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .roi-inputs {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .roi-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .roi-input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .roi-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-label-hint {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .roi-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .roi-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .roi-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-gray-dark);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .roi-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+        }
+
+        .roi-slider-value {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .roi-results {
+            text-align: center;
+        }
+
+        .roi-savings-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.3);
+        }
+
+        .roi-savings-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-savings-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-savings-period {
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+
+        .roi-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .roi-stat {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+
+        .roi-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .roi-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .features-grid {
@@ -412,22 +577,78 @@
             line-height: 1.5;
         }
 
-        /* Preview Section */
-        .preview {
+        /* Interactive Demo Section */
+        .demo {
             padding: 5rem 2rem;
             max-width: 1100px;
             margin: 0 auto;
         }
 
-        .preview-container {
+        .demo-container {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border: 1px solid var(--border-light);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 2.5rem;
             box-shadow: var(--shadow-xl);
         }
 
-        .preview-mockup {
+        .demo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .demo-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-gray-dark);
+            padding: 0.25rem;
+            border-radius: 10px;
+        }
+
+        .demo-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .demo-tab.active {
+            background: white;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .demo-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .demo-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .demo-mockup {
             background: var(--bg-white);
             border: 1px solid var(--border-light);
             border-radius: 12px;
@@ -454,7 +675,7 @@
         }
 
         .mockup-chart {
-            height: 100px;
+            height: 120px;
             display: flex;
             align-items: flex-end;
             gap: 6px;
@@ -465,6 +686,7 @@
             background: linear-gradient(180deg, var(--primary-light) 0%, var(--primary) 100%);
             border-radius: 3px 3px 0 0;
             min-height: 16px;
+            transition: height 0.5s ease;
         }
 
         .mockup-prediction {
@@ -477,10 +699,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.625rem 0.75rem;
+            padding: 0.75rem;
             background: var(--bg-white);
             border: 1px solid var(--border-light);
-            border-radius: 6px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-row:hover {
+            border-color: var(--primary-light);
+            background: rgba(13, 148, 136, 0.02);
         }
 
         .prediction-item {
@@ -492,6 +720,13 @@
             font-weight: 600;
             color: var(--primary-dark);
             font-size: 0.85rem;
+        }
+
+        .demo-cta {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
         /* Testimonials Section */
@@ -606,18 +841,26 @@
             background: var(--bg-gray);
         }
 
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
         .footer p {
             color: var(--text-muted);
             font-size: 0.85rem;
-        }
-
-        .footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            color: var(--text-primary);
         }
 
         /* Responsive */
@@ -631,7 +874,7 @@
             .step::after {
                 display: none;
             }
-            .preview-mockup {
+            .demo-mockup {
                 grid-template-columns: 1fr;
             }
             .testimonials-grid {
@@ -639,6 +882,9 @@
             }
             .trusted-stats {
                 gap: 2.5rem;
+            }
+            .roi-calculator {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -674,6 +920,12 @@
                 flex-direction: column;
                 gap: 1.5rem;
             }
+            .roi-section {
+                padding: 4rem 1.25rem;
+            }
+            .roi-breakdown {
+                grid-template-columns: 1fr;
+            }
             .features {
                 padding: 4rem 1.25rem;
             }
@@ -690,11 +942,15 @@
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
             }
-            .preview {
+            .demo {
                 padding: 4rem 1.25rem;
             }
-            .preview-container {
-                padding: 1.25rem;
+            .demo-container {
+                padding: 1.5rem;
+            }
+            .demo-header {
+                flex-direction: column;
+                gap: 1rem;
             }
             .testimonials {
                 padding: 4rem 1.25rem;
@@ -704,6 +960,10 @@
             }
             .cta h2 {
                 font-size: 1.75rem;
+            }
+            .footer-links {
+                flex-direction: column;
+                gap: 0.75rem;
             }
         }
     </style>
@@ -721,12 +981,13 @@
             </a>
             <div class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
-                <a href="#how-it-works" class="nav-link">How It Works</a>
-                <a href="#preview" class="nav-link">Demo</a>
+                <a href="#roi" class="nav-link">ROI Calculator</a>
+                <a href="/frontend/pages/pricing.html" class="nav-link">Pricing</a>
+                <a href="#demo" class="nav-link">Demo</a>
             </div>
             <div class="nav-buttons">
                 <a href="/frontend/pages/login.html" class="btn btn-ghost">Log in</a>
-                <a href="/frontend/pages/login.html" class="btn btn-primary">Get Started</a>
+                <a href="/frontend/pages/login.html" class="btn btn-primary">Start Free Trial</a>
             </div>
         </div>
     </nav>
@@ -746,14 +1007,24 @@
         </p>
         <div class="hero-buttons">
             <a href="/frontend/pages/login.html" class="btn btn-hero btn-primary">
-                Start Free Trial
+                Start Free 14-Day Trial
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
             </a>
-            <a href="#preview" class="btn btn-hero btn-outline">
+            <a href="#demo" class="btn btn-hero btn-outline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
                 View Demo
             </a>
+        </div>
+        <div class="hero-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            No credit card required. Free tier available.
         </div>
     </section>
 
@@ -776,6 +1047,76 @@
             <div class="stat">
                 <div class="stat-value">14 days</div>
                 <div class="stat-label">Ahead forecasting</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculator Section -->
+    <section class="roi-section" id="roi">
+        <div class="roi-content">
+            <div class="section-header">
+                <h2>Calculate Your Savings</h2>
+                <p>See how much TrucastAI can save your business by reducing waste and optimizing inventory.</p>
+            </div>
+            <div class="roi-calculator">
+                <div class="roi-inputs">
+                    <div class="roi-input-group">
+                        <label class="roi-label">
+                            Monthly Revenue
+                            <span class="roi-label-hint">(Average)</span>
+                        </label>
+                        <input type="text" class="roi-input" id="roiRevenue" value="$50,000" oninput="calculateROI()">
+                    </div>
+                    <div class="roi-input-group">
+                        <label class="roi-label">
+                            Food Cost Percentage
+                            <span class="roi-label-hint">(Industry avg: 28-35%)</span>
+                        </label>
+                        <input type="range" class="roi-slider" id="roiFoodCost" min="20" max="45" value="30" oninput="calculateROI()">
+                        <div class="roi-slider-value">
+                            <span>20%</span>
+                            <span id="foodCostDisplay">30%</span>
+                            <span>45%</span>
+                        </div>
+                    </div>
+                    <div class="roi-input-group">
+                        <label class="roi-label">
+                            Current Waste Percentage
+                            <span class="roi-label-hint">(Industry avg: 4-10%)</span>
+                        </label>
+                        <input type="range" class="roi-slider" id="roiWaste" min="2" max="15" value="8" oninput="calculateROI()">
+                        <div class="roi-slider-value">
+                            <span>2%</span>
+                            <span id="wasteDisplay">8%</span>
+                            <span>15%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="roi-results">
+                    <div class="roi-savings-card">
+                        <div class="roi-savings-label">Estimated Annual Savings</div>
+                        <div class="roi-savings-amount" id="annualSavings">$8,640</div>
+                        <div class="roi-savings-period">per year with TrucastAI</div>
+                    </div>
+                    <div class="roi-breakdown">
+                        <div class="roi-stat">
+                            <div class="roi-stat-value" id="monthlyWaste">$1,200</div>
+                            <div class="roi-stat-label">Current Monthly Waste</div>
+                        </div>
+                        <div class="roi-stat">
+                            <div class="roi-stat-value" id="wasteReduction">60%</div>
+                            <div class="roi-stat-label">Waste Reduction</div>
+                        </div>
+                        <div class="roi-stat">
+                            <div class="roi-stat-value" id="monthlySavings">$720</div>
+                            <div class="roi-stat-label">Monthly Savings</div>
+                        </div>
+                        <div class="roi-stat">
+                            <div class="roi-stat-value" id="roiMultiple">14.7x</div>
+                            <div class="roi-stat-label">ROI (vs Pro Plan)</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -885,17 +1226,25 @@
         </div>
     </section>
 
-    <!-- Dashboard Preview Section -->
-    <section class="preview" id="preview">
+    <!-- Interactive Demo Section -->
+    <section class="demo" id="demo">
         <div class="section-header">
-            <h2>See Your Forecasts at a Glance</h2>
-            <p>Clear, actionable predictions for every item on your menu.</p>
+            <h2>See TrucastAI in Action</h2>
+            <p>Explore how the dashboard helps you plan ahead with confidence.</p>
         </div>
-        <div class="preview-container">
-            <div class="preview-mockup">
+        <div class="demo-container">
+            <div class="demo-header">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" onclick="switchDemo('forecast')">7-Day Forecast</button>
+                    <button class="demo-tab" onclick="switchDemo('predictions')">Item Predictions</button>
+                    <button class="demo-tab" onclick="switchDemo('factors')">Impact Factors</button>
+                </div>
+                <div class="demo-badge">Live Demo Data</div>
+            </div>
+            <div class="demo-mockup" id="demoContent">
                 <div class="mockup-card">
                     <h4>7-Day Sales Forecast</h4>
-                    <div class="mockup-chart">
+                    <div class="mockup-chart" id="demoChart">
                         <div class="chart-bar" style="height: 60%"></div>
                         <div class="chart-bar" style="height: 75%"></div>
                         <div class="chart-bar" style="height: 45%"></div>
@@ -906,8 +1255,8 @@
                     </div>
                 </div>
                 <div class="mockup-card">
-                    <h4>Tomorrow's Predictions</h4>
-                    <div class="mockup-prediction">
+                    <h4>Tomorrow's Top Predictions</h4>
+                    <div class="mockup-prediction" id="demoPredictions">
                         <div class="prediction-row">
                             <span class="prediction-item">Large Pepperoni</span>
                             <span class="prediction-value">42 units</span>
@@ -926,6 +1275,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="demo-cta">
+                <a href="/frontend/pages/login.html" class="btn btn-hero btn-primary">
+                    Try It With Your Data
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="/frontend/pages/pricing.html" class="btn btn-hero btn-outline">
+                    View Pricing
+                </a>
             </div>
         </div>
     </section>
@@ -985,7 +1345,118 @@
 
     <!-- Footer -->
     <footer class="footer">
+        <div class="footer-links">
+            <a href="/frontend/pages/pricing.html">Pricing</a>
+            <a href="#features">Features</a>
+            <a href="#demo">Demo</a>
+            <a href="/frontend/pages/login.html">Login</a>
+        </div>
         <p>&copy; 2025 TrucastAI. Smart forecasting for smarter businesses.</p>
     </footer>
+
+    <script>
+        // ROI Calculator
+        function calculateROI() {
+            const revenueInput = document.getElementById('roiRevenue').value;
+            const revenue = parseFloat(revenueInput.replace(/[^0-9.]/g, '')) || 50000;
+            const foodCostPct = parseFloat(document.getElementById('roiFoodCost').value) / 100;
+            const wastePct = parseFloat(document.getElementById('roiWaste').value) / 100;
+
+            // Display current slider values
+            document.getElementById('foodCostDisplay').textContent = Math.round(foodCostPct * 100) + '%';
+            document.getElementById('wasteDisplay').textContent = Math.round(wastePct * 100) + '%';
+
+            // Calculate values
+            const foodCost = revenue * foodCostPct;
+            const monthlyWaste = foodCost * wastePct;
+            const wasteReduction = 0.60; // 60% reduction with TrucastAI
+            const monthlySavings = monthlyWaste * wasteReduction;
+            const annualSavings = monthlySavings * 12;
+            const proPlanCost = 49 * 12; // $49/month
+            const roiMultiple = annualSavings / proPlanCost;
+
+            // Update display
+            document.getElementById('monthlyWaste').textContent = '$' + Math.round(monthlyWaste).toLocaleString();
+            document.getElementById('wasteReduction').textContent = Math.round(wasteReduction * 100) + '%';
+            document.getElementById('monthlySavings').textContent = '$' + Math.round(monthlySavings).toLocaleString();
+            document.getElementById('annualSavings').textContent = '$' + Math.round(annualSavings).toLocaleString();
+            document.getElementById('roiMultiple').textContent = roiMultiple.toFixed(1) + 'x';
+        }
+
+        // Format revenue input
+        document.getElementById('roiRevenue').addEventListener('blur', function() {
+            const value = parseFloat(this.value.replace(/[^0-9.]/g, '')) || 50000;
+            this.value = '$' + value.toLocaleString();
+            calculateROI();
+        });
+
+        // Interactive Demo
+        const demoData = {
+            forecast: {
+                chart: [60, 75, 45, 90, 100, 85, 70],
+                predictions: [
+                    { item: 'Large Pepperoni', value: '42 units' },
+                    { item: 'Medium Cheese', value: '38 units' },
+                    { item: 'Wings (12pc)', value: '27 units' },
+                    { item: 'Caesar Salad', value: '15 units' }
+                ],
+                chartTitle: '7-Day Sales Forecast',
+                predTitle: "Tomorrow's Top Predictions"
+            },
+            predictions: {
+                chart: [85, 70, 95, 60, 75, 80, 90],
+                predictions: [
+                    { item: 'Chicken Sandwich', value: '31 units' },
+                    { item: 'French Fries', value: '58 units' },
+                    { item: 'Milkshake', value: '22 units' },
+                    { item: 'Onion Rings', value: '18 units' }
+                ],
+                chartTitle: 'Weekly Item Trends',
+                predTitle: 'Friday Peak Items'
+            },
+            factors: {
+                chart: [40, 55, 70, 120, 95, 85, 75],
+                predictions: [
+                    { item: 'Weather: Sunny 75F', value: '+15%' },
+                    { item: 'Local Sports Game', value: '+25%' },
+                    { item: 'Payday Friday', value: '+12%' },
+                    { item: 'School Break', value: '+8%' }
+                ],
+                chartTitle: 'Impact Factors This Week',
+                predTitle: 'Sales Boosters'
+            }
+        };
+
+        function switchDemo(type) {
+            // Update tabs
+            document.querySelectorAll('.demo-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update chart
+            const data = demoData[type];
+            const bars = document.querySelectorAll('.chart-bar');
+            bars.forEach((bar, i) => {
+                bar.style.height = data.chart[i] + '%';
+            });
+
+            // Update predictions
+            const predContainer = document.getElementById('demoPredictions');
+            predContainer.innerHTML = data.predictions.map(p => `
+                <div class="prediction-row">
+                    <span class="prediction-item">${p.item}</span>
+                    <span class="prediction-value">${p.value}</span>
+                </div>
+            `).join('');
+
+            // Update titles
+            document.querySelector('#demoContent .mockup-card:first-child h4').textContent = data.chartTitle;
+            document.querySelector('#demoContent .mockup-card:last-child h4').textContent = data.predTitle;
+        }
+
+        // Initial calculation
+        calculateROI();
+    </script>
 </body>
 </html>
