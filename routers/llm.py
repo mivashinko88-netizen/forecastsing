@@ -52,6 +52,13 @@ class LLMResponse(BaseModel):
 @router.get("/status")
 async def get_llm_status():
     """Check if OpenRouter LLM is available"""
+    import os
+
+    # Debug: Check if key exists in environment
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    key_exists = api_key is not None and len(api_key) > 0
+    key_preview = f"{api_key[:15]}...{api_key[-4:]}" if key_exists and len(api_key) > 20 else "NOT SET"
+
     available = await check_openrouter_available()
     models = await get_available_models() if available else []
 
@@ -61,7 +68,9 @@ async def get_llm_status():
     return {
         "available": available,
         "models": model_ids,
-        "message": "OpenRouter AI is connected" if available else "OpenRouter API key not configured. Add OPENROUTER_API_KEY to enable AI features."
+        "key_configured": key_exists,
+        "key_preview": key_preview,
+        "message": "OpenRouter AI is connected" if available else "OpenRouter API key not configured or invalid. Add OPENROUTER_API_KEY to enable AI features."
     }
 
 
