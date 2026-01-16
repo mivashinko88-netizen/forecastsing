@@ -48,7 +48,7 @@ from scheduler import start_scheduler, shutdown_scheduler
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Forecast Pro", version="1.0.0")
+app = FastAPI(title="TrucastAI", version="1.0.0")
 
 # Initialize database and scheduler on startup
 @app.on_event("startup")

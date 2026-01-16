@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Forecast Pro</title>
+    <title>Dashboard - TrucastAI</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
@@ -20,7 +20,7 @@
         }
 
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border-bottom: none;
             padding: var(--space-5) var(--space-6);
         }
@@ -72,7 +72,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
         }
 
         .stat-card:nth-child(2)::before {
@@ -164,7 +164,7 @@
         }
 
         .action-card:nth-child(1) .action-icon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
         }
 
@@ -225,7 +225,7 @@
 
         /* AI Insights Section */
         .ai-insights-section {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.08) 0%, rgba(94, 234, 212, 0.08) 100%);
             border: none;
             border-radius: var(--radius-xl);
             padding: var(--space-6);
@@ -242,7 +242,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background: linear-gradient(90deg, #0D9488, #14B8A6, #5EEAD4, #F97316);
             background-size: 300% 100%;
             animation: gradientShift 3s ease infinite;
         }
@@ -262,12 +262,12 @@
         .ai-insights-icon-lg {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
         }
 
         .ai-insights-icon-lg svg {
@@ -328,7 +328,7 @@
         }
 
         [data-theme="dark"] .ai-insights-section {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(94, 234, 212, 0.15) 100%);
         }
 
         [data-theme="dark"] .ai-insights-title {
@@ -340,7 +340,7 @@
         }
 
         [data-theme="dark"] .page-header {
-            background: linear-gradient(135deg, #4c5fd7 0%, #5a3d8a 100%);
+            background: linear-gradient(135deg, #0F766E 0%, #0D9488 100%);
         }
 
         [data-theme="dark"] .location-switcher {
@@ -363,7 +363,7 @@
         }
 
         [data-theme="dark"] .location-option.active {
-            background: rgba(102, 126, 234, 0.2);
+            background: rgba(20, 184, 166, 0.2);
         }
 
         /* Location Switcher */
@@ -396,7 +396,7 @@
         .location-switcher-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
@@ -631,10 +631,10 @@
             <div class="sidebar-header">
                 <a href="/frontend/pages/home.html" class="sidebar-logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18 9l-5-6-4 8-3-2"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    Forecast Pro
+                    TrucastAI
                 </a>
             </div>
 

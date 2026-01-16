@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - Forecast Pro</title>
+    <title>Analytics - TrucastAI</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
@@ -20,7 +20,7 @@
         }
 
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border-bottom: none;
             padding: var(--space-4) var(--space-6);
             display: flex;
@@ -77,7 +77,7 @@
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
         }
 
@@ -120,7 +120,7 @@
             height: 3px;
         }
 
-        .metric-card.purple::before { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .metric-card.purple::before { background: linear-gradient(90deg, #0D9488, #14B8A6); }
         .metric-card.green::before { background: linear-gradient(90deg, #10b981, #34d399); }
         .metric-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
         .metric-card.orange::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
@@ -381,10 +381,10 @@
             <div class="sidebar-header">
                 <a href="/frontend/pages/home.html" class="sidebar-logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18 9l-5-6-4 8-3-2"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    Forecast Pro
+                    TrucastAI
                 </a>
             </div>
             <nav class="sidebar-nav">
@@ -786,7 +786,7 @@
                     name: 'Predicted',
                     type: 'scatter',
                     mode: 'lines+markers',
-                    line: { color: '#6366F1', width: 2 },
+                    line: { color: '#14B8A6', width: 2 },
                     marker: { size: 6 }
                 },
                 {
@@ -853,7 +853,7 @@
                     y: dowData.map(d => d.avg_predicted),
                     name: 'Avg Predicted',
                     type: 'bar',
-                    marker: { color: '#6366F1' }
+                    marker: { color: '#14B8A6' }
                 },
                 {
                     x: dowData.map(d => d.day.substring(0, 3)),

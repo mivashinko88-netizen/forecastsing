@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect Data Source - Forecast Pro</title>
+    <title>Connect Data Source - TrucastAI</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
@@ -49,7 +49,7 @@
         .setup-logo svg {
             width: 32px;
             height: 32px;
-            color: #818cf8;
+            color: #14B8A6;
         }
 
         /* Progress Steps */
@@ -81,9 +81,9 @@
         }
 
         .progress-dot.active {
-            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
         }
 
         .progress-dot.complete {
@@ -169,7 +169,7 @@
 
         .integration-card:hover {
             background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(129, 140, 248, 0.3);
+            border-color: rgba(94, 234, 212, 0.3);
             transform: translateY(-2px);
         }
 
@@ -191,7 +191,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(99, 102, 241, 0.15);
+            background: rgba(20, 184, 166, 0.15);
             border-radius: 12px;
         }
 
@@ -202,7 +202,7 @@
         .integration-icon svg {
             width: 28px;
             height: 28px;
-            stroke: #818cf8;
+            stroke: #14B8A6;
             stroke-width: 1.5;
             fill: none;
         }
@@ -266,7 +266,7 @@
         }
 
         .shopify-domain-input input:focus {
-            border-color: #6366f1;
+            border-color: #14B8A6;
             background: rgba(255, 255, 255, 0.15);
         }
 
@@ -289,7 +289,7 @@
         .btn-connect {
             flex: 1;
             padding: 12px 20px;
-            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -301,7 +301,7 @@
 
         .btn-connect:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.4);
         }
 
         .btn-disconnect {
@@ -353,7 +353,7 @@
             align-items: center;
             gap: 8px;
             padding: 14px 28px;
-            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -365,7 +365,7 @@
 
         .btn-continue:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 30px rgba(20, 184, 166, 0.4);
         }
 
         .btn-continue svg {
@@ -394,10 +394,10 @@
             <div class="setup-header">
                 <div class="setup-logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18 9l-5-6-4 8-3-2"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    Forecast Pro
+                    TrucastAI
                 </div>
 
                 <!-- Progress Steps -->

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forecast Pro - AI-Powered Sales Forecasting</title>
+    <title>TrucastAI - AI-Powered Sales Forecasting</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <style>
         * {
@@ -14,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #134E4A 100%);
             color: #f1f5f9;
             min-height: 100vh;
         }
@@ -76,22 +76,22 @@
         }
 
         .btn-login {
-            color: #a5b4fc;
-            border: 1px solid #4f46e5;
+            color: #5EEAD4;
+            border: 1px solid #0D9488;
         }
 
         .btn-login:hover {
-            background: rgba(79, 70, 229, 0.2);
+            background: rgba(13, 148, 136, 0.2);
         }
 
         .btn-start {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
         }
 
         .btn-start:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4);
         }
 
         /* Hero Section */
@@ -107,11 +107,11 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: rgba(99, 102, 241, 0.2);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(20, 184, 166, 0.2);
+            border: 1px solid rgba(20, 184, 166, 0.3);
             border-radius: 100px;
             font-size: 0.875rem;
-            color: #a5b4fc;
+            color: #5EEAD4;
             margin-bottom: 1.5rem;
         }
 
@@ -120,7 +120,7 @@
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #5EEAD4 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -152,13 +152,13 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 30px rgba(20, 184, 166, 0.4);
         }
 
         .btn-secondary {
@@ -174,7 +174,7 @@
         /* Features Section */
         .features {
             padding: 6rem 4rem;
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(15, 23, 42, 0.5);
         }
 
         .features-header {
@@ -212,14 +212,14 @@
 
         .feature-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(99, 102, 241, 0.5);
+            border-color: rgba(20, 184, 166, 0.5);
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
         .feature-icon {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(94, 234, 212, 0.2));
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -230,7 +230,7 @@
         .feature-icon svg {
             width: 24px;
             height: 24px;
-            color: #a5b4fc;
+            color: #5EEAD4;
         }
 
         .feature-card h3 {
@@ -285,7 +285,7 @@
             left: 60%;
             width: 80%;
             height: 2px;
-            background: linear-gradient(90deg, #6366f1, transparent);
+            background: linear-gradient(90deg, #14B8A6, transparent);
         }
 
         .step:last-child::after {
@@ -295,7 +295,7 @@
         .step-number {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -322,9 +322,9 @@
         .cta {
             padding: 6rem 4rem;
             text-align: center;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
-            border-top: 1px solid rgba(99, 102, 241, 0.2);
-            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(13, 148, 136, 0.15));
+            border-top: 1px solid rgba(20, 184, 166, 0.2);
+            border-bottom: 1px solid rgba(20, 184, 166, 0.2);
         }
 
         .cta h2 {
@@ -405,10 +405,10 @@
     <nav class="nav">
         <a href="/frontend/pages/home.html" class="nav-logo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3v18h18"/>
-                <path d="M18 9l-5-6-4 8-3-2"/>
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
             </svg>
-            Forecast Pro
+            TrucastAI
         </a>
         <div class="nav-links">
             <a href="#features" class="nav-link">Features</a>
@@ -426,10 +426,10 @@
             </svg>
             AI-Powered Predictions
         </div>
-        <h1>Predict Your Sales Before They Happen</h1>
+        <h1>Know Your Business Rhythm</h1>
         <p>
-            Forecast Pro uses machine learning to analyze your historical sales data, weather patterns,
-            holidays, and events to predict exactly what you'll sell tomorrow, next week, and beyond.
+            TrucastAI uses machine learning to analyze your sales patterns, weather, holidays, and local events
+            to predict exactly what you'll sell - so you're always prepared for what's next.
         </p>
         <div class="hero-buttons">
             <a href="/frontend/pages/login.html" class="btn-hero btn-primary">
@@ -447,8 +447,8 @@
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="features-header">
-            <h2>Everything You Need to Forecast</h2>
-            <p>Powerful features designed for businesses that want to stay ahead of demand.</p>
+            <h2>Stay in Sync with Demand</h2>
+            <p>Powerful features designed for businesses that want to stay ahead.</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
@@ -459,8 +459,8 @@
                         <path d="M2 12l10 5 10-5"/>
                     </svg>
                 </div>
-                <h3>XGBoost ML Model</h3>
-                <p>Industry-leading machine learning algorithm trained on your specific sales patterns and business characteristics.</p>
+                <h3>Smart ML Model</h3>
+                <p>XGBoost machine learning trained on your specific sales patterns and business characteristics.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -468,8 +468,8 @@
                         <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/>
                     </svg>
                 </div>
-                <h3>Weather Integration</h3>
-                <p>Automatically factors in weather forecasts. Rain, snow, or sunshine - we adjust predictions accordingly.</p>
+                <h3>Weather Aware</h3>
+                <p>Automatically factors in weather forecasts. Rain or shine - predictions adjust accordingly.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -480,8 +480,8 @@
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                 </div>
-                <h3>Holiday & Event Aware</h3>
-                <p>Knows about holidays, NFL games, school schedules, and paydays that impact your sales patterns.</p>
+                <h3>Event Intelligence</h3>
+                <p>Knows about holidays, sports games, school schedules, and paydays that impact your sales.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -491,7 +491,7 @@
                     </svg>
                 </div>
                 <h3>Visual Analytics</h3>
-                <p>Interactive charts and calendars show predictions at a glance. Drill down by item, category, or time period.</p>
+                <p>Interactive charts and calendars show predictions at a glance. Drill down by item or time.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -501,7 +501,7 @@
                     </svg>
                 </div>
                 <h3>Accuracy Tracking</h3>
-                <p>Auto-compare predictions with actuals. Watch your model improve as it learns from new data.</p>
+                <p>Auto-compare predictions with actuals. Watch accuracy improve as your model learns.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -511,8 +511,8 @@
                         <line x1="12" y1="3" x2="12" y2="15"/>
                     </svg>
                 </div>
-                <h3>Easy CSV Upload</h3>
-                <p>Simply upload your POS data as a CSV. We automatically map columns and start training immediately.</p>
+                <h3>Easy Data Import</h3>
+                <p>Upload CSV from any POS system. We map columns automatically and start training instantly.</p>
             </div>
         </div>
     </section>
@@ -527,30 +527,30 @@
             <div class="step">
                 <div class="step-number">1</div>
                 <h4>Upload Your Data</h4>
-                <p>Export sales history from your POS system and upload the CSV file.</p>
+                <p>Export sales history from your POS and upload the CSV file.</p>
             </div>
             <div class="step">
                 <div class="step-number">2</div>
-                <h4>Model Trains</h4>
-                <p>Our AI analyzes patterns, seasonality, and external factors automatically.</p>
+                <h4>AI Analyzes</h4>
+                <p>TrucastAI learns your patterns, seasonality, and external factors.</p>
             </div>
             <div class="step">
                 <div class="step-number">3</div>
                 <h4>Get Predictions</h4>
-                <p>View forecasts for each item by day, with factors that influence sales.</p>
+                <p>View forecasts for each item by day, with factors explained.</p>
             </div>
             <div class="step">
                 <div class="step-number">4</div>
-                <h4>Track Accuracy</h4>
-                <p>Upload new data to auto-compare and continuously improve predictions.</p>
+                <h4>Stay Accurate</h4>
+                <p>Upload new data to refine predictions over time.</p>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
     <section class="cta">
-        <h2>Ready to Predict Your Future?</h2>
-        <p>Join businesses using AI to reduce waste, optimize inventory, and never miss a sales opportunity.</p>
+        <h2>Ready to Find Your Rhythm?</h2>
+        <p>Join businesses using AI to reduce waste, optimize inventory, and never miss a beat.</p>
         <a href="/frontend/pages/login.html" class="btn-hero btn-primary">
             Get Started Free
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -561,7 +561,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2024 Forecast Pro. Built with AI for smarter business decisions.</p>
+        <p>&copy; 2025 TrucastAI. Smart forecasting for smarter businesses.</p>
     </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forecasts - Forecast Pro</title>
+    <title>Forecasts - TrucastAI</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
@@ -21,7 +21,7 @@
         }
 
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border-bottom: none;
             padding: var(--space-4) var(--space-6);
             display: flex;
@@ -160,8 +160,8 @@
             height: 4px;
         }
 
-        .overview-card.primary { background: linear-gradient(135deg, #fff 0%, #eef2ff 100%); }
-        .overview-card.primary::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .overview-card.primary { background: linear-gradient(135deg, #fff 0%, #ecfeff 100%); }
+        .overview-card.primary::before { background: linear-gradient(90deg, #0D9488, #14B8A6); }
         .overview-card.success { background: linear-gradient(135deg, #fff 0%, #ecfdf5 100%); }
         .overview-card.success::before { background: linear-gradient(90deg, #10b981, #34d399); }
         .overview-card.warning { background: linear-gradient(135deg, #fff 0%, #fffbeb 100%); }
@@ -1032,7 +1032,7 @@
             display: flex;
             gap: var(--space-3);
             padding: var(--space-3) var(--space-5);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
         }
 
         .quick-access-btn {
@@ -1062,7 +1062,7 @@
             height: 16px;
         }
 
-        .quick-access-btn.forecast-btn { background: linear-gradient(135deg, rgba(99,102,241,0.8), rgba(139,92,246,0.8)); }
+        .quick-access-btn.forecast-btn { background: linear-gradient(135deg, rgba(13,148,136,0.8), rgba(20,184,166,0.8)); }
         .quick-access-btn.graphs-btn { background: linear-gradient(135deg, rgba(59,130,246,0.8), rgba(96,165,250,0.8)); }
         .quick-access-btn.events-btn { background: linear-gradient(135deg, rgba(245,158,11,0.8), rgba(251,191,36,0.8)); }
 
@@ -1138,20 +1138,20 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4);
             transition: all 0.3s ease;
             z-index: 999;
         }
 
         .ai-chat-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 30px rgba(20, 184, 166, 0.5);
         }
 
         .ai-chat-btn svg {
@@ -1186,7 +1186,7 @@
         }
 
         .ai-chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             padding: var(--space-4);
             display: flex;
             justify-content: space-between;
@@ -1254,7 +1254,7 @@
 
         .ai-message.user {
             align-self: flex-end;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             color: white;
         }
 
@@ -1275,12 +1275,12 @@
         }
 
         .ai-chat-input input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #14B8A6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
         }
 
         .ai-chat-send {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
             border: none;
             color: white;
             padding: var(--space-3);
@@ -1311,7 +1311,7 @@
         .typing-indicator span {
             width: 8px;
             height: 8px;
-            background: #667eea;
+            background: #14B8A6;
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -1467,10 +1467,10 @@
             <div class="sidebar-header">
                 <a href="/frontend/pages/home.html" class="sidebar-logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18 9l-5-6-4 8-3-2"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    Forecast Pro
+                    TrucastAI
                 </a>
             </div>
             <nav class="sidebar-nav">
@@ -2090,7 +2090,7 @@
                     title: 'Predicted Quantity'
                 },
                 legend: { orientation: 'h', y: -0.3, x: 0.5, xanchor: 'center' },
-                colorway: ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'],
+                colorway: ['#14B8A6', '#10B981', '#F59E0B', '#EF4444', '#0F766E', '#EC4899'],
                 barmode: 'stack'
             };
 
@@ -2492,9 +2492,9 @@
                 type: 'scatter',
                 mode: 'lines+markers',
                 fill: 'tozeroy',
-                fillcolor: 'rgba(99, 102, 241, 0.1)',
-                line: { color: '#6366F1', width: 3, shape: 'spline' },
-                marker: { color: '#6366F1', size: 8 }
+                fillcolor: 'rgba(20, 184, 166, 0.1)',
+                line: { color: '#14B8A6', width: 3, shape: 'spline' },
+                marker: { color: '#14B8A6', size: 8 }
             };
 
             const layout = {
@@ -2523,7 +2523,7 @@
 
             const cats = Object.keys(categoryTotals);
             const values = cats.map(c => categoryTotals[c]);
-            const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899'];
+            const colors = ['#14B8A6', '#10B981', '#F59E0B', '#EF4444', '#0F766E', '#06B6D4', '#EC4899'];
 
             const trace = {
                 labels: cats,
@@ -2564,7 +2564,7 @@
                 orientation: 'h',
                 marker: {
                     color: values.map((v, i) => {
-                        const colors = ['#6366F1', '#818CF8', '#A5B4FC', '#C7D2FE', '#E0E7FF'];
+                        const colors = ['#14B8A6', '#5EEAD4', '#99F6E4', '#CCFBF1', '#F0FDFA'];
                         return colors[Math.min(i, colors.length - 1)];
                     })
                 }
@@ -2849,13 +2849,13 @@
                 y: sortedData.map(d => d.percentage),
                 type: 'scatter',
                 mode: 'lines+markers',
-                line: { color: '#6366F1', width: 4, shape: 'spline' },
+                line: { color: '#14B8A6', width: 4, shape: 'spline' },
                 marker: {
-                    color: sortedData.map(d => d.percentage > 12 ? '#6366F1' : d.percentage > 8 ? '#818CF8' : '#A5B4FC'),
+                    color: sortedData.map(d => d.percentage > 12 ? '#14B8A6' : d.percentage > 8 ? '#5EEAD4' : '#99F6E4'),
                     size: 12
                 },
                 fill: 'tozeroy',
-                fillcolor: 'rgba(99, 102, 241, 0.15)',
+                fillcolor: 'rgba(20, 184, 166, 0.15)',
                 hovertemplate: '%{x}: %{y:.1f}% of daily sales<extra></extra>'
             };
 
@@ -3115,20 +3115,20 @@
                 type: 'scatter',
                 mode: 'lines+markers',
                 line: {
-                    color: '#6366F1',
+                    color: '#14B8A6',
                     width: 3,
                     shape: 'spline'
                 },
                 marker: {
                     color: sortedData.map(d => {
-                        if (d.percentage > 12) return '#6366F1';
-                        if (d.percentage > 8) return '#818CF8';
-                        return '#A5B4FC';
+                        if (d.percentage > 12) return '#14B8A6';
+                        if (d.percentage > 8) return '#5EEAD4';
+                        return '#99F6E4';
                     }),
                     size: 10
                 },
                 fill: 'tozeroy',
-                fillcolor: 'rgba(99, 102, 241, 0.15)',
+                fillcolor: 'rgba(20, 184, 166, 0.15)',
                 hovertemplate: '%{x}: %{y:.1f}% of daily sales<extra></extra>'
             };
 

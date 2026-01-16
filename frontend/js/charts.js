@@ -2,7 +2,7 @@
 
 // Chart theme matching our design system
 const chartTheme = {
-    colors: ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'],
+    colors: ['#14B8A6', '#10B981', '#F59E0B', '#EF4444', '#0D9488', '#EC4899', '#5EEAD4', '#F97316'],
     font: {
         family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         size: 12,

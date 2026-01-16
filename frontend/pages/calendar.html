@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar - Forecast Pro</title>
+    <title>Calendar - TrucastAI</title>
     <link rel="stylesheet" href="/frontend/css/main.css">
     <link rel="stylesheet" href="/frontend/css/components.css">
     <style>
@@ -871,12 +871,12 @@
             height: 12px;
             border-radius: 6px;
             background: linear-gradient(90deg,
-                #f3e8ff 0%,
-                #e9d5ff 20%,
-                #d8b4fe 40%,
-                #c084fc 60%,
-                #a855f7 80%,
-                #7c3aed 100%
+                #F0FDFA 0%,
+                #99F6E4 20%,
+                #5EEAD4 40%,
+                #14B8A6 60%,
+                #0D9488 80%,
+                #0F766E 100%
             );
         }
 
@@ -895,28 +895,28 @@
             white-space: nowrap;
         }
 
-        /* Heatmap cell coloring - Purple theme */
-        .calendar-cell.heatmap-1 { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
-        .calendar-cell.heatmap-2 { background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); }
-        .calendar-cell.heatmap-3 { background: linear-gradient(135deg, #ede9fe 0%, #e9d5ff 100%); }
-        .calendar-cell.heatmap-4 { background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%); }
-        .calendar-cell.heatmap-5 { background: linear-gradient(135deg, #ddd6fe 0%, #d8b4fe 100%); }
-        .calendar-cell.heatmap-6 { background: linear-gradient(135deg, #d8b4fe 0%, #c4b5fd 100%); }
-        .calendar-cell.heatmap-7 { background: linear-gradient(135deg, #c4b5fd 0%, #c084fc 100%); }
-        .calendar-cell.heatmap-8 { background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%); }
-        .calendar-cell.heatmap-9 { background: linear-gradient(135deg, #a78bfa 0%, #a855f7 100%); }
-        .calendar-cell.heatmap-10 { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); }
+        /* Heatmap cell coloring - Teal theme */
+        .calendar-cell.heatmap-1 { background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); }
+        .calendar-cell.heatmap-2 { background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%); }
+        .calendar-cell.heatmap-3 { background: linear-gradient(135deg, #99F6E4 0%, #5EEAD4 100%); }
+        .calendar-cell.heatmap-4 { background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%); }
+        .calendar-cell.heatmap-5 { background: linear-gradient(135deg, #2DD4BF 0%, #14B8A6 100%); }
+        .calendar-cell.heatmap-6 { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
+        .calendar-cell.heatmap-7 { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); }
+        .calendar-cell.heatmap-8 { background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); }
+        .calendar-cell.heatmap-9 { background: linear-gradient(135deg, #115E59 0%, #134E4A 100%); }
+        .calendar-cell.heatmap-10 { background: linear-gradient(135deg, #134E4A 0%, #042F2E 100%); }
 
-        .calendar-cell.heatmap-1:hover { background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); }
-        .calendar-cell.heatmap-2:hover { background: linear-gradient(135deg, #ede9fe 0%, #e9d5ff 100%); }
-        .calendar-cell.heatmap-3:hover { background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%); }
-        .calendar-cell.heatmap-4:hover { background: linear-gradient(135deg, #ddd6fe 0%, #d8b4fe 100%); }
-        .calendar-cell.heatmap-5:hover { background: linear-gradient(135deg, #d8b4fe 0%, #c4b5fd 100%); }
-        .calendar-cell.heatmap-6:hover { background: linear-gradient(135deg, #c4b5fd 0%, #c084fc 100%); }
-        .calendar-cell.heatmap-7:hover { background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%); }
-        .calendar-cell.heatmap-8:hover { background: linear-gradient(135deg, #a78bfa 0%, #a855f7 100%); }
-        .calendar-cell.heatmap-9:hover { background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%); }
-        .calendar-cell.heatmap-10:hover { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .calendar-cell.heatmap-1:hover { background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%); }
+        .calendar-cell.heatmap-2:hover { background: linear-gradient(135deg, #99F6E4 0%, #5EEAD4 100%); }
+        .calendar-cell.heatmap-3:hover { background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%); }
+        .calendar-cell.heatmap-4:hover { background: linear-gradient(135deg, #2DD4BF 0%, #14B8A6 100%); }
+        .calendar-cell.heatmap-5:hover { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
+        .calendar-cell.heatmap-6:hover { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); }
+        .calendar-cell.heatmap-7:hover { background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); }
+        .calendar-cell.heatmap-8:hover { background: linear-gradient(135deg, #115E59 0%, #134E4A 100%); }
+        .calendar-cell.heatmap-9:hover { background: linear-gradient(135deg, #134E4A 0%, #042F2E 100%); }
+        .calendar-cell.heatmap-10:hover { background: linear-gradient(135deg, #042F2E 0%, #022C22 100%); }
 
         /* Prediction indicator on day cell */
         .day-prediction {
@@ -928,9 +928,9 @@
             display: inline-block;
         }
 
-        .day-prediction.low { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
-        .day-prediction.medium { background: rgba(139, 92, 246, 0.25); color: #6d28d9; }
-        .day-prediction.high { background: rgba(139, 92, 246, 0.4); color: #5b21b6; }
+        .day-prediction.low { background: rgba(20, 184, 166, 0.15); color: #0F766E; }
+        .day-prediction.medium { background: rgba(20, 184, 166, 0.25); color: #0D9488; }
+        .day-prediction.high { background: rgba(20, 184, 166, 0.4); color: #115E59; }
 
         /* No prediction state */
         .calendar-cell.no-prediction {
@@ -969,10 +969,10 @@
             <div class="sidebar-header">
                 <a href="/frontend/pages/home.html" class="sidebar-logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18 9l-5-6-4 8-3-2"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    Forecast Pro
+                    TrucastAI
                 </a>
             </div>
             <nav class="sidebar-nav">
@@ -1218,9 +1218,9 @@
                         </svg>
                         Predicted Sales
                     </div>
-                    <div id="predictionCard" class="weather-card" style="background: linear-gradient(135deg, #f3e8ff, #ede9fe);">
-                        <div class="weather-icon" style="background: #ede9fe;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #7c3aed;">
+                    <div id="predictionCard" class="weather-card" style="background: linear-gradient(135deg, #F0FDFA, #CCFBF1);">
+                        <div class="weather-icon" style="background: #CCFBF1;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #0D9488;">
                                 <path d="M3 3v18h18"/>
                                 <path d="M18 9l-5-6-4 8-3-2"/>
                             </svg>
@@ -1660,28 +1660,28 @@
                 predictionSection.style.display = 'block';
                 document.getElementById('predictionQty').textContent = `${prediction.totalQty} units`;
 
-                // Build description based on level - Purple theme
+                // Build description based on level - Teal theme
                 const level = getHeatmapLevel(dateStr);
                 let levelDesc = 'Normal';
-                let bgColor = '#f3e8ff, #ede9fe';
-                let iconBg = '#ede9fe';
-                let iconColor = '#7c3aed';
+                let bgColor = '#F0FDFA, #CCFBF1';
+                let iconBg = '#CCFBF1';
+                let iconColor = '#0D9488';
 
                 if (level >= 8) {
                     levelDesc = 'Very Busy Day';
-                    bgColor = '#a855f7, #7c3aed';
-                    iconBg = '#c4b5fd';
-                    iconColor = '#5b21b6';
+                    bgColor = '#0D9488, #0F766E';
+                    iconBg = '#14B8A6';
+                    iconColor = '#042F2E';
                 } else if (level >= 6) {
                     levelDesc = 'Busy Day';
-                    bgColor = '#c084fc, #a855f7';
-                    iconBg = '#d8b4fe';
-                    iconColor = '#6d28d9';
+                    bgColor = '#14B8A6, #0D9488';
+                    iconBg = '#2DD4BF';
+                    iconColor = '#0F766E';
                 } else if (level >= 4) {
                     levelDesc = 'Moderate Traffic';
-                    bgColor = '#ddd6fe, #c4b5fd';
-                    iconBg = '#e9d5ff';
-                    iconColor = '#7c3aed';
+                    bgColor = '#5EEAD4, #2DD4BF';
+                    iconBg = '#99F6E4';
+                    iconColor = '#0D9488';
                 } else if (level >= 2) {
                     levelDesc = 'Light Traffic';
                 } else {

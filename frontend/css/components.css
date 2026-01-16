@@ -943,7 +943,7 @@
 }
 
 [data-theme="dark"] .stat-icon {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(20, 184, 166, 0.2);
 }
 
 /* Form Elements */
@@ -965,8 +965,8 @@
 
 [data-theme="dark"] .input:focus,
 [data-theme="dark"] .select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: #14B8A6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
 }
 
 /* Sidebar */
@@ -993,7 +993,7 @@
 }
 
 [data-theme="dark"] .sidebar-item.active {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(94, 234, 212, 0.2));
   color: #a5b4fc;
 }
 
@@ -1020,7 +1020,7 @@
 }
 
 [data-theme="dark"] .toggle.checked {
-  background: #6366f1;
+  background: #14B8A6;
 }
 
 /* Modal */
@@ -1132,7 +1132,7 @@
 
 [data-theme="dark"] .tab-btn.active {
   color: #a5b4fc;
-  border-color: #6366f1;
+  border-color: #14B8A6;
 }
 
 /* Table */
@@ -1156,7 +1156,7 @@
 }
 
 [data-theme="dark"] tr:hover {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(20, 184, 166, 0.1);
 }
 
 /* Business Type Cards */
@@ -1166,13 +1166,13 @@
 }
 
 [data-theme="dark"] .business-type-card:hover {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
+  border-color: #14B8A6;
+  background: rgba(20, 184, 166, 0.1);
 }
 
 [data-theme="dark"] .business-type-card.selected {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.15);
+  border-color: #14B8A6;
+  background: rgba(20, 184, 166, 0.15);
 }
 
 [data-theme="dark"] .business-type-name {
@@ -1223,6 +1223,6 @@
 }
 
 [data-theme="dark"] .factor-tag.school {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(20, 184, 166, 0.2);
   color: #a5b4fc;
 }

@@ -1,17 +1,22 @@
-/* main.css - Design System (Stripe/Linear Inspired) */
+/* main.css - Design System (TrucastAI Brand) */
 
 :root {
-  /* Primary Colors - Indigo */
-  --primary-50: #EEF2FF;
-  --primary-100: #E0E7FF;
-  --primary-200: #C7D2FE;
-  --primary-300: #A5B4FC;
-  --primary-400: #818CF8;
-  --primary-500: #6366F1;
-  --primary-600: #4F46E5;
-  --primary-700: #4338CA;
-  --primary-800: #3730A3;
-  --primary-900: #312E81;
+  /* Primary Colors - Teal/Cyan */
+  --primary-50: #F0FDFA;
+  --primary-100: #CCFBF1;
+  --primary-200: #99F6E4;
+  --primary-300: #5EEAD4;
+  --primary-400: #2DD4BF;
+  --primary-500: #14B8A6;
+  --primary-600: #0D9488;
+  --primary-700: #0F766E;
+  --primary-800: #115E59;
+  --primary-900: #134E4A;
+
+  /* Accent Colors - Coral */
+  --accent-400: #FB923C;
+  --accent-500: #F97316;
+  --accent-600: #EA580C;
 
   /* Neutral Colors */
   --gray-50: #F9FAFB;
@@ -410,8 +415,8 @@ a:hover {
 }
 
 [data-theme="dark"] .sidebar-item.active {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-  color: #a5b4fc;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(94, 234, 212, 0.2));
+  color: #5EEAD4;
 }
 
 [data-theme="dark"] .sidebar-logo {
@@ -430,8 +435,8 @@ a:hover {
 }
 
 [data-theme="dark"] .input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: #14B8A6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
 }
 
 [data-theme="dark"] .btn-secondary {
@@ -540,7 +545,7 @@ a:hover {
 
 [data-theme="dark"] .stat-value,
 [data-theme="dark"] .model-stat-value {
-  color: #a5b4fc;
+  color: #5EEAD4;
 }
 
 [data-theme="dark"] .stat-label,
@@ -558,7 +563,7 @@ a:hover {
 }
 
 [data-theme="dark"] .model-item.active {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(94, 234, 212, 0.15));
 }
 
 [data-theme="dark"] .model-name {
@@ -632,7 +637,7 @@ a:hover {
 }
 
 [data-theme="dark"] .location-card.primary {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(94, 234, 212, 0.15));
   border-color: #4f46e5;
 }
 
@@ -665,7 +670,7 @@ a:hover {
 }
 
 [data-theme="dark"] tr:hover {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(20, 184, 166, 0.1);
 }
 
 /* Dark mode - Success/Error Messages */
@@ -756,7 +761,7 @@ a:hover {
 }
 
 [data-theme="dark"] .location-option.active {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(20, 184, 166, 0.2);
 }
 
 [data-theme="dark"] .location-option-icon {
@@ -764,7 +769,7 @@ a:hover {
 }
 
 [data-theme="dark"] .location-option.active .location-option-icon {
-  background: rgba(99, 102, 241, 0.3);
+  background: rgba(20, 184, 166, 0.3);
 }
 
 [data-theme="dark"] .location-option-name {
@@ -795,9 +800,9 @@ a:hover {
 }
 
 [data-theme="dark"] .compare-toggle.active {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: #6366f1;
-  color: #a5b4fc;
+  background: rgba(20, 184, 166, 0.2);
+  border-color: #14B8A6;
+  color: #5EEAD4;
 }
 
 /* Dark mode - Chart Section */
@@ -817,7 +822,7 @@ a:hover {
 }
 
 [data-theme="dark"] .action-card:hover {
-  border-color: #6366f1;
+  border-color: #14B8A6;
 }
 
 [data-theme="dark"] .action-content h3 {
@@ -830,12 +835,12 @@ a:hover {
 
 /* Dark mode - AI Insights */
 [data-theme="dark"] .ai-insights-section {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(59, 130, 246, 0.1));
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(59, 130, 246, 0.1));
   border-color: #4f46e5;
 }
 
 [data-theme="dark"] .ai-insights-title {
-  color: #a5b4fc;
+  color: #5EEAD4;
 }
 
 [data-theme="dark"] .ai-insights-content {
@@ -901,9 +906,9 @@ a:hover {
 }
 
 [data-theme="dark"] .add-location-btn:hover {
-  border-color: #6366f1;
-  color: #a5b4fc;
-  background: rgba(99, 102, 241, 0.1);
+  border-color: #14B8A6;
+  color: #5EEAD4;
+  background: rgba(20, 184, 166, 0.1);
 }
 
 /* Form elements */
@@ -943,13 +948,13 @@ a:hover {
 }
 
 [data-theme="dark"] .upload-area:hover {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
+  border-color: #14B8A6;
+  background: rgba(20, 184, 166, 0.1);
 }
 
 [data-theme="dark"] .upload-area.dragover {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.15);
+  border-color: #14B8A6;
+  background: rgba(20, 184, 166, 0.15);
 }
 
 [data-theme="dark"] .upload-icon {
@@ -1017,7 +1022,7 @@ a:hover {
 }
 
 [data-theme="dark"] .forecast-quantity {
-  color: #a5b4fc;
+  color: #5EEAD4;
 }
 
 /* Detailed forecast table rows */
@@ -1089,13 +1094,13 @@ a:hover {
 }
 
 [data-theme="dark"] .calendar-day.today {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: #6366f1;
+  background: rgba(20, 184, 166, 0.2);
+  border-color: #14B8A6;
 }
 
 [data-theme="dark"] .calendar-event {
-  background: rgba(99, 102, 241, 0.3);
-  color: #a5b4fc;
+  background: rgba(20, 184, 166, 0.3);
+  color: #5EEAD4;
 }
 
 /* Analytics page */
@@ -1109,7 +1114,7 @@ a:hover {
 }
 
 [data-theme="dark"] .analytics-value {
-  color: #a5b4fc;
+  color: #5EEAD4;
 }
 
 [data-theme="dark"] .analytics-label {
@@ -1133,9 +1138,9 @@ a:hover {
 }
 
 [data-theme="dark"] .filter-btn.active {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: #6366f1;
-  color: #a5b4fc;
+  background: rgba(20, 184, 166, 0.2);
+  border-color: #14B8A6;
+  color: #5EEAD4;
 }
 
 /* Period selector buttons */
@@ -1149,7 +1154,7 @@ a:hover {
 }
 
 [data-theme="dark"] .period-btn.active {
-  background: #6366f1;
+  background: #14B8A6;
   color: white;
 }
 
@@ -1167,8 +1172,8 @@ a:hover {
 }
 
 [data-theme="dark"] .badge-primary {
-  background: rgba(99, 102, 241, 0.2);
-  color: #a5b4fc;
+  background: rgba(20, 184, 166, 0.2);
+  color: #5EEAD4;
 }
 
 [data-theme="dark"] .badge-success {
@@ -1188,11 +1193,11 @@ a:hover {
 
 /* Icon containers */
 [data-theme="dark"] .action-icon {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(20, 184, 166, 0.2);
 }
 
 [data-theme="dark"] .location-icon {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(20, 184, 166, 0.2);
 }
 
 /* Button icons */
@@ -1249,7 +1254,7 @@ a:hover {
 }
 
 [data-theme="dark"] .feature-icon {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(20, 184, 166, 0.2);
 }
 
 [data-theme="dark"] .feature-title {
@@ -1303,8 +1308,8 @@ a:hover {
 }
 
 [data-theme="dark"] .step-badge {
-  background: rgba(99, 102, 241, 0.2) !important;
-  color: #a5b4fc !important;
+  background: rgba(20, 184, 166, 0.2) !important;
+  color: #5EEAD4 !important;
 }
 
 [data-theme="dark"] .dropzone {
@@ -1314,8 +1319,8 @@ a:hover {
 
 [data-theme="dark"] .dropzone:hover,
 [data-theme="dark"] .dropzone.dragover {
-  border-color: #6366f1 !important;
-  background: rgba(99, 102, 241, 0.1) !important;
+  border-color: #14B8A6 !important;
+  background: rgba(20, 184, 166, 0.1) !important;
 }
 
 [data-theme="dark"] .dropzone-icon {
@@ -1360,7 +1365,7 @@ a:hover {
 }
 
 [data-theme="dark"] .tab-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%) !important;
   color: white !important;
 }
 
@@ -1457,7 +1462,7 @@ a:hover {
 }
 
 [data-theme="dark"] .calendar-cell.today {
-  background: rgba(99, 102, 241, 0.2) !important;
+  background: rgba(20, 184, 166, 0.2) !important;
 }
 
 /* Settings/Account page */
@@ -1511,7 +1516,7 @@ a:hover {
 }
 
 [data-theme="dark"] .forecast-item-qty {
-  color: #a5b4fc !important;
+  color: #5EEAD4 !important;
 }
 
 /* Summary cards */
@@ -1567,7 +1572,7 @@ a:hover {
 }
 
 [data-theme="dark"] .overview-card.primary {
-  background: linear-gradient(135deg, #1e293b 0%, rgba(99, 102, 241, 0.15) 100%) !important;
+  background: linear-gradient(135deg, #1e293b 0%, rgba(20, 184, 166, 0.15) 100%) !important;
 }
 
 [data-theme="dark"] .overview-card.success {
@@ -1583,7 +1588,7 @@ a:hover {
 }
 
 [data-theme="dark"] .overview-card.purple {
-  background: linear-gradient(135deg, #1e293b 0%, rgba(139, 92, 246, 0.15) 100%) !important;
+  background: linear-gradient(135deg, #1e293b 0%, rgba(94, 234, 212, 0.15) 100%) !important;
 }
 
 [data-theme="dark"] .overview-label {
@@ -1697,7 +1702,7 @@ a:hover {
 }
 
 [data-theme="dark"] .calendar-cell.today {
-  background: rgba(99, 102, 241, 0.2) !important;
+  background: rgba(20, 184, 166, 0.2) !important;
 }
 
 [data-theme="dark"] .calendar-cell.past-day {
@@ -1739,8 +1744,8 @@ a:hover {
 
 /* Day prediction badge */
 [data-theme="dark"] .day-prediction {
-  background: rgba(139, 92, 246, 0.2) !important;
-  color: #a5b4fc !important;
+  background: rgba(94, 234, 212, 0.2) !important;
+  color: #5EEAD4 !important;
 }
 
 /* Calendar modal */
@@ -1789,7 +1794,7 @@ a:hover {
 }
 
 [data-theme="dark"] .ai-summary {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(59, 130, 246, 0.15)) !important;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(59, 130, 246, 0.15)) !important;
 }
 
 [data-theme="dark"] .ai-summary-text {
@@ -1854,7 +1859,7 @@ a:hover {
 }
 
 [data-theme="dark"] .entry-qty {
-  color: #a5b4fc !important;
+  color: #5EEAD4 !important;
 }
 
 [data-theme="dark"] .btn-remove {
@@ -1905,7 +1910,7 @@ a:hover {
 }
 
 [data-theme="dark"] .card-title svg {
-  color: #a5b4fc !important;
+  color: #5EEAD4 !important;
 }
 
 /* Card body */
@@ -1916,16 +1921,16 @@ a:hover {
 /* ============ Additional Heatmap Dark Mode ============ */
 
 /* Heatmap cells retain their purple gradient but with dark-adjusted base */
-[data-theme="dark"] .calendar-cell.heatmap-1 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(139, 92, 246, 0.15) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-2 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(139, 92, 246, 0.2) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-3 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(139, 92, 246, 0.25) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-4 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(139, 92, 246, 0.3) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-5 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-6 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.35) 0%, rgba(139, 92, 246, 0.4) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-7 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.45) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-8 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.45) 0%, rgba(139, 92, 246, 0.5) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-9 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.5) 0%, rgba(139, 92, 246, 0.55) 100%) !important; }
-[data-theme="dark"] .calendar-cell.heatmap-10 { background: linear-gradient(135deg, rgba(124, 58, 237, 0.55) 0%, rgba(139, 92, 246, 0.6) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-1 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(94, 234, 212, 0.15) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-2 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(94, 234, 212, 0.2) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-3 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(94, 234, 212, 0.25) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-4 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.25) 0%, rgba(94, 234, 212, 0.3) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-5 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.3) 0%, rgba(94, 234, 212, 0.35) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-6 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.35) 0%, rgba(94, 234, 212, 0.4) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-7 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.4) 0%, rgba(94, 234, 212, 0.45) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-8 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.45) 0%, rgba(94, 234, 212, 0.5) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-9 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.5) 0%, rgba(94, 234, 212, 0.55) 100%) !important; }
+[data-theme="dark"] .calendar-cell.heatmap-10 { background: linear-gradient(135deg, rgba(13, 148, 136, 0.55) 0%, rgba(94, 234, 212, 0.6) 100%) !important; }
 
 /* ============ List View Dark Mode ============ */
 

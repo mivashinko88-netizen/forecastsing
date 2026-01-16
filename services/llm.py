@@ -236,7 +236,7 @@ async def chat_response(
 ) -> str:
     """Generate a chat response with business context"""
 
-    system_prompt = """You are an AI assistant for Forecast Pro, a sales forecasting application.
+    system_prompt = """You are an AI assistant for TrucastAI, a sales forecasting application.
 You help business owners understand their sales predictions, analyze factors affecting sales, and provide actionable advice.
 
 You have access to:

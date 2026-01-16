@@ -1,15 +1,15 @@
-# Render deployment configuration for Forecast Pro
+# Render deployment configuration for TrucastAI
 # PostgreSQL database: $7/month starter plan
 
 databases:
-  - name: forecast-pro-db
+  - name: trucastai-db
     plan: starter  # $7/month - 1GB storage, 97 connections
-    databaseName: forecasting
-    user: forecast_user
+    databaseName: trucastai
+    user: trucastai_user
 
 services:
   - type: web
-    name: forecast-pro
+    name: trucastai
     runtime: python
     buildCommand: pip install -r requirements.txt && alembic upgrade head
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
@@ -28,7 +28,7 @@ services:
       # Database - automatically set from Render PostgreSQL
       - key: DATABASE_URL
         fromDatabase:
-          name: forecast-pro-db
+          name: trucastai-db
           property: connectionString
 
       # Security - auto-generated
@@ -37,11 +37,11 @@ services:
 
       # CORS - UPDATE THIS with your actual domain
       - key: CORS_ORIGINS
-        value: '["https://forecast-pro.onrender.com"]'
+        value: '["https://trucastai.com", "https://www.trucastai.com"]'
 
       # OAuth redirect base URL - UPDATE with your domain
       - key: OAUTH_REDIRECT_BASE_URL
-        value: https://forecast-pro.onrender.com
+        value: https://trucastai.com
 
       # Scheduler settings
       - key: SYNC_ENABLED

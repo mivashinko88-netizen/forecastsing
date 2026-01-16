@@ -10,7 +10,7 @@ import json
 
 class Settings(BaseSettings):
     # Application
-    APP_NAME: str = "Forecast Pro"
+    APP_NAME: str = "TrucastAI"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"  # development, staging, production
 

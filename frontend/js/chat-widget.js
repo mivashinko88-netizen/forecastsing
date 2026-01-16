@@ -99,19 +99,19 @@ class ChatWidget {
                 width: 56px;
                 height: 56px;
                 border-radius: 28px;
-                background: linear-gradient(135deg, #6366F1, #8B5CF6);
+                background: linear-gradient(135deg, #14B8A6, #5EEAD4);
                 border: none;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+                box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
                 transition: all 0.2s ease;
             }
 
             .chat-button:hover {
                 transform: scale(1.05);
-                box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+                box-shadow: 0 6px 20px rgba(20, 184, 166, 0.5);
             }
 
             .chat-button svg {
@@ -164,7 +164,7 @@ class ChatWidget {
 
             .chat-header {
                 padding: 16px;
-                background: linear-gradient(135deg, #6366F1, #8B5CF6);
+                background: linear-gradient(135deg, #14B8A6, #5EEAD4);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -252,7 +252,7 @@ class ChatWidget {
             .chat-welcome-icon svg {
                 width: 28px;
                 height: 28px;
-                color: #6366F1;
+                color: #14B8A6;
             }
 
             .chat-welcome h3 {
@@ -288,7 +288,7 @@ class ChatWidget {
             }
 
             .chat-suggestion:hover {
-                border-color: #6366F1;
+                border-color: #14B8A6;
                 background: #EEF2FF;
             }
 
@@ -315,7 +315,7 @@ class ChatWidget {
             }
 
             .chat-message.user .chat-bubble {
-                background: linear-gradient(135deg, #6366F1, #8B5CF6);
+                background: linear-gradient(135deg, #14B8A6, #5EEAD4);
                 color: white;
                 border-bottom-right-radius: 4px;
             }
@@ -380,7 +380,7 @@ class ChatWidget {
             }
 
             .chat-input:focus {
-                border-color: #6366F1;
+                border-color: #14B8A6;
             }
 
             .chat-input::placeholder {
@@ -390,7 +390,7 @@ class ChatWidget {
             .chat-send {
                 width: 44px;
                 height: 44px;
-                background: #6366F1;
+                background: #14B8A6;
                 border: none;
                 border-radius: 22px;
                 cursor: pointer;
