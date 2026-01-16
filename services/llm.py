@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 logger = logging.getLogger(__name__)
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "nvidia/nemotron-3-nano-30b-a3b:free"  # Free general-purpose model
+DEFAULT_MODEL = "mistralai/devstral-2512:free"  # Free model that returns actual content
 
 def get_api_key() -> Optional[str]:
     """Get OpenRouter API key from environment"""
