@@ -309,8 +309,14 @@ Give specific answers based on the forecast data when available."""
             context_parts.append(f"Predicted Busiest Day: {business_context['busiest_day']}")
         if business_context.get("slowest_day"):
             context_parts.append(f"Predicted Slowest Day: {business_context['slowest_day']}")
+        if business_context.get("products_tracked"):
+            context_parts.append(f"Products/Items Tracked ({business_context.get('total_products', 'N/A')} total): {business_context['products_tracked']}")
+        if business_context.get("weather_forecast"):
+            context_parts.append(f"\nWeather Forecast (7 days):\n{business_context['weather_forecast']}")
+        if business_context.get("upcoming_holidays"):
+            context_parts.append(f"Upcoming Holidays: {business_context['upcoming_holidays']}")
         if business_context.get("forecast_next_14_days"):
-            context_parts.append(f"\nForecast for next 14 days:\n{business_context['forecast_next_14_days']}")
+            context_parts.append(f"\nSales Forecast (next 14 days):\n{business_context['forecast_next_14_days']}")
 
     # Build messages
     messages = []

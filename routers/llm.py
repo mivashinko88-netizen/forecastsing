@@ -8,6 +8,7 @@ from database import get_db
 from db_models import User, Business, TrainedModel, Prediction
 from datetime import date, timedelta
 from auth import get_current_user
+import json
 from services.llm import (
     check_openrouter_available,
     get_available_models,
@@ -16,6 +17,8 @@ from services.llm import (
     generate_dashboard_insights,
     chat_response
 )
+from services.weather import get_forecast_weather
+from services.events import get_holidays
 
 router = APIRouter(prefix="/llm", tags=["LLM"])
 
@@ -200,6 +203,16 @@ async def chat(
                 business_context["model_accuracy"] = f"{model.test_mape:.1f}% MAPE" if model.test_mape else "Unknown"
                 business_context["data_range"] = f"{model.data_start_date} to {model.data_end_date}"
 
+                # Get items the model was trained on
+                if model.items_trained:
+                    try:
+                        items = json.loads(model.items_trained)
+                        if items:
+                            business_context["products_tracked"] = ", ".join(items[:20])  # First 20 items
+                            business_context["total_products"] = len(items)
+                    except:
+                        pass
+
                 # Get predictions for next 14 days
                 today = date.today()
                 next_two_weeks = today + timedelta(days=14)
@@ -239,6 +252,27 @@ async def chat(
                         slowest = min(daily_totals.items(), key=lambda x: x[1]["total"])
                         business_context["busiest_day"] = f"{busiest[1]['day']} ({busiest[0]}) with {busiest[1]['total']} units"
                         business_context["slowest_day"] = f"{slowest[1]['day']} ({slowest[0]}) with {slowest[1]['total']} units"
+
+            # Get weather forecast if business has location
+            if business.latitude and business.longitude:
+                try:
+                    weather = await get_forecast_weather(business.latitude, business.longitude, days=7)
+                    if weather:
+                        weather_summary = []
+                        for w in weather[:7]:
+                            weather_summary.append(f"{w['date']}: High {w['temp_max']}F, Low {w['temp_min']}F")
+                        business_context["weather_forecast"] = "\n".join(weather_summary)
+                except:
+                    pass
+
+            # Get upcoming holidays
+            try:
+                holidays = await get_holidays(date.today().year)
+                upcoming = [h for h in holidays if h['date'] >= str(date.today()) and h['date'] <= str(date.today() + timedelta(days=30))]
+                if upcoming:
+                    business_context["upcoming_holidays"] = ", ".join([f"{h['name']} ({h['date']})" for h in upcoming[:5]])
+            except:
+                pass
 
     response_text = await chat_response(
         message=request.message,
