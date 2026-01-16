@@ -253,26 +253,39 @@ async def chat(
                         business_context["busiest_day"] = f"{busiest[1]['day']} ({busiest[0]}) with {busiest[1]['total']} units"
                         business_context["slowest_day"] = f"{slowest[1]['day']} ({slowest[0]}) with {slowest[1]['total']} units"
 
-            # Get weather forecast if business has location
-            if business.latitude and business.longitude:
+            # Get weather and holidays in PARALLEL for speed
+            import asyncio
+
+            async def fetch_weather():
+                if business.latitude and business.longitude:
+                    try:
+                        weather = await get_forecast_weather(business.latitude, business.longitude, days=7)
+                        if weather:
+                            weather_summary = []
+                            for w in weather[:7]:
+                                weather_summary.append(f"{w['date']}: High {w['temp_max']}F, Low {w['temp_min']}F")
+                            return "\n".join(weather_summary)
+                    except:
+                        pass
+                return None
+
+            async def fetch_holidays():
                 try:
-                    weather = await get_forecast_weather(business.latitude, business.longitude, days=7)
-                    if weather:
-                        weather_summary = []
-                        for w in weather[:7]:
-                            weather_summary.append(f"{w['date']}: High {w['temp_max']}F, Low {w['temp_min']}F")
-                        business_context["weather_forecast"] = "\n".join(weather_summary)
+                    holidays = await get_holidays(date.today().year)
+                    upcoming = [h for h in holidays if h['date'] >= str(date.today()) and h['date'] <= str(date.today() + timedelta(days=30))]
+                    if upcoming:
+                        return ", ".join([f"{h['name']} ({h['date']})" for h in upcoming[:5]])
                 except:
                     pass
+                return None
 
-            # Get upcoming holidays
-            try:
-                holidays = await get_holidays(date.today().year)
-                upcoming = [h for h in holidays if h['date'] >= str(date.today()) and h['date'] <= str(date.today() + timedelta(days=30))]
-                if upcoming:
-                    business_context["upcoming_holidays"] = ", ".join([f"{h['name']} ({h['date']})" for h in upcoming[:5]])
-            except:
-                pass
+            # Run both API calls simultaneously
+            weather_result, holidays_result = await asyncio.gather(fetch_weather(), fetch_holidays())
+
+            if weather_result:
+                business_context["weather_forecast"] = weather_result
+            if holidays_result:
+                business_context["upcoming_holidays"] = holidays_result
 
     response_text = await chat_response(
         message=request.message,
