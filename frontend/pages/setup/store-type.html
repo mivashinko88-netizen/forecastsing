@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store Type - TrucastAI</title>
+    <script src="/frontend/js/theme.js"></script>
     <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/techy-theme.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -15,9 +17,9 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f8fafc;
+            background: var(--techy-bg-void, #0a0a0f);
             min-height: 100vh;
-            color: #1e293b;
+            color: var(--techy-text-primary, #f1f5f9);
         }
 
         .setup-page {
@@ -42,7 +44,7 @@
             gap: 10px;
             font-size: 22px;
             font-weight: 700;
-            color: #1e293b;
+            color: #e2e8f0;
             margin-bottom: 32px;
         }
 
@@ -92,9 +94,9 @@
         }
 
         .progress-dot.pending {
-            background: #e2e8f0;
+            background: #334155;
             color: #94a3b8;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #475569;
         }
 
         .progress-label {
@@ -104,13 +106,13 @@
         }
 
         .progress-step.active .progress-label {
-            color: #1e293b;
+            color: #e2e8f0;
         }
 
         .progress-line {
             width: 20px;
             height: 2px;
-            background: #e2e8f0;
+            background: #334155;
             flex-shrink: 0;
         }
 
@@ -121,13 +123,13 @@
         .setup-title {
             font-size: 32px;
             font-weight: 700;
-            color: #1e293b;
+            color: #e2e8f0;
             margin-bottom: 12px;
         }
 
         .setup-subtitle {
             font-size: 16px;
-            color: #64748b;
+            color: #94a3b8;
         }
 
         /* Store Type Cards */
@@ -139,8 +141,8 @@
         }
 
         .store-type-option {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            background: #1e293b;
+            border: 1px solid #334155;
             border-radius: 16px;
             padding: 32px 24px;
             text-align: center;
@@ -192,13 +194,13 @@
         .type-name {
             font-size: 20px;
             font-weight: 600;
-            color: #1e293b;
+            color: #e2e8f0;
             margin-bottom: 8px;
         }
 
         .type-desc {
             font-size: 14px;
-            color: #64748b;
+            color: #94a3b8;
             line-height: 1.5;
         }
 
@@ -254,6 +256,11 @@
     </style>
 </head>
 <body>
+    <!-- Techy Background Effects -->
+    <div class="techy-bg-grid"></div>
+    <div class="techy-glow techy-glow-1"></div>
+    <div class="techy-glow techy-glow-2"></div>
+
     <div class="setup-page">
         <div class="setup-container">
             <div class="setup-header">

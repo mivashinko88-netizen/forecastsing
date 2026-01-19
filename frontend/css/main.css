@@ -366,36 +366,36 @@ a:hover {
 
 /* ============ Dark Mode - Premium Glass Design ============ */
 
-/* Dark Mode Color System - Deep Space Theme */
+/* Dark Mode Color System - Techy Theme (Matching home.html aesthetic) */
 [data-theme="dark"] {
-  /* Core backgrounds - rich dark with subtle warmth */
-  --dark-bg-void: #06080d;
-  --dark-bg-base: #0c1017;
-  --dark-bg-surface: #121820;
-  --dark-bg-elevated: #1a222e;
-  --dark-bg-overlay: #232d3d;
+  /* Core backgrounds - techy void black */
+  --dark-bg-void: #0a0a0f;
+  --dark-bg-base: #0a0a0f;
+  --dark-bg-surface: #12121a;
+  --dark-bg-elevated: #1e1e2a;
+  --dark-bg-overlay: #1a1a24;
 
   /* Glass effect backgrounds */
-  --dark-glass: rgba(18, 24, 32, 0.85);
-  --dark-glass-hover: rgba(26, 34, 46, 0.9);
-  --dark-glass-active: rgba(35, 45, 61, 0.95);
+  --dark-glass: rgba(18, 18, 26, 0.85);
+  --dark-glass-hover: rgba(26, 26, 36, 0.9);
+  --dark-glass-active: rgba(30, 30, 42, 0.95);
 
   /* Border hierarchy */
   --dark-border-subtle: rgba(255, 255, 255, 0.04);
   --dark-border-default: rgba(255, 255, 255, 0.08);
   --dark-border-strong: rgba(255, 255, 255, 0.12);
-  --dark-border-accent: rgba(94, 234, 212, 0.3);
+  --dark-border-accent: rgba(20, 184, 166, 0.3);
 
   /* Text with clear hierarchy */
-  --dark-text-primary: #f8fafc;
-  --dark-text-secondary: #a1b0c4;
-  --dark-text-muted: #6b7d93;
-  --dark-text-disabled: #3d4a5c;
+  --dark-text-primary: #f1f5f9;
+  --dark-text-secondary: #94a3b8;
+  --dark-text-muted: #64748b;
+  --dark-text-disabled: #475569;
 
   /* Accent colors - teal/cyan focus */
   --dark-accent: #14b8a6;
   --dark-accent-light: #5eead4;
-  --dark-accent-glow: rgba(20, 184, 166, 0.25);
+  --dark-accent-glow: rgba(20, 184, 166, 0.4);
 
   /* Status colors */
   --dark-success: #10b981;
