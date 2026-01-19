@@ -343,15 +343,13 @@ async def get_events(
             print(f"Failed to fetch school calendar: {e}")
             return []
 
-    # Run async fetches in parallel, sync fetches immediately
-    paydays = fetch_paydays()
-    school = fetch_school()
-
-    # Gather async results
-    weather, holidays, sports = await asyncio.gather(
+    # Run ALL fetches in parallel (wrap sync functions with to_thread)
+    weather, holidays, sports, paydays, school = await asyncio.gather(
         fetch_weather(),
         fetch_holidays(),
-        fetch_sports()
+        fetch_sports(),
+        asyncio.to_thread(fetch_paydays),
+        asyncio.to_thread(fetch_school)
     )
 
     return {

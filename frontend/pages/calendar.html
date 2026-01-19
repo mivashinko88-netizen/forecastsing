@@ -1453,7 +1453,11 @@
                     return;
                 }
                 businessId = businesses[0].id;
-                await loadEvents();
+
+                // Load events and predictions in parallel for faster loading
+                await Promise.all([loadEvents(), loadPredictions()]);
+                renderCalendar();
+                applyWeatherEffects(); // Use already-fetched weather data
             } catch (error) {
                 console.error('Init error:', error);
             }
@@ -1476,15 +1480,11 @@
                 if (response.ok) {
                     eventsData = await response.json();
                 } else {
-                    eventsData = { holidays: [], sports: [], paydays: [], school: [] };
+                    eventsData = { holidays: [], sports: [], paydays: [], school: [], weather: [] };
                 }
-
-                await loadPredictions();
-                renderCalendar();
             } catch (error) {
                 console.error('Failed to load events:', error);
-                eventsData = { holidays: [], sports: [], paydays: [], school: [] };
-                renderCalendar();
+                eventsData = { holidays: [], sports: [], paydays: [], school: [], weather: [] };
             }
         }
 
@@ -2116,20 +2116,13 @@
             }
         }
 
-        async function applyWeatherEffects() {
-            if (!businessId) return;
+        function applyWeatherEffects() {
+            if (!businessId || !eventsData.weather) return;
 
             try {
+                // Use already-fetched weather data instead of making another API call
                 const today = new Date().toISOString().split('T')[0];
-                const response = await fetch(
-                    `/api/businesses/${businessId}/events?date=${today}`,
-                    { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } }
-                );
-
-                if (!response.ok) return;
-
-                const data = await response.json();
-                const weather = data.weather && data.weather[0];
+                const weather = eventsData.weather.find(w => w.date === today) || eventsData.weather[0];
 
                 if (!weather) return;
 
@@ -2189,7 +2182,6 @@
         }
 
         init();
-        setTimeout(applyWeatherEffects, 500);
     </script>
 </body>
 </html>
