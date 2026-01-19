@@ -209,24 +209,30 @@ class SalesForecaster:
         df["weather_missing"] = 1  # Flag for missing weather data
 
         if weather_data:
-            weather_dict = {w["date"]: w for w in weather_data}
-            for idx, row in df.iterrows():
-                weather = weather_dict.get(row["date_str"])
-                if weather:
-                    temp_max = weather.get("temp_max")
-                    temp_min = weather.get("temp_min")
-                    precip = weather.get("precipitation")
-                    code = weather.get("weather_code")
+            # Vectorized weather merge - much faster than iterrows
+            weather_df = pd.DataFrame(weather_data)
+            weather_df = weather_df.rename(columns={"date": "date_str"})
 
-                    if temp_max is not None:
-                        df.at[idx, "temp_max"] = float(temp_max)
-                        df.at[idx, "weather_missing"] = 0
-                    if temp_min is not None:
-                        df.at[idx, "temp_min"] = float(temp_min)
-                    if precip is not None:
-                        df.at[idx, "precipitation"] = float(precip)
-                    if code is not None:
-                        df.at[idx, "weather_code"] = int(code)
+            # Select only the columns we need
+            weather_cols = ["date_str"]
+            for col in ["temp_max", "temp_min", "precipitation", "weather_code"]:
+                if col in weather_df.columns:
+                    weather_cols.append(col)
+
+            if len(weather_cols) > 1:
+                weather_df = weather_df[weather_cols]
+                # Merge weather data
+                df = df.merge(weather_df, on="date_str", how="left", suffixes=("", "_weather"))
+
+                # Update columns from merge
+                for col in ["temp_max", "temp_min", "precipitation", "weather_code"]:
+                    weather_col = f"{col}_weather" if f"{col}_weather" in df.columns else col
+                    if weather_col in df.columns and weather_col != col:
+                        df[col] = df[col].fillna(df[weather_col])
+                        df = df.drop(columns=[weather_col])
+
+                # Update weather_missing flag
+                df.loc[df["temp_max"].notna(), "weather_missing"] = 0
 
         # Fill missing weather with monthly averages from the data, not hardcoded values
         for col in ["temp_max", "temp_min", "precipitation", "weather_code"]:
@@ -253,22 +259,35 @@ class SalesForecaster:
             holiday_dates = set(h["date"] for h in holidays)
             df["is_holiday"] = df["date_str"].isin(holiday_dates).astype(int)
 
-            # Calculate days to/from nearest holiday
-            holiday_dates_dt = sorted([pd.to_datetime(h["date"]) for h in holidays])
-            for idx, row in df.iterrows():
-                current_date = row["date"]
+            # Vectorized holiday distance calculation using searchsorted
+            holiday_dates_dt = np.array(sorted([pd.to_datetime(h["date"]) for h in holidays]))
+            dates_array = df["date"].values
 
-                # Days to next holiday
-                future_holidays = [h for h in holiday_dates_dt if h >= current_date]
-                if future_holidays:
-                    days_to = (future_holidays[0] - current_date).days
-                    df.at[idx, "days_to_holiday"] = min(days_to, 30)
+            # Days to next holiday - find insertion point (first holiday >= current date)
+            next_indices = np.searchsorted(holiday_dates_dt, dates_array, side="left")
+            # Clip to valid range
+            next_indices_clipped = np.clip(next_indices, 0, len(holiday_dates_dt) - 1)
+            # Calculate days to next holiday (only valid where index < len)
+            has_future = next_indices < len(holiday_dates_dt)
+            days_to = np.where(
+                has_future,
+                (holiday_dates_dt[next_indices_clipped] - dates_array).astype("timedelta64[D]").astype(int),
+                30
+            )
+            df["days_to_holiday"] = np.clip(days_to, 0, 30)
 
-                # Days from last holiday
-                past_holidays = [h for h in holiday_dates_dt if h <= current_date]
-                if past_holidays:
-                    days_from = (current_date - past_holidays[-1]).days
-                    df.at[idx, "days_from_holiday"] = min(days_from, 30)
+            # Days from last holiday - find insertion point and go back one
+            prev_indices = np.searchsorted(holiday_dates_dt, dates_array, side="right") - 1
+            # Clip to valid range
+            prev_indices_clipped = np.clip(prev_indices, 0, len(holiday_dates_dt) - 1)
+            # Calculate days from last holiday (only valid where index >= 0)
+            has_past = prev_indices >= 0
+            days_from = np.where(
+                has_past,
+                (dates_array - holiday_dates_dt[prev_indices_clipped]).astype("timedelta64[D]").astype(int),
+                30
+            )
+            df["days_from_holiday"] = np.clip(days_from, 0, 30)
 
         # Sports features
         df["has_sports"] = 0
@@ -284,14 +303,20 @@ class SalesForecaster:
             payday_dates = set(p["date"] for p in paydays)
             df["is_payday"] = df["date_str"].isin(payday_dates).astype(int)
 
-            # Days to next payday
-            payday_dates_dt = sorted([pd.to_datetime(p["date"]) for p in paydays])
-            for idx, row in df.iterrows():
-                current_date = row["date"]
-                future_paydays = [p for p in payday_dates_dt if p >= current_date]
-                if future_paydays:
-                    days_to = (future_paydays[0] - current_date).days
-                    df.at[idx, "days_to_payday"] = min(days_to, 15)
+            # Vectorized payday distance calculation using searchsorted
+            payday_dates_dt = np.array(sorted([pd.to_datetime(p["date"]) for p in paydays]))
+            dates_array = df["date"].values
+
+            # Days to next payday - find insertion point
+            next_indices = np.searchsorted(payday_dates_dt, dates_array, side="left")
+            next_indices_clipped = np.clip(next_indices, 0, len(payday_dates_dt) - 1)
+            has_future = next_indices < len(payday_dates_dt)
+            days_to = np.where(
+                has_future,
+                (payday_dates_dt[next_indices_clipped] - dates_array).astype("timedelta64[D]").astype(int),
+                15
+            )
+            df["days_to_payday"] = np.clip(days_to, 0, 15)
 
         # School features - optimized with date range indexing
         df["is_school_break"] = 0
@@ -813,8 +838,10 @@ class SalesForecaster:
         }, filepath)
 
     def serialize_model(self) -> bytes:
-        """Serialize trained model to bytes for database storage"""
+        """Serialize trained model to bytes for database storage with compression"""
         import io
+        import zlib
+
         buffer = io.BytesIO()
         joblib.dump({
             "model": self.model,
@@ -827,8 +854,14 @@ class SalesForecaster:
             "global_avg_quantity": self.global_avg_quantity,
             "category_avg_quantity": self.category_avg_quantity,
             "sales_history": self.sales_history
-        }, buffer)
-        return buffer.getvalue()
+        }, buffer, compress=3)  # Use joblib compression level 3
+
+        # Additional zlib compression for smaller size
+        raw_bytes = buffer.getvalue()
+        compressed = zlib.compress(raw_bytes, level=6)
+
+        # Prefix with marker to identify compressed data
+        return b'ZLIB' + compressed
 
     def load_model(self, filepath: str):
         """Load trained model from file"""
@@ -846,9 +879,20 @@ class SalesForecaster:
         self.sales_history = data.get("sales_history", None)
 
     def load_model_from_bytes(self, model_bytes: bytes):
-        """Load trained model from bytes (from database)"""
+        """Load trained model from bytes (from database) - handles both compressed and uncompressed"""
         import io
-        buffer = io.BytesIO(model_bytes)
+        import zlib
+
+        # Check if data is compressed (has ZLIB prefix)
+        if model_bytes[:4] == b'ZLIB':
+            # Decompress the data
+            compressed_data = model_bytes[4:]
+            raw_bytes = zlib.decompress(compressed_data)
+            buffer = io.BytesIO(raw_bytes)
+        else:
+            # Legacy uncompressed data
+            buffer = io.BytesIO(model_bytes)
+
         data = joblib.load(buffer)
         self.model = data["model"]
         self.feature_columns = data["feature_columns"]
