@@ -659,6 +659,96 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Dark Mode - Techy Theme */
+        [data-theme="dark"] .main-content {
+            background: var(--techy-bg-void, #0a0a0f);
+        }
+
+        [data-theme="dark"] .page-header {
+            background: linear-gradient(135deg, var(--techy-bg-card, #12121a) 0%, var(--techy-bg-elevated, #1e1e2a) 100%);
+            border-bottom: 1px solid var(--techy-border-dark, rgba(255, 255, 255, 0.08));
+        }
+
+        [data-theme="dark"] .page-header h1 {
+            color: var(--techy-text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .page-header p {
+            color: var(--techy-text-secondary, #94a3b8);
+        }
+
+        [data-theme="dark"] .settings-card,
+        [data-theme="dark"] .card {
+            background: var(--techy-gradient-card, linear-gradient(145deg, #12121a 0%, #1a1a24 100%));
+            border: 1px solid var(--techy-border-dark, rgba(255, 255, 255, 0.08));
+        }
+
+        [data-theme="dark"] .settings-card:hover,
+        [data-theme="dark"] .card:hover {
+            border-color: var(--techy-border-glow, rgba(20, 184, 166, 0.3));
+        }
+
+        [data-theme="dark"] .card-title,
+        [data-theme="dark"] .section-title {
+            color: var(--techy-text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .form-label {
+            color: var(--techy-text-secondary, #94a3b8);
+        }
+
+        [data-theme="dark"] .form-input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="email"],
+        [data-theme="dark"] input[type="password"] {
+            background: var(--techy-bg-void, #0a0a0f);
+            border-color: var(--techy-border-dark, rgba(255, 255, 255, 0.08));
+            color: var(--techy-text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .form-input:focus,
+        [data-theme="dark"] select:focus,
+        [data-theme="dark"] input:focus {
+            border-color: var(--techy-primary-light, #14b8a6);
+            box-shadow: 0 0 0 3px var(--techy-primary-glow, rgba(20, 184, 166, 0.4));
+        }
+
+        [data-theme="dark"] .stat-card {
+            background: var(--techy-bg-card, #12121a);
+            border: 1px solid var(--techy-border-dark, rgba(255, 255, 255, 0.08));
+        }
+
+        [data-theme="dark"] .stat-value {
+            color: var(--techy-text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .stat-label {
+            color: var(--techy-text-secondary, #94a3b8);
+        }
+
+        [data-theme="dark"] .info-value {
+            color: var(--techy-text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .info-label {
+            color: var(--techy-text-muted, #64748b);
+        }
+
+        [data-theme="dark"] .sidebar {
+            background: linear-gradient(180deg, var(--techy-bg-card, #12121a) 0%, var(--techy-bg-elevated, #1e1e2a) 100%);
+            border-right: 1px solid var(--techy-border-dark, rgba(255, 255, 255, 0.08));
+        }
+
+        [data-theme="dark"] .sidebar-item:hover {
+            background: var(--techy-bg-card-hover, #1a1a24);
+        }
+
+        [data-theme="dark"] .sidebar-item.active {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(94, 234, 212, 0.1) 100%);
+            border-left: 3px solid var(--techy-primary-light, #14b8a6);
+        }
     </style>
 </head>
 <body>
