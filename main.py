@@ -564,35 +564,40 @@ async def train_model_with_progress(
 ):
     """Train model with real-time progress updates via Server-Sent Events"""
 
+    # Read file content BEFORE the generator (file may close after request ends)
+    if not file.filename.endswith(".csv"):
+        async def error_gen():
+            yield f"data: {json.dumps({'step': 'error', 'message': 'Only CSV files supported'})}\n\n"
+        return StreamingResponse(error_gen(), media_type="text/event-stream")
+
+    file_content = await file.read()
+    filename = file.filename
+
+    # Parse config upfront
+    config_data = None
+    if config and config.strip() and config != "string":
+        try:
+            config_data = json.loads(config)
+        except json.JSONDecodeError:
+            pass
+
+    # Get cached coordinates upfront
+    cached_lat, cached_lon = None, None
+    if business_id:
+        from database import SessionLocal
+        db = SessionLocal()
+        try:
+            business = db.query(Business).filter(Business.id == business_id).first()
+            if business:
+                cached_lat = business.latitude
+                cached_lon = business.longitude
+        finally:
+            db.close()
+
     async def generate_progress():
         try:
             # Step 1: Processing CSV
             yield f"data: {json.dumps({'step': 'processing', 'message': 'Processing your CSV file...', 'progress': 10})}\n\n"
-
-            if not file.filename.endswith(".csv"):
-                yield f"data: {json.dumps({'step': 'error', 'message': 'Only CSV files supported'})}\n\n"
-                return
-
-            # Parse config
-            config_data = None
-            if config and config.strip() and config != "string":
-                try:
-                    config_data = json.loads(config)
-                except json.JSONDecodeError:
-                    pass
-
-            # Get cached coordinates
-            cached_lat, cached_lon = None, None
-            if business_id:
-                from database import SessionLocal
-                db = SessionLocal()
-                try:
-                    business = db.query(Business).filter(Business.id == business_id).first()
-                    if business:
-                        cached_lat = business.latitude
-                        cached_lon = business.longitude
-                finally:
-                    db.close()
 
             if config_data:
                 business_config = BusinessConfig(
@@ -615,9 +620,9 @@ async def train_model_with_progress(
                     longitude=cached_lon
                 )
 
-            # Read CSV
-            file.file.seek(0)  # Reset file position
-            df = pd.read_csv(file.file)
+            # Read CSV from bytes
+            import io
+            df = pd.read_csv(io.BytesIO(file_content))
             df.columns = df.columns.str.lower().str.strip()
 
             yield f"data: {json.dumps({'step': 'processing', 'message': f'Found {len(df):,} rows in your data', 'progress': 20})}\n\n"
