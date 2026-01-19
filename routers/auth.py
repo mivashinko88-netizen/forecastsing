@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
-from database import get_db
+from database import get_db, safe_commit
 from db_models import User
 from auth import (
     hash_password,
@@ -48,11 +48,26 @@ async def sign_up(request: SignUpRequest, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
 
-    # Validate password
-    if len(request.password) < 6:
+    # Validate password strength
+    if len(request.password) < 8:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password must be at least 6 characters"
+            detail="Password must be at least 8 characters"
+        )
+    if not any(c.isupper() for c in request.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least one uppercase letter"
+        )
+    if not any(c.islower() for c in request.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least one lowercase letter"
+        )
+    if not any(c.isdigit() for c in request.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least one number"
         )
 
     # Create new user with bcrypt hashed password
@@ -66,7 +81,7 @@ async def sign_up(request: SignUpRequest, db: Session = Depends(get_db)):
     )
 
     db.add(user)
-    db.commit()
+    safe_commit(db)
     db.refresh(user)
 
     # Generate tokens
@@ -125,7 +140,7 @@ async def sign_in(request: SignInRequest, db: Session = Depends(get_db)):
 
     # Update last login
     user.last_login = datetime.utcnow()
-    db.commit()
+    safe_commit(db)
 
     # Generate tokens
     access_token = create_access_token(user.id)

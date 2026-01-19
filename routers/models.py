@@ -1,10 +1,13 @@
 # routers/models.py - Model and Prediction endpoints
+import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import json
+
+logger = logging.getLogger(__name__)
 
 from database import get_db
 from db_models import User, Business, TrainedModel, Prediction
@@ -18,6 +21,36 @@ from services.cycles import get_payday_dates
 from services.school import get_school_calendar
 
 router = APIRouter(tags=["Models"])
+
+
+def safe_parse_date(date_str: str, field_name: str = "date") -> datetime:
+    """
+    Safely parse a date string with validation.
+
+    Args:
+        date_str: Date string to parse
+        field_name: Name of the field for error messages
+
+    Returns:
+        Parsed datetime object
+
+    Raises:
+        HTTPException: If date parsing fails
+    """
+    if not date_str or not isinstance(date_str, str):
+        raise HTTPException(status_code=400, detail=f"Invalid {field_name}: must be a non-empty string")
+
+    formats = ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%Y/%m/%d"]
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_str.strip(), fmt)
+        except ValueError:
+            continue
+
+    raise HTTPException(
+        status_code=400,
+        detail=f"Invalid {field_name} format: '{date_str}'. Expected format: YYYY-MM-DD"
+    )
 
 
 class PredictRequest(BaseModel):
@@ -176,7 +209,7 @@ async def delete_model(
             try:
                 os.remove(model.model_path)
             except Exception as e:
-                print(f"Warning: Could not delete model file: {e}")
+                logger.warning(f"Could not delete model file: {e}")
 
         # Delete the model record
         db.delete(model)
@@ -185,8 +218,8 @@ async def delete_model(
         return {"message": "Model deleted"}
     except Exception as e:
         db.rollback()
-        print(f"Error deleting model: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to delete model: {str(e)}")
+        logger.error(f"Error deleting model: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete model. Please try again.")
 
 
 # ============ Prediction Endpoints ============
@@ -254,30 +287,30 @@ async def predict(
                     days=request.days
                 )
             except Exception as e:
-                print(f"Weather forecast fetch failed: {e}")
+                logger.warning(f"Weather forecast fetch failed: {e}")
 
         try:
             holidays = await get_holidays(year, business.country or "US")
         except Exception as e:
-            print(f"Holidays fetch failed: {e}")
+            logger.warning(f"Holidays fetch failed: {e}")
 
         try:
             sports_games = await get_nfl_games(year)
         except Exception as e:
-            print(f"Sports fetch failed: {e}")
+            logger.warning(f"Sports fetch failed: {e}")
 
         try:
             payday_dates = get_payday_dates(year)
             # Convert to format expected by trainer
             paydays = [{"date": p.isoformat()} for p in payday_dates]
         except Exception as e:
-            print(f"Paydays fetch failed: {e}")
+            logger.warning(f"Paydays fetch failed: {e}")
             payday_dates = []
 
         try:
             school_calendar = get_school_calendar(year)
         except Exception as e:
-            print(f"School calendar fetch failed: {e}")
+            logger.warning(f"School calendar fetch failed: {e}")
 
         # Generate list of future dates
         future_dates = []
@@ -360,31 +393,52 @@ async def predict(
 
         # Save predictions to database for later comparison with actuals
         # Use raw_predictions (before size expansion) for accurate item-level tracking
+        # Use upsert pattern to avoid race conditions with concurrent requests
+        from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+        from sqlalchemy.dialects.postgresql import insert as pg_insert
+        from sqlalchemy import inspect
+
+        dialect_name = inspect(db.bind).dialect.name
+
         for p in raw_predictions:
             date_str = p["date"] if isinstance(p["date"], str) else p["date"].strftime("%Y-%m-%d")
             pred_date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
-            existing = db.query(Prediction).filter(
-                Prediction.model_id == model_id,
-                Prediction.prediction_date == pred_date,
-                Prediction.item_name == p["item_name"]
-            ).first()
-
-            if existing:
-                # Update existing prediction
-                existing.predicted_quantity = p["predicted_quantity"]
-            else:
-                # Create new prediction record
-                new_pred = Prediction(
+            if dialect_name == "postgresql":
+                # PostgreSQL upsert
+                stmt = pg_insert(Prediction).values(
                     model_id=model_id,
                     prediction_date=pred_date,
                     item_name=p["item_name"],
                     predicted_quantity=p["predicted_quantity"]
                 )
-                db.add(new_pred)
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=['model_id', 'prediction_date', 'item_name'],
+                    set_={'predicted_quantity': p["predicted_quantity"]}
+                )
+                db.execute(stmt)
+            else:
+                # SQLite upsert (INSERT OR REPLACE pattern)
+                # For SQLite, we use the traditional check-then-update but with row locking
+                existing = db.query(Prediction).filter(
+                    Prediction.model_id == model_id,
+                    Prediction.prediction_date == pred_date,
+                    Prediction.item_name == p["item_name"]
+                ).with_for_update().first()
+
+                if existing:
+                    existing.predicted_quantity = p["predicted_quantity"]
+                else:
+                    new_pred = Prediction(
+                        model_id=model_id,
+                        prediction_date=pred_date,
+                        item_name=p["item_name"],
+                        predicted_quantity=p["predicted_quantity"]
+                    )
+                    db.add(new_pred)
 
         db.commit()
-        print(f"Saved {len(raw_predictions)} predictions to database for model {model_id}")
+        logger.info(f"Saved {len(raw_predictions)} predictions to database for model {model_id}")
 
         return {
             "predictions": predictions,
@@ -399,8 +453,8 @@ async def predict(
     except FileNotFoundError:
         raise HTTPException(status_code=400, detail="Model file not found. Please retrain the model.")
     except Exception as e:
-        print(f"Prediction error: {e}")
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+        logger.error(f"Prediction error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Prediction failed. Please try again or retrain your model.")
 
 
 @router.get("/businesses/{business_id}/forecasts")
@@ -495,7 +549,7 @@ async def save_actual_sales(
     created_count = 0
 
     for entry in data.entries:
-        entry_date = datetime.strptime(entry.date, "%Y-%m-%d").date()
+        entry_date = safe_parse_date(entry.date, "entry date").date()
 
         # Try to find existing prediction
         prediction = db.query(Prediction).filter(

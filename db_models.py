@@ -1,5 +1,5 @@
 # db_models.py
-from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text, ForeignKey, Date, LargeBinary
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text, ForeignKey, Date, LargeBinary, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
@@ -105,6 +105,9 @@ class Upload(Base):
 
 class Prediction(Base):
     __tablename__ = "predictions"
+    __table_args__ = (
+        UniqueConstraint('model_id', 'prediction_date', 'item_name', name='uq_predictions_model_date_item'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     model_id = Column(Integer, ForeignKey("trained_models.id", ondelete="CASCADE"), nullable=False)
@@ -166,6 +169,9 @@ class SyncLog(Base):
 class SyncedProduct(Base):
     """Products synced from external integrations"""
     __tablename__ = "synced_products"
+    __table_args__ = (
+        UniqueConstraint('integration_id', 'external_id', name='uq_synced_products_integration_external'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     business_id = Column(Integer, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
@@ -186,6 +192,9 @@ class SyncedProduct(Base):
 class SyncedOrder(Base):
     """Orders synced from external integrations"""
     __tablename__ = "synced_orders"
+    __table_args__ = (
+        UniqueConstraint('integration_id', 'external_id', name='uq_synced_orders_integration_external'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     business_id = Column(Integer, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)

@@ -1,8 +1,8 @@
 # main.py
-from fastapi import FastAPI, UploadFile, HTTPException, Form
+from fastapi import FastAPI, UploadFile, HTTPException, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from processor import process_csv
 import os
 from config import BusinessConfig
@@ -45,6 +45,9 @@ from routers import auth, businesses, models, llm, integrations
 # Import scheduler
 from scheduler import start_scheduler, shutdown_scheduler
 
+# Import shared utilities
+from utils.column_mapping import COLUMN_MAPPING, apply_column_mapping
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,6 +56,16 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(title="TrucastAI", version="1.0.0")
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler for unhandled errors."""
+    logger.error(f"Unhandled exception on {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal error occurred. Please try again later."}
+    )
 
 
 def run_migrations():
@@ -89,7 +102,7 @@ def run_migrations():
             try:
                 conn.execute(text("ALTER TABLE trained_models ALTER COLUMN model_path DROP NOT NULL"))
                 conn.commit()
-            except:
+            except Exception:
                 pass  # Column may already be nullable
     except Exception as e:
         logger.warning(f"Direct column check/add failed (may be OK): {e}")
@@ -252,90 +265,8 @@ async def train_model(
     df = pd.read_csv(file.file)
     df.columns = df.columns.str.lower().str.strip()
 
-    # Flexible column mapping - try common variations
-    column_mapping = {
-        # Date columns
-        "order_date": "date",
-        "sale_date": "date",
-        "transaction_date": "date",
-        "order date": "date",
-        "sale date": "date",
-        "trans_date": "date",
-        # Item/product columns
-        "pizza_name": "item_name",
-        "product": "item_name",
-        "product_name": "item_name",
-        "item": "item_name",
-        "name": "item_name",
-        "product name": "item_name",
-        "menu_item": "item_name",
-        "item_description": "item_name",
-        "description": "item_name",
-        # Size columns
-        "pizza_size": "size",
-        "product_size": "size",
-        "item_size": "size",
-        "portion": "size",
-        "portion_size": "size",
-        # Type/category columns
-        "pizza_category": "type",
-        "pizza_type": "type",
-        "product_type": "type",
-        "item_type": "type",
-        "category": "type",
-        "product_category": "type",
-        "item_category": "type",
-        "food_type": "type",
-        "menu_category": "type",
-        # Unit price columns (sale price to customer)
-        "price": "unit_price",
-        "item_price": "unit_price",
-        "product_price": "unit_price",
-        "sale_price": "unit_price",
-        "selling_price": "unit_price",
-        "retail_price": "unit_price",
-        "price_each": "unit_price",
-        "each_price": "unit_price",
-        # Cost columns (business cost, separate from sale price)
-        "item_cost": "cost",
-        "product_cost": "cost",
-        "unit_cost": "cost",
-        # Total price columns
-        "total_price": "total_price",
-        "total": "total_price",
-        "revenue": "total_price",
-        "amount_paid": "total_price",
-        "order_total": "total_price",
-        "line_total": "total_price",
-        "subtotal": "total_price",
-        "sales": "total_price",
-        "income": "total_price",
-        "sale_amount": "total_price",
-        # Order ID columns
-        "order": "order_id",
-        "transaction_id": "order_id",
-        "receipt": "order_id",
-        "ticket": "order_id",
-        "order_details_id": "order_id",
-        "invoice": "order_id",
-        "invoice_id": "order_id",
-        "receipt_id": "order_id",
-        # Quantity columns
-        "qty": "quantity",
-        "amount": "quantity",
-        "units": "quantity",
-        "units_sold": "quantity",
-        "qty_sold": "quantity",
-        "order_qty": "quantity",
-        "count": "quantity",
-        "num_sold": "quantity",
-        # Time columns
-        "order_time": "time",
-        "sale_time": "time",
-        "transaction_time": "time",
-        "time_of_sale": "time",
-    }
-    df = df.rename(columns=column_mapping)
+    # Apply shared column mapping
+    df = apply_column_mapping(df)
 
     # Check for required columns
     if "date" not in df.columns:
@@ -381,35 +312,35 @@ async def train_model(
                     end_date=max_date
                 )
             except Exception as e:
-                print(f"Weather fetch failed: {e}")
+                logger.warning(f"Weather fetch failed: {e}")
         return []
 
     async def fetch_holidays():
         try:
             return await get_holidays(year, business_config.country)
         except Exception as e:
-            print(f"Holidays fetch failed: {e}")
+            logger.warning(f"Holidays fetch failed: {e}")
             return []
 
     async def fetch_sports():
         try:
             return await get_nfl_games(year)
         except Exception as e:
-            print(f"Sports fetch failed: {e}")
+            logger.warning(f"Sports fetch failed: {e}")
             return []
 
     async def fetch_paydays():
         try:
             return get_payday_dates(year)
         except Exception as e:
-            print(f"Paydays fetch failed: {e}")
+            logger.warning(f"Paydays fetch failed: {e}")
             return []
 
     async def fetch_school():
         try:
             return get_school_calendar(year)
         except Exception as e:
-            print(f"School calendar fetch failed: {e}")
+            logger.warning(f"School calendar fetch failed: {e}")
             return []
 
     # Run all external data fetches in parallel
@@ -499,15 +430,15 @@ async def train_model(
                 df_actuals["date"] = pd.to_datetime(df_actuals["date"]).dt.date
                 actual_sales = df_actuals.groupby(["date", "item_name"])["quantity"].sum().reset_index()
 
-                print(f"Auto-compare: Processing {len(actual_sales)} unique date/item combinations")
-                print(f"Auto-compare: Date range in uploaded data: {actual_sales['date'].min()} to {actual_sales['date'].max()}")
+                logger.info(f"Auto-compare: Processing {len(actual_sales)} unique date/item combinations")
+                logger.info(f"Auto-compare: Date range in uploaded data: {actual_sales['date'].min()} to {actual_sales['date'].max()}")
 
                 # Find predictions for this business (from any model)
                 business_models = db.query(TrainedModel).filter(
                     TrainedModel.business_id == business_id
                 ).all()
                 model_ids = [m.id for m in business_models]
-                print(f"Auto-compare: Found {len(model_ids)} models for business {business_id}")
+                logger.info(f"Auto-compare: Found {len(model_ids)} models for business {business_id}")
 
                 if model_ids:
                     # Build a lookup dict of actuals for fast O(1) access
@@ -527,27 +458,31 @@ async def train_model(
                         Prediction.prediction_date <= max_actual_date
                     ).all()
 
-                    print(f"Auto-compare: Found {len(predictions_to_update)} predictions in date range")
+                    logger.info(f"Auto-compare: Found {len(predictions_to_update)} predictions in date range")
 
-                    # Batch update in memory, then commit once
+                    # Batch update in memory with transaction safety
                     updated_count = 0
-                    for pred in predictions_to_update:
-                        key = (pred.prediction_date, pred.item_name)
-                        if key in actuals_lookup:
-                            pred.actual_quantity = actuals_lookup[key]
-                            updated_count += 1
+                    try:
+                        for pred in predictions_to_update:
+                            key = (pred.prediction_date, pred.item_name)
+                            if key in actuals_lookup:
+                                pred.actual_quantity = actuals_lookup[key]
+                                updated_count += 1
 
-                    db.commit()
-                    print(f"Auto-compare: Updated {updated_count} predictions with actual quantities")
-                    results["actuals_matched"] = updated_count
+                        db.commit()
+                        logger.info(f"Auto-compare: Updated {updated_count} predictions with actual quantities")
+                        results["actuals_matched"] = updated_count
+                    except Exception as batch_error:
+                        db.rollback()
+                        logger.error(f"Auto-compare batch update failed, rolled back: {batch_error}")
+                        raise
 
             except Exception as e:
-                import traceback
-                print(f"Auto-compare failed (non-critical): {e}")
-                traceback.print_exc()
+                db.rollback()  # Ensure rollback on any error
+                logger.warning(f"Auto-compare failed (non-critical): {e}", exc_info=True)
 
         except Exception as e:
-            print(f"Error saving model to database: {e}")
+            logger.error(f"Error saving model to database: {e}")
             results["model_saved"] = False
         finally:
             db.close()
@@ -627,21 +562,8 @@ async def train_model_with_progress(
 
             yield f"data: {json.dumps({'step': 'processing', 'message': f'Found {len(df):,} rows in your data', 'progress': 20})}\n\n"
 
-            # Column mapping (same as /train)
-            column_mapping = {
-                "order_date": "date", "sale_date": "date", "transaction_date": "date",
-                "order date": "date", "sale date": "date", "trans_date": "date",
-                "pizza_name": "item_name", "product": "item_name", "product_name": "item_name",
-                "item": "item_name", "name": "item_name", "product name": "item_name",
-                "menu_item": "item_name", "item_description": "item_name", "description": "item_name",
-                "pizza_size": "size", "product_size": "size", "item_size": "size",
-                "portion": "size", "portion_size": "size",
-                "pizza_category": "type", "pizza_type": "type", "product_type": "type",
-                "item_type": "type", "category": "type", "product_category": "type",
-                "pizza_price": "unit_price", "unit_price": "unit_price", "price": "unit_price",
-                "order_quantity": "quantity", "qty": "quantity", "units_sold": "quantity",
-            }
-            df = df.rename(columns={k: v for k, v in column_mapping.items() if k in df.columns})
+            # Apply shared column mapping
+            df = apply_column_mapping(df)
 
             # Parse dates
             if "date" in df.columns:
@@ -676,35 +598,35 @@ async def train_model_with_progress(
                             end_date=max_date
                         )
                     except Exception as e:
-                        print(f"Weather fetch failed: {e}")
+                        logger.warning(f"Weather fetch failed: {e}")
                 return []
 
             async def fetch_holidays():
                 try:
                     return await get_holidays(year, business_config.country)
                 except Exception as e:
-                    print(f"Holidays fetch failed: {e}")
+                    logger.warning(f"Holidays fetch failed: {e}")
                     return []
 
             async def fetch_sports():
                 try:
                     return await get_nfl_games(year)
                 except Exception as e:
-                    print(f"Sports fetch failed: {e}")
+                    logger.warning(f"Sports fetch failed: {e}")
                     return []
 
             async def fetch_paydays():
                 try:
                     return get_payday_dates(year)
                 except Exception as e:
-                    print(f"Paydays fetch failed: {e}")
+                    logger.warning(f"Paydays fetch failed: {e}")
                     return []
 
             async def fetch_school():
                 try:
                     return get_school_calendar(year)
                 except Exception as e:
-                    print(f"School calendar fetch failed: {e}")
+                    logger.warning(f"School calendar fetch failed: {e}")
                     return []
 
             weather_data, holidays, sports_games, paydays, school_calendar = await asyncio.gather(
@@ -806,7 +728,7 @@ async def train_model_with_progress(
                     results["model_id"] = model_id
                     results["model_saved"] = True
                 else:
-                    print(f"Error saving model: {error}")
+                    logger.error(f"Error saving model: {error}")
                     results["model_saved"] = False
                     results["save_error"] = error
 
@@ -814,9 +736,9 @@ async def train_model_with_progress(
             yield f"data: {json.dumps({'step': 'complete', 'message': 'Training complete!', 'progress': 100, 'results': clean_for_json(results)})}\n\n"
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            yield f"data: {json.dumps({'step': 'error', 'message': str(e)})}\n\n"
+            logger.error(f"Training stream error: {e}", exc_info=True)
+            # Don't expose internal error details to the user
+            yield f"data: {json.dumps({'step': 'error', 'message': 'Training failed. Please check your data and try again.'})}\n\n"
 
     return StreamingResponse(
         generate_progress(),

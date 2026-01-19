@@ -23,6 +23,16 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # SECURITY: Prevent deployment with default JWT secret
+        if self.ENVIRONMENT in ("production", "staging"):
+            if self.JWT_SECRET_KEY == "local-dev-secret-key-change-in-production":
+                raise ValueError(
+                    "CRITICAL: JWT_SECRET_KEY must be set to a secure random value in production! "
+                    "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+                )
+
     # CORS - accepts JSON string or list
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000", "http://127.0.0.1:8000"]
 

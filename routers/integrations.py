@@ -187,28 +187,42 @@ async def oauth_callback(
     Exchanges code for tokens and stores integration
     Redirects back to frontend with success/error status
     """
+    from urllib.parse import quote
+
     frontend_base = "/frontend/pages/setup"
 
-    # Handle OAuth errors
+    # Handle OAuth errors - sanitize error message for URL
     if error:
-        error_msg = error_description or error
+        error_msg = "Authorization failed"  # Generic message, don't expose details
         return RedirectResponse(
-            url=f"{frontend_base}/integrations.html?error={error_msg}&provider={provider}"
+            url=f"{frontend_base}/integrations.html?error={quote(error_msg)}&provider={quote(provider)}"
         )
 
     # Validate state
     state_data = OAuthStateManager.validate_state(state)
     if not state_data:
         return RedirectResponse(
-            url=f"{frontend_base}/integrations.html?error=Invalid+or+expired+state&provider={provider}"
+            url=f"{frontend_base}/integrations.html?error=Invalid+or+expired+state&provider={quote(provider)}"
         )
 
     if not code:
         return RedirectResponse(
-            url=f"{frontend_base}/integrations.html?error=No+authorization+code&provider={provider}"
+            url=f"{frontend_base}/integrations.html?error=No+authorization+code&provider={quote(provider)}"
         )
 
     business_id = state_data["business_id"]
+    user_id = state_data.get("user_id")
+
+    # SECURITY: Verify the user who initiated the OAuth flow owns this business
+    if user_id:
+        business = db.query(Business).filter(
+            Business.id == business_id,
+            Business.user_id == user_id
+        ).first()
+        if not business:
+            return RedirectResponse(
+                url=f"{frontend_base}/integrations.html?error=Unauthorized&provider={quote(provider)}"
+            )
 
     try:
         # Exchange code for tokens
@@ -273,8 +287,11 @@ async def oauth_callback(
         )
 
     except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"OAuth callback error for {provider}: {e}")
+        # Don't expose internal error details to the user
         return RedirectResponse(
-            url=f"{frontend_base}/integrations.html?error={str(e)}&provider={provider}"
+            url=f"{frontend_base}/integrations.html?error=Connection+failed&provider={quote(provider)}"
         )
 
 
