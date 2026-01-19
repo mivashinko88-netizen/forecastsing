@@ -728,19 +728,16 @@ async def train_model_with_progress(
 
             forecaster = SalesForecaster(business_config)
 
-            # Run training in thread to not block event loop
-            def do_training():
-                return forecaster.train(
-                    df_agg,
-                    weather_data=weather_data,
-                    holidays=holidays,
-                    sports_games=sports_games,
-                    paydays=paydays,
-                    school_calendar=school_calendar,
-                    raw_df=df_raw
-                )
-
-            results = await asyncio.to_thread(do_training)
+            # Train the model
+            results = forecaster.train(
+                df_agg,
+                weather_data=weather_data,
+                holidays=holidays,
+                sports_games=sports_games,
+                paydays=paydays,
+                school_calendar=school_calendar,
+                raw_df=df_raw
+            )
 
             yield f"data: {json.dumps({'step': 'training', 'message': 'Model training complete!', 'progress': 80})}\n\n"
 
