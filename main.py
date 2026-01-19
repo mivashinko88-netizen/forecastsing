@@ -688,10 +688,14 @@ async def train_model_with_progress(
 
                 # Database operations in thread
                 def save_to_db():
+                    logger.info(f"Starting database save, model_bytes size: {len(model_bytes)} bytes")
                     db = SessionLocal()
                     try:
+                        logger.info("Deactivating previous models...")
                         db.query(TrainedModel).filter(TrainedModel.business_id == business_id).update({"is_active": False})
+                        logger.info("Previous models deactivated")
 
+                        logger.info("Creating new TrainedModel record...")
                         trained_model = TrainedModel(
                             business_id=business_id,
                             model_name="xgboost",
@@ -710,19 +714,34 @@ async def train_model_with_progress(
                             is_active=True
                         )
                         db.add(trained_model)
+                        logger.info("Model added to session, committing...")
                         db.commit()
+                        logger.info(f"Commit successful, model_id: {trained_model.id}")
                         return trained_model.id, True, None
                     except Exception as e:
+                        logger.error(f"Database save error: {e}")
                         import traceback
                         traceback.print_exc()
+                        db.rollback()
                         return None, False, str(e)
                     finally:
                         db.close()
+                        logger.info("Database connection closed")
 
                 yield f"data: {json.dumps({'step': 'saving', 'message': 'Committing changes...', 'progress': 96})}\n\n"
                 await asyncio.sleep(0)
 
-                model_id, saved, error = await asyncio.to_thread(save_to_db)
+                # Add timeout to database save to prevent hanging
+                try:
+                    model_id, saved, error = await asyncio.wait_for(
+                        asyncio.to_thread(save_to_db),
+                        timeout=60.0  # 60 second timeout for database save
+                    )
+                except asyncio.TimeoutError:
+                    logger.error("Database save timed out after 60 seconds")
+                    saved = False
+                    model_id = None
+                    error = "Database save timed out. The model was trained but could not be saved."
 
                 if saved:
                     results["model_id"] = model_id
