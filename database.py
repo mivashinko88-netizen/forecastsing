@@ -1,9 +1,13 @@
 # database.py - Database configuration with PostgreSQL and SQLite support
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.exc import SQLAlchemyError
 from pathlib import Path
 import os
+
+logger = logging.getLogger(__name__)
 
 # Import settings - but handle circular import for Alembic
 try:
@@ -51,3 +55,29 @@ def init_db():
     """Initialize database tables"""
     from db_models import User, Business, TrainedModel, Upload, Prediction, Integration, SyncLog, SyncedProduct, SyncedOrder
     Base.metadata.create_all(bind=engine)
+
+
+def safe_commit(db: Session) -> bool:
+    """
+    Safely commit a database transaction with rollback on failure.
+
+    Args:
+        db: SQLAlchemy session
+
+    Returns:
+        True if commit succeeded, False otherwise
+
+    Raises:
+        Re-raises the exception after rollback for critical errors
+    """
+    try:
+        db.commit()
+        return True
+    except SQLAlchemyError as e:
+        logger.error(f"Database commit failed, rolling back: {e}")
+        db.rollback()
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during commit, rolling back: {e}")
+        db.rollback()
+        raise
