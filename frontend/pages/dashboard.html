@@ -605,145 +605,11 @@
             color: var(--primary-700);
         }
 
-        /* ROI Tracker Section */
-        .roi-tracker-section {
-            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-            border-radius: var(--radius-xl);
-            padding: var(--space-6);
-            margin-bottom: var(--space-6);
-            box-shadow: 0 4px 20px rgba(13, 148, 136, 0.25);
-            color: white;
-        }
-
-        .roi-tracker-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            margin-bottom: var(--space-5);
-        }
-
-        .roi-tracker-icon {
-            width: 52px;
-            height: 52px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .roi-tracker-icon svg {
-            width: 26px;
-            height: 26px;
-            color: white;
-        }
-
-        .roi-tracker-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .roi-tracker-subtitle {
-            font-size: 13px;
-            opacity: 0.85;
-            margin: 4px 0 0 0;
-        }
-
-        .roi-tracker-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: var(--space-5);
-            align-items: center;
-        }
-
-        .roi-tracker-main {
-            text-align: center;
-            padding: var(--space-4);
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: var(--radius-lg);
-        }
-
-        .roi-tracker-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.9;
-            margin-bottom: var(--space-2);
-        }
-
-        .roi-tracker-value {
-            font-size: 36px;
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: var(--space-2);
-        }
-
-        .roi-tracker-annual {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .roi-tracker-annual span {
-            font-weight: 700;
-        }
-
-        .roi-tracker-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-4);
-        }
-
-        .roi-stat-item {
-            text-align: center;
-            padding: var(--space-3);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius);
-        }
-
-        .roi-stat-item .roi-stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .roi-stat-item .roi-stat-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            opacity: 0.85;
-        }
-
-        .roi-tracker-footer {
-            margin-top: var(--space-4);
-            padding-top: var(--space-4);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 12px;
-            opacity: 0.75;
-            text-align: center;
-        }
-
-        [data-theme="dark"] .roi-tracker-section {
-            background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-        }
-
         @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             .quick-actions {
-                grid-template-columns: 1fr;
-            }
-            .roi-tracker-grid {
-                grid-template-columns: 1fr;
-            }
-            .roi-tracker-stats {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 640px) {
-            .roi-tracker-stats {
                 grid-template-columns: 1fr;
             }
         }
@@ -885,48 +751,6 @@
                         <div class="stat-label">Data Points</div>
                         <div class="stat-value" id="statDataPoints">0</div>
                         <div class="stat-change" id="statDataRange">No data uploaded</div>
-                    </div>
-                </div>
-
-                <!-- ROI Tracker -->
-                <div class="roi-tracker-section" id="roiTrackerSection" style="display: none;">
-                    <div class="roi-tracker-header">
-                        <div class="roi-tracker-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="1" x2="12" y2="23"/>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="roi-tracker-title">Your Estimated Savings</h3>
-                            <p class="roi-tracker-subtitle">Based on your forecasts and industry benchmarks</p>
-                        </div>
-                    </div>
-                    <div class="roi-tracker-grid">
-                        <div class="roi-tracker-main">
-                            <div class="roi-tracker-label">Estimated Monthly Savings</div>
-                            <div class="roi-tracker-value" id="roiMonthlySavings">$0</div>
-                            <div class="roi-tracker-annual">
-                                <span id="roiAnnualSavings">$0</span> projected annually
-                            </div>
-                        </div>
-                        <div class="roi-tracker-stats">
-                            <div class="roi-stat-item">
-                                <div class="roi-stat-value" id="roiWasteReduced">0 units</div>
-                                <div class="roi-stat-label">Waste Reduced</div>
-                            </div>
-                            <div class="roi-stat-item">
-                                <div class="roi-stat-value" id="roiAccuracyBoost">0%</div>
-                                <div class="roi-stat-label">Accuracy Improvement</div>
-                            </div>
-                            <div class="roi-stat-item">
-                                <div class="roi-stat-value" id="roiROIMultiple">0x</div>
-                                <div class="roi-stat-label">ROI vs Subscription</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="roi-tracker-footer">
-                        <span>Calculations based on industry average waste reduction of 60% with accurate forecasting</span>
                     </div>
                 </div>
 
@@ -1324,63 +1148,10 @@
                         forecast_total: total,
                         avg_daily: total / predictions.predictions.length
                     }, predictions.predictions);
-
-                    // Calculate and display ROI
-                    calculateROI(total, modelAccuracy);
                 }
             } catch (error) {
                 console.error('Error loading forecast:', error);
             }
-        }
-
-        function calculateROI(weeklyForecast, modelAccuracy) {
-            const section = document.getElementById('roiTrackerSection');
-
-            // Only show if we have forecast data
-            if (!weeklyForecast || weeklyForecast <= 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            section.style.display = 'block';
-
-            // Assumptions based on industry averages
-            const avgItemPrice = 15; // Average item price
-            const foodCostPct = 0.30; // 30% food cost
-            const wasteWithoutForecast = 0.08; // 8% waste without forecasting
-            const wasteWithForecast = 0.03; // 3% waste with accurate forecasting
-            const wasteReductionPct = 0.60; // 60% reduction
-            const subscriptionCost = 49; // Monthly Pro plan
-
-            // Calculate monthly values (weekly * 4.3)
-            const monthlyUnits = weeklyForecast * 4.3;
-            const monthlyRevenue = monthlyUnits * avgItemPrice;
-            const monthlyFoodCost = monthlyRevenue * foodCostPct;
-
-            // Waste calculations
-            const wasteWithoutSystem = monthlyFoodCost * wasteWithoutForecast;
-            const wasteWithSystem = monthlyFoodCost * wasteWithForecast;
-            const monthlySavings = wasteWithoutSystem - wasteWithSystem;
-            const annualSavings = monthlySavings * 12;
-
-            // Units saved (estimated)
-            const unitsWastedBefore = monthlyUnits * wasteWithoutForecast;
-            const unitsWastedAfter = monthlyUnits * wasteWithForecast;
-            const unitsSaved = Math.round(unitsWastedBefore - unitsWastedAfter);
-
-            // ROI multiple
-            const roiMultiple = monthlySavings / subscriptionCost;
-
-            // Accuracy improvement (compare to industry average ~70%)
-            const industryAvgAccuracy = 70;
-            const accuracyImprovement = modelAccuracy ? Math.max(0, (100 - modelAccuracy) - (100 - industryAvgAccuracy)) : 0;
-
-            // Update UI
-            document.getElementById('roiMonthlySavings').textContent = '$' + Math.round(monthlySavings).toLocaleString();
-            document.getElementById('roiAnnualSavings').textContent = '$' + Math.round(annualSavings).toLocaleString();
-            document.getElementById('roiWasteReduced').textContent = unitsSaved.toLocaleString() + ' units';
-            document.getElementById('roiAccuracyBoost').textContent = Math.round(accuracyImprovement) + '%';
-            document.getElementById('roiROIMultiple').textContent = roiMultiple.toFixed(1) + 'x';
         }
 
         async function fetchDashboardInsights(stats, recentPredictions) {

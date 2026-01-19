@@ -720,21 +720,27 @@ async def train_model_with_progress(
 
             # Step 3: Train model
             yield f"data: {json.dumps({'step': 'training', 'message': 'Training AI model (this may take a moment)...', 'progress': 60})}\n\n"
+            await asyncio.sleep(0)  # Allow SSE to flush
 
             df_raw = df.copy()
             df_agg = df.groupby(["date", "item_name"]).agg({"quantity": "sum"}).reset_index()
             df_agg["date"] = df_agg["date"].dt.strftime("%Y-%m-%d")
 
             forecaster = SalesForecaster(business_config)
-            results = forecaster.train(
-                df_agg,
-                weather_data=weather_data,
-                holidays=holidays,
-                sports_games=sports_games,
-                paydays=paydays,
-                school_calendar=school_calendar,
-                raw_df=df_raw
-            )
+
+            # Run training in thread to not block event loop
+            def do_training():
+                return forecaster.train(
+                    df_agg,
+                    weather_data=weather_data,
+                    holidays=holidays,
+                    sports_games=sports_games,
+                    paydays=paydays,
+                    school_calendar=school_calendar,
+                    raw_df=df_raw
+                )
+
+            results = await asyncio.to_thread(do_training)
 
             yield f"data: {json.dumps({'step': 'training', 'message': 'Model training complete!', 'progress': 80})}\n\n"
 
@@ -750,42 +756,62 @@ async def train_model_with_progress(
 
             # Step 4: Save to database
             if business_id:
-                yield f"data: {json.dumps({'step': 'saving', 'message': 'Saving model to database...', 'progress': 90})}\n\n"
+                yield f"data: {json.dumps({'step': 'saving', 'message': 'Serializing model...', 'progress': 85})}\n\n"
+                await asyncio.sleep(0)  # Allow SSE to flush
 
                 from database import SessionLocal
-                db = SessionLocal()
-                try:
-                    model_bytes = forecaster.serialize_model()
-                    db.query(TrainedModel).filter(TrainedModel.business_id == business_id).update({"is_active": False})
 
-                    trained_model = TrainedModel(
-                        business_id=business_id,
-                        model_name="xgboost",
-                        model_path=None,
-                        model_data=model_bytes,
-                        train_mae=results.get("train_mae"),
-                        test_mae=results.get("test_mae"),
-                        train_mape=results.get("train_mape"),
-                        test_mape=results.get("test_mape"),
-                        training_rows=results.get("training_rows", 0),
-                        test_rows=results.get("test_rows", 0),
-                        feature_importance=json.dumps(results.get("feature_importance", {})),
-                        items_trained=json.dumps(items_trained),
-                        data_start_date=min_date,
-                        data_end_date=max_date,
-                        is_active=True
-                    )
-                    db.add(trained_model)
-                    db.commit()
+                # Run serialization in thread to not block event loop
+                model_bytes = await asyncio.to_thread(forecaster.serialize_model)
 
-                    results["model_id"] = trained_model.id
+                yield f"data: {json.dumps({'step': 'saving', 'message': 'Saving to database...', 'progress': 92})}\n\n"
+                await asyncio.sleep(0)
+
+                # Database operations in thread
+                def save_to_db():
+                    db = SessionLocal()
+                    try:
+                        db.query(TrainedModel).filter(TrainedModel.business_id == business_id).update({"is_active": False})
+
+                        trained_model = TrainedModel(
+                            business_id=business_id,
+                            model_name="xgboost",
+                            model_path=None,
+                            model_data=model_bytes,
+                            train_mae=results.get("train_mae"),
+                            test_mae=results.get("test_mae"),
+                            train_mape=results.get("train_mape"),
+                            test_mape=results.get("test_mape"),
+                            training_rows=results.get("training_rows", 0),
+                            test_rows=results.get("test_rows", 0),
+                            feature_importance=json.dumps(results.get("feature_importance", {})),
+                            items_trained=json.dumps(items_trained),
+                            data_start_date=min_date,
+                            data_end_date=max_date,
+                            is_active=True
+                        )
+                        db.add(trained_model)
+                        db.commit()
+                        return trained_model.id, True, None
+                    except Exception as e:
+                        import traceback
+                        traceback.print_exc()
+                        return None, False, str(e)
+                    finally:
+                        db.close()
+
+                yield f"data: {json.dumps({'step': 'saving', 'message': 'Committing changes...', 'progress': 96})}\n\n"
+                await asyncio.sleep(0)
+
+                model_id, saved, error = await asyncio.to_thread(save_to_db)
+
+                if saved:
+                    results["model_id"] = model_id
                     results["model_saved"] = True
-
-                except Exception as e:
-                    print(f"Error saving model: {e}")
+                else:
+                    print(f"Error saving model: {error}")
                     results["model_saved"] = False
-                finally:
-                    db.close()
+                    results["save_error"] = error
 
             # Final result
             yield f"data: {json.dumps({'step': 'complete', 'message': 'Training complete!', 'progress': 100, 'results': clean_for_json(results)})}\n\n"

@@ -18,26 +18,66 @@
             --primary: #0d9488;
             --primary-dark: #0f766e;
             --primary-light: #14b8a6;
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --text-muted: #6b7280;
-            --bg-white: #ffffff;
-            --bg-gray: #f9fafb;
-            --bg-gray-dark: #f3f4f6;
-            --border-light: #e5e7eb;
-            --border-medium: #d1d5db;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --primary-glow: rgba(20, 184, 166, 0.4);
+            --accent: #06b6d4;
+            --accent-glow: rgba(6, 182, 212, 0.3);
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a24;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(20, 184, 166, 0.3);
+            --gradient-primary: linear-gradient(135deg, #0d9488 0%, #06b6d4 100%);
+            --gradient-dark: linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-white);
+            background: var(--bg-dark);
             color: var(--text-primary);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(20, 184, 166, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20, 184, 166, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-1 {
+            top: -200px;
+            right: -200px;
+            background: var(--primary);
+        }
+
+        .bg-glow-2 {
+            bottom: -200px;
+            left: -200px;
+            background: var(--accent);
         }
 
         /* Navigation */
@@ -51,9 +91,9 @@
             left: 0;
             right: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-light);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-dark);
         }
 
         .nav-container {
@@ -78,7 +118,8 @@
         .nav-logo svg {
             width: 28px;
             height: 28px;
-            color: var(--primary);
+            color: var(--primary-light);
+            filter: drop-shadow(0 0 8px var(--primary-glow));
         }
 
         .nav-links {
@@ -92,11 +133,11 @@
             text-decoration: none;
             font-weight: 500;
             font-size: 0.9rem;
-            transition: color 0.2s;
+            transition: all 0.2s;
         }
 
         .nav-link:hover {
-            color: var(--text-primary);
+            color: var(--primary-light);
         }
 
         .nav-buttons {
@@ -123,178 +164,177 @@
 
         .btn-ghost:hover {
             color: var(--text-primary);
-            background: var(--bg-gray);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: var(--gradient-primary);
             color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--primary-glow);
         }
 
         .btn-outline {
-            border: 1px solid var(--border-medium);
+            border: 1px solid var(--border-glow);
             color: var(--text-primary);
             background: transparent;
         }
 
         .btn-outline:hover {
-            background: var(--bg-gray);
-            border-color: var(--border-medium);
+            background: rgba(20, 184, 166, 0.1);
+            border-color: var(--primary-light);
         }
 
         /* Hero Section */
         .hero {
-            padding: 8rem 2rem 5rem;
+            padding: 10rem 2rem 6rem;
             text-align: center;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.375rem 0.875rem;
-            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
-            border: 1px solid rgba(13, 148, 136, 0.2);
+            padding: 0.5rem 1rem;
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid var(--border-glow);
             border-radius: 100px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            color: var(--primary-dark);
-            margin-bottom: 1.5rem;
+            color: var(--primary-light);
+            margin-bottom: 2rem;
         }
 
         .hero-badge svg {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
         }
 
         .hero h1 {
-            font-size: 3.25rem;
+            font-size: 4rem;
             font-weight: 800;
-            line-height: 1.15;
-            margin-bottom: 1.25rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
             color: var(--text-primary);
-            letter-spacing: -0.025em;
+            letter-spacing: -0.03em;
         }
 
         .hero h1 span {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .hero p {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             color: var(--text-secondary);
             line-height: 1.7;
-            margin-bottom: 2rem;
-            max-width: 600px;
+            margin-bottom: 2.5rem;
+            max-width: 650px;
             margin-left: auto;
             margin-right: auto;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn-hero {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.95rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .btn-hero svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .btn-hero.btn-primary {
-            box-shadow: var(--shadow-md), 0 0 0 1px rgba(13, 148, 136, 0.1);
-        }
-
-        .btn-hero.btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-lg), 0 0 0 1px rgba(13, 148, 136, 0.2);
+            width: 20px;
+            height: 20px;
         }
 
         .hero-note {
-            margin-top: 1rem;
-            font-size: 0.85rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.375rem;
+            gap: 0.5rem;
         }
 
         .hero-note svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             color: #10b981;
         }
 
-        /* Trusted By Section */
-        .trusted {
-            padding: 3rem 2rem;
+        /* Stats Section */
+        .stats {
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 2rem;
             text-align: center;
-            border-top: 1px solid var(--border-light);
-            border-bottom: 1px solid var(--border-light);
-            background: var(--bg-gray);
+            transition: all 0.3s;
         }
 
-        .trusted p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 500;
-        }
-
-        .trusted-stats {
-            display: flex;
-            justify-content: center;
-            gap: 4rem;
-            flex-wrap: wrap;
-        }
-
-        .stat {
-            text-align: center;
+        .stat-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
         }
 
         .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
 
-        /* ROI Calculator Section */
-        .roi-section {
-            padding: 5rem 2rem;
-            background: linear-gradient(135deg, #f0fdfa 0%, #f8fafc 100%);
-            border-bottom: 1px solid var(--border-light);
+        /* Industry Problem Section */
+        .problem-section {
+            padding: 6rem 2rem;
+            position: relative;
+            z-index: 1;
         }
 
-        .roi-content {
+        .problem-content {
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -302,163 +342,100 @@
         .section-header {
             text-align: center;
             max-width: 600px;
-            margin: 0 auto 3rem;
+            margin: 0 auto 4rem;
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.875rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ef4444;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .section-header h2 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             color: var(--text-primary);
         }
 
         .section-header p {
             color: var(--text-secondary);
-            font-size: 1.05rem;
+            font-size: 1.1rem;
         }
 
-        .roi-calculator {
+        .problem-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
         }
 
-        .roi-inputs {
-            background: white;
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-light);
-        }
-
-        .roi-input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .roi-input-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .roi-label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .roi-label-hint {
-            font-weight: 400;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .roi-input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .roi-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
-        }
-
-        .roi-slider {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: var(--bg-gray-dark);
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .roi-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
-        }
-
-        .roi-slider-value {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
-
-        .roi-results {
             text-align: center;
+            transition: all 0.3s;
         }
 
-        .roi-savings-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.3);
+        .problem-card:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: var(--bg-card-hover);
         }
 
-        .roi-savings-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-
-        .roi-savings-amount {
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .roi-savings-period {
-            font-size: 1rem;
-            opacity: 0.85;
-        }
-
-        .roi-breakdown {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .roi-stat {
-            background: white;
+        .problem-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(239, 68, 68, 0.1);
             border-radius: 12px;
-            padding: 1.25rem;
-            text-align: center;
-            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
         }
 
-        .roi-stat-value {
-            font-size: 1.5rem;
+        .problem-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #ef4444;
+        }
+
+        .problem-card h3 {
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--primary-dark);
+            color: #ef4444;
+            margin-bottom: 0.5rem;
         }
 
-        .roi-stat-label {
-            font-size: 0.8rem;
+        .problem-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .problem-source {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 0.25rem;
         }
 
         /* Features Section */
         .features {
-            padding: 5rem 2rem;
+            padding: 6rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .features-grid {
@@ -468,37 +445,38 @@
         }
 
         .feature-card {
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 1.75rem;
-            transition: all 0.2s;
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
         }
 
         .feature-card:hover {
-            border-color: var(--border-medium);
-            box-shadow: var(--shadow-md);
+            border-color: var(--border-glow);
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
         }
 
         .feature-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(20, 184, 166, 0.15) 100%);
-            border-radius: 10px;
+            width: 48px;
+            height: 48px;
+            background: rgba(20, 184, 166, 0.1);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .feature-icon svg {
-            width: 22px;
-            height: 22px;
-            color: var(--primary);
+            width: 24px;
+            height: 24px;
+            color: var(--primary-light);
         }
 
         .feature-card h3 {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
@@ -512,10 +490,12 @@
 
         /* How It Works Section */
         .how-it-works {
-            padding: 5rem 2rem;
-            background: var(--bg-gray);
-            border-top: 1px solid var(--border-light);
-            border-bottom: 1px solid var(--border-light);
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-dark);
+            border-bottom: 1px solid var(--border-dark);
+            position: relative;
+            z-index: 1;
         }
 
         .how-content {
@@ -537,11 +517,12 @@
         .step::after {
             content: '';
             position: absolute;
-            top: 24px;
+            top: 28px;
             left: 60%;
             width: 80%;
             height: 2px;
             background: linear-gradient(90deg, var(--primary-light), transparent);
+            opacity: 0.3;
         }
 
         .step:last-child::after {
@@ -549,47 +530,50 @@
         }
 
         .step-number {
-            width: 48px;
-            height: 48px;
-            background: var(--primary);
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: white;
-            margin: 0 auto 1rem;
+            margin: 0 auto 1.25rem;
             position: relative;
             z-index: 1;
+            box-shadow: 0 0 30px var(--primary-glow);
         }
 
         .step h4 {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 0.375rem;
+            margin-bottom: 0.5rem;
             color: var(--text-primary);
         }
 
         .step p {
             color: var(--text-secondary);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             line-height: 1.5;
         }
 
         /* Interactive Demo Section */
         .demo {
-            padding: 5rem 2rem;
+            padding: 6rem 2rem;
             max-width: 1100px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .demo-container {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
         }
 
         .demo-header {
@@ -602,7 +586,7 @@
         .demo-tabs {
             display: flex;
             gap: 0.5rem;
-            background: var(--bg-gray-dark);
+            background: rgba(255, 255, 255, 0.05);
             padding: 0.25rem;
             border-radius: 10px;
         }
@@ -620,9 +604,8 @@
         }
 
         .demo-tab.active {
-            background: white;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
+            background: var(--gradient-primary);
+            color: white;
         }
 
         .demo-badge {
@@ -641,6 +624,7 @@
             background: #10b981;
             border-radius: 50%;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 10px #10b981;
         }
 
         @keyframes pulse {
@@ -649,8 +633,8 @@
         }
 
         .demo-mockup {
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-dark);
             border-radius: 12px;
             padding: 1.5rem;
             display: grid;
@@ -659,8 +643,8 @@
         }
 
         .mockup-card {
-            background: var(--bg-gray);
-            border: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-dark);
             border-radius: 10px;
             padding: 1.25rem;
         }
@@ -683,10 +667,11 @@
 
         .chart-bar {
             flex: 1;
-            background: linear-gradient(180deg, var(--primary-light) 0%, var(--primary) 100%);
+            background: var(--gradient-primary);
             border-radius: 3px 3px 0 0;
             min-height: 16px;
             transition: height 0.5s ease;
+            box-shadow: 0 0 10px var(--primary-glow);
         }
 
         .mockup-prediction {
@@ -700,15 +685,15 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.75rem;
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-dark);
             border-radius: 8px;
             transition: all 0.3s ease;
         }
 
         .prediction-row:hover {
-            border-color: var(--primary-light);
-            background: rgba(13, 148, 136, 0.02);
+            border-color: var(--border-glow);
+            background: rgba(20, 184, 166, 0.05);
         }
 
         .prediction-item {
@@ -718,7 +703,7 @@
 
         .prediction-value {
             font-weight: 600;
-            color: var(--primary-dark);
+            color: var(--primary-light);
             font-size: 0.85rem;
         }
 
@@ -731,9 +716,11 @@
 
         /* Testimonials Section */
         .testimonials {
-            padding: 5rem 2rem;
-            background: var(--bg-gray);
-            border-top: 1px solid var(--border-light);
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-dark);
+            position: relative;
+            z-index: 1;
         }
 
         .testimonials-content {
@@ -748,17 +735,22 @@
         }
 
         .testimonial-card {
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 1.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .testimonial-card:hover {
+            border-color: var(--border-glow);
         }
 
         .testimonial-quote {
-            font-size: 0.95rem;
+            font-size: 1rem;
             line-height: 1.7;
             color: var(--text-secondary);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .testimonial-author {
@@ -768,9 +760,9 @@
         }
 
         .author-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -781,55 +773,56 @@
         }
 
         .author-info h4 {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 0.125rem;
             color: var(--text-primary);
         }
 
         .author-info p {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
 
         /* CTA Section */
         .cta {
-            padding: 5rem 2rem;
+            padding: 6rem 2rem;
             text-align: center;
-            border-top: 1px solid var(--border-light);
+            position: relative;
+            z-index: 1;
         }
 
         .cta-content {
-            max-width: 500px;
+            max-width: 550px;
             margin: 0 auto;
         }
 
         .cta h2 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             color: var(--text-primary);
         }
 
         .cta p {
             color: var(--text-secondary);
-            font-size: 1.05rem;
-            margin-bottom: 1.75rem;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
         }
 
         .cta-note {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.375rem;
-            margin-top: 1rem;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
         .cta-note svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             color: #10b981;
         }
 
@@ -837,8 +830,9 @@
         .footer {
             padding: 2rem;
             text-align: center;
-            border-top: 1px solid var(--border-light);
-            background: var(--bg-gray);
+            border-top: 1px solid var(--border-dark);
+            position: relative;
+            z-index: 1;
         }
 
         .footer-links {
@@ -852,10 +846,11 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-size: 0.9rem;
+            transition: color 0.2s;
         }
 
         .footer-links a:hover {
-            color: var(--primary);
+            color: var(--primary-light);
         }
 
         .footer p {
@@ -865,6 +860,12 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .problem-grid {
+                grid-template-columns: 1fr;
+            }
             .features-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -880,12 +881,6 @@
             .testimonials-grid {
                 grid-template-columns: 1fr;
             }
-            .trusted-stats {
-                gap: 2.5rem;
-            }
-            .roi-calculator {
-                grid-template-columns: 1fr;
-            }
         }
 
         @media (max-width: 768px) {
@@ -896,13 +891,13 @@
                 display: none;
             }
             .hero {
-                padding: 7rem 1.25rem 4rem;
+                padding: 8rem 1.25rem 4rem;
             }
             .hero h1 {
-                font-size: 2.25rem;
+                font-size: 2.5rem;
             }
             .hero p {
-                font-size: 1rem;
+                font-size: 1.05rem;
             }
             .hero-buttons {
                 flex-direction: column;
@@ -910,33 +905,24 @@
             }
             .btn-hero {
                 width: 100%;
-                max-width: 280px;
+                max-width: 300px;
                 justify-content: center;
             }
-            .trusted {
-                padding: 2.5rem 1.25rem;
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
             }
-            .trusted-stats {
-                flex-direction: column;
-                gap: 1.5rem;
+            .stat-card {
+                padding: 1.5rem 1rem;
             }
-            .roi-section {
-                padding: 4rem 1.25rem;
+            .stat-value {
+                font-size: 2rem;
             }
-            .roi-breakdown {
-                grid-template-columns: 1fr;
-            }
-            .features {
-                padding: 4rem 1.25rem;
+            .section-header h2 {
+                font-size: 2rem;
             }
             .features-grid {
                 grid-template-columns: 1fr;
-            }
-            .section-header h2 {
-                font-size: 1.75rem;
-            }
-            .how-it-works {
-                padding: 4rem 1.25rem;
             }
             .steps {
                 grid-template-columns: 1fr;
@@ -952,14 +938,8 @@
                 flex-direction: column;
                 gap: 1rem;
             }
-            .testimonials {
-                padding: 4rem 1.25rem;
-            }
-            .cta {
-                padding: 4rem 1.25rem;
-            }
             .cta h2 {
-                font-size: 1.75rem;
+                font-size: 2rem;
             }
             .footer-links {
                 flex-direction: column;
@@ -969,6 +949,11 @@
     </style>
 </head>
 <body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-container">
@@ -981,7 +966,7 @@
             </a>
             <div class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
-                <a href="#roi" class="nav-link">ROI Calculator</a>
+                <a href="#problem" class="nav-link">The Problem</a>
                 <a href="/frontend/pages/pricing.html" class="nav-link">Pricing</a>
                 <a href="#demo" class="nav-link">Demo</a>
             </div>
@@ -998,12 +983,11 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
-            Built for Restaurants & Local Businesses
+            AI-Powered Demand Forecasting
         </div>
-        <h1>Know Exactly What <span>You'll Sell Tomorrow</span></h1>
+        <h1>Know What You'll Sell <span>Before You Prep</span></h1>
         <p>
-            AI-powered sales forecasting for restaurants, pizza shops, and food businesses.
-            Use weather, events, and your sales history to predict demand with precision.
+            Machine learning that predicts your daily demand using weather, local events, holidays, and your historical sales patterns. Stop guessing. Start forecasting.
         </p>
         <div class="hero-buttons">
             <a href="/frontend/pages/login.html" class="btn btn-hero btn-primary">
@@ -1028,104 +1012,78 @@
         </div>
     </section>
 
-    <!-- Trusted By / Stats Section -->
-    <section class="trusted">
-        <p>Trusted by local businesses</p>
-        <div class="trusted-stats">
-            <div class="stat">
-                <div class="stat-value">23%</div>
-                <div class="stat-label">Less food waste</div>
-            </div>
-            <div class="stat">
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-card">
                 <div class="stat-value">91%</div>
-                <div class="stat-label">Prediction accuracy</div>
+                <div class="stat-label">Prediction Accuracy</div>
             </div>
-            <div class="stat">
+            <div class="stat-card">
+                <div class="stat-value">14</div>
+                <div class="stat-label">Days Ahead Forecasting</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-value">2 min</div>
-                <div class="stat-label">Setup time</div>
+                <div class="stat-label">Setup Time</div>
             </div>
-            <div class="stat">
-                <div class="stat-value">14 days</div>
-                <div class="stat-label">Ahead forecasting</div>
+            <div class="stat-card">
+                <div class="stat-value">12+</div>
+                <div class="stat-label">External Data Factors</div>
             </div>
         </div>
     </section>
 
-    <!-- ROI Calculator Section -->
-    <section class="roi-section" id="roi">
-        <div class="roi-content">
+    <!-- Industry Problem Section -->
+    <section class="problem-section" id="problem">
+        <div class="problem-content">
             <div class="section-header">
-                <h2>Calculate Your Savings</h2>
-                <p>See how much TrucastAI can save your business by reducing waste and optimizing inventory.</p>
+                <span class="section-badge">The Industry Problem</span>
+                <h2>Food Waste is Costing You</h2>
+                <p>Restaurants lose billions every year to poor demand forecasting. Here's what the data shows.</p>
             </div>
-            <div class="roi-calculator">
-                <div class="roi-inputs">
-                    <div class="roi-input-group">
-                        <label class="roi-label">
-                            Monthly Revenue
-                            <span class="roi-label-hint">(Average)</span>
-                        </label>
-                        <input type="text" class="roi-input" id="roiRevenue" value="$50,000" oninput="calculateROI()">
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 17V9"/>
+                            <path d="M13 17V5"/>
+                            <path d="M8 17v-3"/>
+                        </svg>
                     </div>
-                    <div class="roi-input-group">
-                        <label class="roi-label">
-                            Food Cost Percentage
-                            <span class="roi-label-hint">(Industry avg: 28-35%)</span>
-                        </label>
-                        <input type="range" class="roi-slider" id="roiFoodCost" min="20" max="45" value="30" oninput="calculateROI()">
-                        <div class="roi-slider-value">
-                            <span>20%</span>
-                            <span id="foodCostDisplay">30%</span>
-                            <span>45%</span>
-                        </div>
-                    </div>
-                    <div class="roi-input-group">
-                        <label class="roi-label">
-                            Current Waste Percentage
-                            <span class="roi-label-hint">(Industry avg: 4-10%)</span>
-                        </label>
-                        <input type="range" class="roi-slider" id="roiWaste" min="2" max="15" value="8" oninput="calculateROI()">
-                        <div class="roi-slider-value">
-                            <span>2%</span>
-                            <span id="wasteDisplay">8%</span>
-                            <span>15%</span>
-                        </div>
-                    </div>
+                    <h3>4-10%</h3>
+                    <p>Average food cost lost to waste in restaurants without demand forecasting</p>
                 </div>
-                <div class="roi-results">
-                    <div class="roi-savings-card">
-                        <div class="roi-savings-label">Estimated Annual Savings</div>
-                        <div class="roi-savings-amount" id="annualSavings">$8,640</div>
-                        <div class="roi-savings-period">per year with TrucastAI</div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
                     </div>
-                    <div class="roi-breakdown">
-                        <div class="roi-stat">
-                            <div class="roi-stat-value" id="monthlyWaste">$1,200</div>
-                            <div class="roi-stat-label">Current Monthly Waste</div>
-                        </div>
-                        <div class="roi-stat">
-                            <div class="roi-stat-value" id="wasteReduction">60%</div>
-                            <div class="roi-stat-label">Waste Reduction</div>
-                        </div>
-                        <div class="roi-stat">
-                            <div class="roi-stat-value" id="monthlySavings">$720</div>
-                            <div class="roi-stat-label">Monthly Savings</div>
-                        </div>
-                        <div class="roi-stat">
-                            <div class="roi-stat-value" id="roiMultiple">14.7x</div>
-                            <div class="roi-stat-label">ROI (vs Pro Plan)</div>
-                        </div>
+                    <h3>20-50%</h3>
+                    <p>Potential waste reduction with accurate AI-powered demand prediction</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
                     </div>
+                    <h3>$162B</h3>
+                    <p>Annual cost of food waste in the US restaurant industry alone</p>
                 </div>
             </div>
+            <p class="problem-source">Sources: National Restaurant Association, USDA Food Waste Research</p>
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="section-header">
-            <h2>Everything you need to forecast demand</h2>
-            <p>Powerful features designed to help you prep smarter and reduce waste.</p>
+            <h2>Everything You Need to Forecast Demand</h2>
+            <p>Powerful ML features designed to help you prep smarter and reduce waste.</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
@@ -1137,7 +1095,7 @@
                     </svg>
                 </div>
                 <h3>XGBoost ML Model</h3>
-                <p>Machine learning trained on your specific sales patterns and business characteristics.</p>
+                <p>Gradient boosting model trained on your specific sales patterns for maximum accuracy.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -1145,7 +1103,7 @@
                         <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/>
                     </svg>
                 </div>
-                <h3>Weather Aware</h3>
+                <h3>Weather Integration</h3>
                 <p>Automatically factors in weather forecasts. Rain or shine, predictions adjust accordingly.</p>
             </div>
             <div class="feature-card">
@@ -1326,7 +1284,7 @@
     <section class="cta">
         <div class="cta-content">
             <h2>Ready to Stop Guessing?</h2>
-            <p>Join restaurants using AI to reduce waste, optimize prep, and boost profits.</p>
+            <p>Join restaurants using AI to predict demand, optimize prep, and reduce waste.</p>
             <a href="/frontend/pages/login.html" class="btn btn-hero btn-primary">
                 Start Your Free 14-Day Trial
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1355,41 +1313,6 @@
     </footer>
 
     <script>
-        // ROI Calculator
-        function calculateROI() {
-            const revenueInput = document.getElementById('roiRevenue').value;
-            const revenue = parseFloat(revenueInput.replace(/[^0-9.]/g, '')) || 50000;
-            const foodCostPct = parseFloat(document.getElementById('roiFoodCost').value) / 100;
-            const wastePct = parseFloat(document.getElementById('roiWaste').value) / 100;
-
-            // Display current slider values
-            document.getElementById('foodCostDisplay').textContent = Math.round(foodCostPct * 100) + '%';
-            document.getElementById('wasteDisplay').textContent = Math.round(wastePct * 100) + '%';
-
-            // Calculate values
-            const foodCost = revenue * foodCostPct;
-            const monthlyWaste = foodCost * wastePct;
-            const wasteReduction = 0.60; // 60% reduction with TrucastAI
-            const monthlySavings = monthlyWaste * wasteReduction;
-            const annualSavings = monthlySavings * 12;
-            const proPlanCost = 49 * 12; // $49/month
-            const roiMultiple = annualSavings / proPlanCost;
-
-            // Update display
-            document.getElementById('monthlyWaste').textContent = '$' + Math.round(monthlyWaste).toLocaleString();
-            document.getElementById('wasteReduction').textContent = Math.round(wasteReduction * 100) + '%';
-            document.getElementById('monthlySavings').textContent = '$' + Math.round(monthlySavings).toLocaleString();
-            document.getElementById('annualSavings').textContent = '$' + Math.round(annualSavings).toLocaleString();
-            document.getElementById('roiMultiple').textContent = roiMultiple.toFixed(1) + 'x';
-        }
-
-        // Format revenue input
-        document.getElementById('roiRevenue').addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[^0-9.]/g, '')) || 50000;
-            this.value = '$' + value.toLocaleString();
-            calculateROI();
-        });
-
         // Interactive Demo
         const demoData = {
             forecast: {
@@ -1454,9 +1377,6 @@
             document.querySelector('#demoContent .mockup-card:first-child h4').textContent = data.chartTitle;
             document.querySelector('#demoContent .mockup-card:last-child h4').textContent = data.predTitle;
         }
-
-        // Initial calculation
-        calculateROI();
     </script>
 </body>
 </html>
