@@ -2,7 +2,7 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from processor import process_csv
 import os
 from config import BusinessConfig
@@ -19,6 +19,7 @@ import math
 from datetime import datetime
 from pathlib import Path
 import logging
+import asyncio
 
 # Settings and monitoring
 from settings import get_settings
@@ -213,6 +214,19 @@ async def train_model(
     else:
         print(f"DEBUG /train: Using default config (config was empty or 'string')")
 
+    # Try to get cached coordinates from database to avoid slow geocoding API call
+    cached_lat, cached_lon = None, None
+    if business_id:
+        from database import SessionLocal
+        db = SessionLocal()
+        try:
+            business = db.query(Business).filter(Business.id == business_id).first()
+            if business:
+                cached_lat = business.latitude
+                cached_lon = business.longitude
+        finally:
+            db.close()
+
     if config_data:
         business_config = BusinessConfig(
             business_name=config_data.get("business_name", "My Business"),
@@ -220,14 +234,18 @@ async def train_model(
             state=config_data.get("state", "CO"),
             zipcode=config_data.get("zipcode", "80202"),
             country=config_data.get("country", "US"),
-            timezone=config_data.get("timezone", "America/New_York")
+            timezone=config_data.get("timezone", "America/New_York"),
+            latitude=cached_lat,
+            longitude=cached_lon
         )
     else:
         business_config = BusinessConfig(
             business_name="Test Shop",
             city="Denver",
             state="CO",
-            zipcode="80202"
+            zipcode="80202",
+            latitude=cached_lat,
+            longitude=cached_lon
         )
     
     # Read and prepare data
@@ -352,43 +370,56 @@ async def train_model(
     max_date = df["date"].max().date()
     year = min_date.year
     
-    # Fetch external data
-    weather_data = []
-    holidays = []
-    sports_games = []
-    paydays = []
-    school_calendar = []
-    
-    if business_config.latitude and business_config.longitude:
+    # Fetch external data in parallel for faster loading
+    async def fetch_weather():
+        if business_config.latitude and business_config.longitude:
+            try:
+                return await get_historical_weather(
+                    latitude=business_config.latitude,
+                    longitude=business_config.longitude,
+                    start_date=min_date,
+                    end_date=max_date
+                )
+            except Exception as e:
+                print(f"Weather fetch failed: {e}")
+        return []
+
+    async def fetch_holidays():
         try:
-            weather_data = await get_historical_weather(
-                latitude=business_config.latitude,
-                longitude=business_config.longitude,
-                start_date=min_date,
-                end_date=max_date
-            )
+            return await get_holidays(year, business_config.country)
         except Exception as e:
-            print(f"Weather fetch failed: {e}")
-    
-    try:
-        holidays = await get_holidays(year, business_config.country)
-    except Exception as e:
-        print(f"Holidays fetch failed: {e}")
-    
-    try:
-        sports_games = await get_nfl_games(year)
-    except Exception as e:
-        print(f"Sports fetch failed: {e}")
-    
-    try:
-        paydays = get_payday_dates(year)
-    except Exception as e:
-        print(f"Paydays fetch failed: {e}")
-    
-    try:
-        school_calendar = get_school_calendar(year)
-    except Exception as e:
-        print(f"School calendar fetch failed: {e}")
+            print(f"Holidays fetch failed: {e}")
+            return []
+
+    async def fetch_sports():
+        try:
+            return await get_nfl_games(year)
+        except Exception as e:
+            print(f"Sports fetch failed: {e}")
+            return []
+
+    async def fetch_paydays():
+        try:
+            return get_payday_dates(year)
+        except Exception as e:
+            print(f"Paydays fetch failed: {e}")
+            return []
+
+    async def fetch_school():
+        try:
+            return get_school_calendar(year)
+        except Exception as e:
+            print(f"School calendar fetch failed: {e}")
+            return []
+
+    # Run all external data fetches in parallel
+    weather_data, holidays, sports_games, paydays, school_calendar = await asyncio.gather(
+        fetch_weather(),
+        fetch_holidays(),
+        fetch_sports(),
+        fetch_paydays(),
+        fetch_school()
+    )
     
     # Keep a copy of raw data for metadata extraction (before aggregation)
     df_raw = df.copy()
@@ -479,28 +510,32 @@ async def train_model(
                 print(f"Auto-compare: Found {len(model_ids)} models for business {business_id}")
 
                 if model_ids:
-                    # Check what predictions exist
-                    existing_predictions = db.query(Prediction).filter(
-                        Prediction.model_id.in_(model_ids)
+                    # Build a lookup dict of actuals for fast O(1) access
+                    actuals_lookup = {
+                        (row["date"], row["item_name"]): int(row["quantity"])
+                        for _, row in actual_sales.iterrows()
+                    }
+
+                    # Get date range for efficient query
+                    min_actual_date = actual_sales["date"].min()
+                    max_actual_date = actual_sales["date"].max()
+
+                    # Fetch only predictions within our date range (much faster than iterating all)
+                    predictions_to_update = db.query(Prediction).filter(
+                        Prediction.model_id.in_(model_ids),
+                        Prediction.prediction_date >= min_actual_date,
+                        Prediction.prediction_date <= max_actual_date
                     ).all()
-                    print(f"Auto-compare: Found {len(existing_predictions)} total predictions in database")
 
-                    if existing_predictions:
-                        pred_dates = set(p.prediction_date for p in existing_predictions)
-                        print(f"Auto-compare: Prediction dates: {min(pred_dates)} to {max(pred_dates)}")
+                    print(f"Auto-compare: Found {len(predictions_to_update)} predictions in date range")
 
+                    # Batch update in memory, then commit once
                     updated_count = 0
-                    for _, row in actual_sales.iterrows():
-                        # Update any predictions matching this date/item
-                        updated = db.query(Prediction).filter(
-                            Prediction.model_id.in_(model_ids),
-                            Prediction.prediction_date == row["date"],
-                            Prediction.item_name == row["item_name"]
-                        ).update(
-                            {"actual_quantity": int(row["quantity"])},
-                            synchronize_session=False
-                        )
-                        updated_count += updated
+                    for pred in predictions_to_update:
+                        key = (pred.prediction_date, pred.item_name)
+                        if key in actuals_lookup:
+                            pred.actual_quantity = actuals_lookup[key]
+                            updated_count += 1
 
                     db.commit()
                     print(f"Auto-compare: Updated {updated_count} predictions with actual quantities")
@@ -519,3 +554,248 @@ async def train_model(
 
     # Clean NaN values before returning
     return clean_for_json(results)
+
+
+@app.post("/train/stream")
+async def train_model_with_progress(
+    file: UploadFile,
+    config: str = Form(default=""),
+    business_id: int = Form(default=None)
+):
+    """Train model with real-time progress updates via Server-Sent Events"""
+
+    async def generate_progress():
+        try:
+            # Step 1: Processing CSV
+            yield f"data: {json.dumps({'step': 'processing', 'message': 'Processing your CSV file...', 'progress': 10})}\n\n"
+
+            if not file.filename.endswith(".csv"):
+                yield f"data: {json.dumps({'step': 'error', 'message': 'Only CSV files supported'})}\n\n"
+                return
+
+            # Parse config
+            config_data = None
+            if config and config.strip() and config != "string":
+                try:
+                    config_data = json.loads(config)
+                except json.JSONDecodeError:
+                    pass
+
+            # Get cached coordinates
+            cached_lat, cached_lon = None, None
+            if business_id:
+                from database import SessionLocal
+                db = SessionLocal()
+                try:
+                    business = db.query(Business).filter(Business.id == business_id).first()
+                    if business:
+                        cached_lat = business.latitude
+                        cached_lon = business.longitude
+                finally:
+                    db.close()
+
+            if config_data:
+                business_config = BusinessConfig(
+                    business_name=config_data.get("business_name", "My Business"),
+                    city=config_data.get("city", "Denver"),
+                    state=config_data.get("state", "CO"),
+                    zipcode=config_data.get("zipcode", "80202"),
+                    country=config_data.get("country", "US"),
+                    timezone=config_data.get("timezone", "America/New_York"),
+                    latitude=cached_lat,
+                    longitude=cached_lon
+                )
+            else:
+                business_config = BusinessConfig(
+                    business_name="Test Shop",
+                    city="Denver",
+                    state="CO",
+                    zipcode="80202",
+                    latitude=cached_lat,
+                    longitude=cached_lon
+                )
+
+            # Read CSV
+            file.file.seek(0)  # Reset file position
+            df = pd.read_csv(file.file)
+            df.columns = df.columns.str.lower().str.strip()
+
+            yield f"data: {json.dumps({'step': 'processing', 'message': f'Found {len(df):,} rows in your data', 'progress': 20})}\n\n"
+
+            # Column mapping (same as /train)
+            column_mapping = {
+                "order_date": "date", "sale_date": "date", "transaction_date": "date",
+                "order date": "date", "sale date": "date", "trans_date": "date",
+                "pizza_name": "item_name", "product": "item_name", "product_name": "item_name",
+                "item": "item_name", "name": "item_name", "product name": "item_name",
+                "menu_item": "item_name", "item_description": "item_name", "description": "item_name",
+                "pizza_size": "size", "product_size": "size", "item_size": "size",
+                "portion": "size", "portion_size": "size",
+                "pizza_category": "type", "pizza_type": "type", "product_type": "type",
+                "item_type": "type", "category": "type", "product_category": "type",
+                "pizza_price": "unit_price", "unit_price": "unit_price", "price": "unit_price",
+                "order_quantity": "quantity", "qty": "quantity", "units_sold": "quantity",
+            }
+            df = df.rename(columns={k: v for k, v in column_mapping.items() if k in df.columns})
+
+            # Parse dates
+            if "date" in df.columns:
+                for fmt in [None, True, False]:
+                    try:
+                        if fmt is None:
+                            df["date"] = pd.to_datetime(df["date"], format="mixed")
+                        else:
+                            df["date"] = pd.to_datetime(df["date"], dayfirst=fmt)
+                        break
+                    except:
+                        continue
+
+            # Ensure quantity column
+            if "quantity" not in df.columns:
+                df["quantity"] = 1
+
+            min_date = df["date"].min().date()
+            max_date = df["date"].max().date()
+            year = min_date.year
+
+            # Step 2: Fetch external data
+            yield f"data: {json.dumps({'step': 'external', 'message': 'Fetching weather, holidays, and event data...', 'progress': 35})}\n\n"
+
+            async def fetch_weather():
+                if business_config.latitude and business_config.longitude:
+                    try:
+                        return await get_historical_weather(
+                            latitude=business_config.latitude,
+                            longitude=business_config.longitude,
+                            start_date=min_date,
+                            end_date=max_date
+                        )
+                    except Exception as e:
+                        print(f"Weather fetch failed: {e}")
+                return []
+
+            async def fetch_holidays():
+                try:
+                    return await get_holidays(year, business_config.country)
+                except Exception as e:
+                    print(f"Holidays fetch failed: {e}")
+                    return []
+
+            async def fetch_sports():
+                try:
+                    return await get_nfl_games(year)
+                except Exception as e:
+                    print(f"Sports fetch failed: {e}")
+                    return []
+
+            async def fetch_paydays():
+                try:
+                    return get_payday_dates(year)
+                except Exception as e:
+                    print(f"Paydays fetch failed: {e}")
+                    return []
+
+            async def fetch_school():
+                try:
+                    return get_school_calendar(year)
+                except Exception as e:
+                    print(f"School calendar fetch failed: {e}")
+                    return []
+
+            weather_data, holidays, sports_games, paydays, school_calendar = await asyncio.gather(
+                fetch_weather(),
+                fetch_holidays(),
+                fetch_sports(),
+                fetch_paydays(),
+                fetch_school()
+            )
+
+            external_count = len(weather_data) + len(holidays) + len(sports_games) + len(paydays) + len(school_calendar)
+            yield f"data: {json.dumps({'step': 'external', 'message': f'Loaded {external_count:,} external data points', 'progress': 50})}\n\n"
+
+            # Step 3: Train model
+            yield f"data: {json.dumps({'step': 'training', 'message': 'Training AI model (this may take a moment)...', 'progress': 60})}\n\n"
+
+            df_raw = df.copy()
+            df_agg = df.groupby(["date", "item_name"]).agg({"quantity": "sum"}).reset_index()
+            df_agg["date"] = df_agg["date"].dt.strftime("%Y-%m-%d")
+
+            forecaster = SalesForecaster(business_config)
+            results = forecaster.train(
+                df_agg,
+                weather_data=weather_data,
+                holidays=holidays,
+                sports_games=sports_games,
+                paydays=paydays,
+                school_calendar=school_calendar,
+                raw_df=df_raw
+            )
+
+            yield f"data: {json.dumps({'step': 'training', 'message': 'Model training complete!', 'progress': 80})}\n\n"
+
+            results["external_data"] = {
+                "weather_days": len(weather_data),
+                "holidays": len(holidays),
+                "sports_games": len(sports_games),
+                "paydays": len(paydays),
+                "school_events": len(school_calendar)
+            }
+
+            items_trained = df_agg["item_name"].unique().tolist()
+
+            # Step 4: Save to database
+            if business_id:
+                yield f"data: {json.dumps({'step': 'saving', 'message': 'Saving model to database...', 'progress': 90})}\n\n"
+
+                from database import SessionLocal
+                db = SessionLocal()
+                try:
+                    model_bytes = forecaster.serialize_model()
+                    db.query(TrainedModel).filter(TrainedModel.business_id == business_id).update({"is_active": False})
+
+                    trained_model = TrainedModel(
+                        business_id=business_id,
+                        model_name="xgboost",
+                        model_path=None,
+                        model_data=model_bytes,
+                        train_mae=results.get("train_mae"),
+                        test_mae=results.get("test_mae"),
+                        train_mape=results.get("train_mape"),
+                        test_mape=results.get("test_mape"),
+                        training_rows=results.get("training_rows", 0),
+                        test_rows=results.get("test_rows", 0),
+                        feature_importance=json.dumps(results.get("feature_importance", {})),
+                        items_trained=json.dumps(items_trained),
+                        data_start_date=min_date,
+                        data_end_date=max_date,
+                        is_active=True
+                    )
+                    db.add(trained_model)
+                    db.commit()
+
+                    results["model_id"] = trained_model.id
+                    results["model_saved"] = True
+
+                except Exception as e:
+                    print(f"Error saving model: {e}")
+                    results["model_saved"] = False
+                finally:
+                    db.close()
+
+            # Final result
+            yield f"data: {json.dumps({'step': 'complete', 'message': 'Training complete!', 'progress': 100, 'results': clean_for_json(results)})}\n\n"
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            yield f"data: {json.dumps({'step': 'error', 'message': str(e)})}\n\n"
+
+    return StreamingResponse(
+        generate_progress(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )

@@ -16,7 +16,9 @@ class BusinessConfig:
         zipcode: str,
         country: str = "US",
         timezone: str = "America/New_York",
-        time_blocks: dict = None
+        time_blocks: dict = None,
+        latitude: float = None,
+        longitude: float = None
     ):
         self.business_name = business_name
         self.city = city
@@ -25,9 +27,13 @@ class BusinessConfig:
         self.country = country
         self.timezone = timezone
         self.time_blocks = time_blocks or DEFAULT_TIME_BLOCKS
-        
-        # Convert to lat/long for weather API
-        self.latitude, self.longitude = self._get_coordinates()
+
+        # Use provided coordinates or fetch them (only if not cached)
+        if latitude is not None and longitude is not None:
+            self.latitude = latitude
+            self.longitude = longitude
+        else:
+            self.latitude, self.longitude = self._get_coordinates()
     
     def _get_coordinates(self) -> tuple:
         """Convert city/zip to lat/long using free API"""

@@ -202,6 +202,80 @@
             margin-right: auto;
         }
 
+        .progress-bar-container {
+            width: 100%;
+            max-width: 400px;
+            margin: var(--space-4) auto;
+            background: var(--gray-100);
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-6);
+            margin-top: var(--space-6);
+            flex-wrap: wrap;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--gray-400);
+            font-size: 13px;
+            transition: color 0.2s ease;
+        }
+
+        .progress-step.active {
+            color: #14B8A6;
+        }
+
+        .progress-step.completed {
+            color: #10B981;
+        }
+
+        .progress-step .step-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-step.active .step-icon {
+            background: #14B8A6;
+            border-color: #14B8A6;
+        }
+
+        .progress-step.completed .step-icon {
+            background: #10B981;
+            border-color: #10B981;
+        }
+
+        .progress-step .step-icon svg {
+            width: 12px;
+            height: 12px;
+            stroke: white;
+            display: none;
+        }
+
+        .progress-step.completed .step-icon svg {
+            display: block;
+        }
+
         .results-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -456,8 +530,45 @@
                 <div class="upload-section" id="trainingSection" style="display: none;">
                     <div class="training-progress">
                         <div class="spinner spinner-lg"></div>
-                        <h3 class="text-lg font-semibold">Training your model...</h3>
-                        <p class="text-gray-500 mt-2">This may take a minute. We're fetching weather, holidays, and other data for your location.</p>
+                        <h3 class="text-lg font-semibold" id="progressTitle">Training your model...</h3>
+                        <p class="text-gray-500 mt-2" id="progressMessage">Starting...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step" id="step-processing" data-step="processing">
+                                <div class="step-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </div>
+                                <span>Processing</span>
+                            </div>
+                            <div class="progress-step" id="step-external" data-step="external">
+                                <div class="step-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </div>
+                                <span>External Data</span>
+                            </div>
+                            <div class="progress-step" id="step-training" data-step="training">
+                                <div class="step-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </div>
+                                <span>Training</span>
+                            </div>
+                            <div class="progress-step" id="step-saving" data-step="saving">
+                                <div class="step-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </div>
+                                <span>Saving</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -585,9 +696,47 @@
             document.getElementById('mappingSection').style.display = 'block';
         }
 
+        let completedSteps = [];
+
+        function updateProgress(step, message, progress) {
+            document.getElementById('progressMessage').textContent = message;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Update step indicators
+            const stepOrder = ['processing', 'external', 'training', 'saving'];
+            const currentIndex = stepOrder.indexOf(step);
+
+            stepOrder.forEach((s, index) => {
+                const stepEl = document.getElementById('step-' + s);
+                if (!stepEl) return;
+
+                stepEl.classList.remove('active', 'completed');
+                if (index < currentIndex || completedSteps.includes(s)) {
+                    stepEl.classList.add('completed');
+                } else if (index === currentIndex) {
+                    stepEl.classList.add('active');
+                }
+            });
+
+            // Mark current step as completed when we move to next
+            if (step && !completedSteps.includes(step) && currentIndex >= 0) {
+                completedSteps.push(step);
+            }
+        }
+
+        function resetProgress() {
+            completedSteps = [];
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressMessage').textContent = 'Starting...';
+            document.querySelectorAll('.progress-step').forEach(el => {
+                el.classList.remove('active', 'completed');
+            });
+        }
+
         async function startTraining() {
             document.getElementById('mappingSection').style.display = 'none';
             document.getElementById('trainingSection').style.display = 'block';
+            resetProgress();
 
             try {
                 const formData = new FormData();
@@ -609,13 +758,54 @@
                     formData.append('business_id', business.id);
                 }
 
-                const response = await fetch('/train', {
+                // Use streaming endpoint for real-time progress
+                const response = await fetch('/train/stream', {
                     method: 'POST',
                     body: formData
                 });
 
-                const results = await response.json();
-                showResults(results);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n\n');
+                    buffer = lines.pop(); // Keep incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+
+                                if (data.step === 'error') {
+                                    throw new Error(data.message);
+                                }
+
+                                if (data.step === 'complete') {
+                                    // Mark all steps as completed
+                                    ['processing', 'external', 'training', 'saving'].forEach(s => {
+                                        const el = document.getElementById('step-' + s);
+                                        if (el) {
+                                            el.classList.remove('active');
+                                            el.classList.add('completed');
+                                        }
+                                    });
+                                    document.getElementById('progressBar').style.width = '100%';
+                                    showResults(data.results);
+                                    return;
+                                }
+
+                                updateProgress(data.step, data.message, data.progress);
+                            } catch (e) {
+                                console.error('Parse error:', e);
+                            }
+                        }
+                    }
+                }
             } catch (error) {
                 console.error('Training error:', error);
                 alert('Training failed: ' + error.message);
