@@ -176,207 +176,227 @@
             overflow-x: auto;
         }
 
-        /* Neural Network Training Animation */
-        .training-container {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: var(--radius-xl);
+        /* Training Progress - Tech Theme */
+        .training-progress {
+            text-align: center;
             padding: var(--space-8);
-            position: relative;
-            overflow: hidden;
         }
 
-        .training-container::before {
-            content: '';
+        .training-visual {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto var(--space-6);
+        }
+
+        .training-ring {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(circle at 20% 50%, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
-            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid var(--gray-100);
         }
 
-        .neural-network-container {
-            position: relative;
+        .training-ring-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 280px;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary-500);
+            animation: spin 1.5s linear infinite;
+        }
+
+        .training-ring-progress::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--primary-500);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--primary-500);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .training-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .training-percent {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gray-900);
+            font-family: 'SF Mono', ui-monospace, monospace;
+            line-height: 1;
+        }
+
+        .training-percent-symbol {
+            font-size: 18px;
+            color: var(--gray-400);
+        }
+
+        .training-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-600);
+            margin-top: 4px;
+        }
+
+        .training-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .training-message {
+            color: var(--gray-500);
+            font-size: 14px;
+            margin-bottom: var(--space-6);
+            font-family: 'SF Mono', ui-monospace, monospace;
+        }
+
+        .training-steps {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-2);
             margin-bottom: var(--space-6);
         }
 
-        #neuralCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .training-info {
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
-
-        .training-info h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: var(--space-2);
-            text-shadow: 0 0 20px rgba(20, 184, 166, 0.5);
-        }
-
-        .training-info p {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-bottom: var(--space-4);
-            font-family: 'SF Mono', 'Fira Code', monospace;
-        }
-
-        .tech-progress-bar {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto var(--space-6);
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 4px;
-            height: 6px;
-            overflow: hidden;
-            border: 1px solid rgba(20, 184, 166, 0.3);
-            box-shadow: 0 0 20px rgba(20, 184, 166, 0.2);
-        }
-
-        .tech-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #14B8A6, #6366f1, #14B8A6);
-            background-size: 200% 100%;
-            animation: progressGlow 2s linear infinite;
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            width: 0%;
-            box-shadow: 0 0 10px rgba(20, 184, 166, 0.8);
-        }
-
-        @keyframes progressGlow {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-
-        .tech-steps {
-            display: flex;
-            justify-content: center;
-            gap: var(--space-4);
-            flex-wrap: wrap;
-        }
-
-        .tech-step {
+        .training-step {
             display: flex;
             align-items: center;
             gap: var(--space-2);
-            padding: 8px 16px;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            border-radius: 20px;
-            color: #64748b;
+            padding: 10px 16px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-full);
+            color: var(--gray-400);
             font-size: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
-        .tech-step.active {
-            color: #14B8A6;
-            border-color: rgba(20, 184, 166, 0.5);
-            background: rgba(20, 184, 166, 0.1);
-            box-shadow: 0 0 15px rgba(20, 184, 166, 0.3);
+        .training-step.active {
+            color: var(--primary-600);
+            background: var(--primary-50);
+            border-color: var(--primary-200);
         }
 
-        .tech-step.completed {
-            color: #10B981;
-            border-color: rgba(16, 185, 129, 0.5);
-            background: rgba(16, 185, 129, 0.1);
+        .training-step.completed {
+            color: var(--success-600);
+            background: var(--success-50);
+            border-color: var(--success-200);
         }
 
-        .tech-step .step-dot {
-            width: 8px;
-            height: 8px;
+        .training-step .step-indicator {
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: currentColor;
-            transition: all 0.3s ease;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: all 0.2s ease;
         }
 
-        .tech-step.active .step-dot {
-            box-shadow: 0 0 10px currentColor;
+        .training-step.active .step-indicator {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            color: white;
             animation: pulse 1.5s ease-in-out infinite;
         }
 
+        .training-step.completed .step-indicator {
+            background: var(--success-500);
+            border-color: var(--success-500);
+            color: white;
+        }
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(20, 184, 166, 0); }
         }
 
-        .tech-step .check-icon {
-            display: none;
-            width: 12px;
-            height: 12px;
+        .training-step .step-indicator svg {
+            width: 10px;
+            height: 10px;
+            stroke-width: 3;
         }
 
-        .tech-step.completed .step-dot {
-            display: none;
+        .training-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-3);
+            max-width: 400px;
+            margin: 0 auto;
+            padding: var(--space-4);
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-100);
         }
 
-        .tech-step.completed .check-icon {
-            display: block;
+        .training-metric {
+            text-align: center;
         }
 
-        /* Data particles floating effect */
-        .data-particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #14B8A6;
-            border-radius: 50%;
-            opacity: 0;
-            animation: floatUp 3s ease-in-out infinite;
-            box-shadow: 0 0 6px #14B8A6;
+        .training-metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            font-family: 'SF Mono', ui-monospace, monospace;
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(100px) scale(0); opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        .training-metric-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+            margin-top: 2px;
         }
 
-        /* Terminal-style log */
-        .training-log {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(71, 85, 105, 0.3);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-top: var(--space-4);
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 11px;
-            color: #10B981;
-            text-align: left;
-            max-height: 80px;
-            overflow-y: auto;
+        [data-theme="dark"] .training-ring {
+            border-color: var(--gray-700);
         }
 
-        .training-log .log-line {
-            margin-bottom: 4px;
-            opacity: 0.9;
+        [data-theme="dark"] .training-percent {
+            color: var(--gray-100);
         }
 
-        .training-log .log-line::before {
-            content: '>';
-            color: #6366f1;
-            margin-right: 8px;
+        [data-theme="dark"] .training-title {
+            color: var(--gray-100);
         }
 
-        .training-log .log-line.highlight {
-            color: #14B8A6;
+        [data-theme="dark"] .training-step {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        [data-theme="dark"] .training-metrics {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        [data-theme="dark"] .training-metric-value {
+            color: var(--gray-100);
         }
 
         .results-grid {
@@ -629,50 +649,60 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Training with Neural Network Animation -->
-                <div class="upload-section" id="trainingSection" style="display: none; padding: 0; overflow: hidden;">
-                    <div class="training-container">
-                        <div class="neural-network-container">
-                            <canvas id="neuralCanvas"></canvas>
+                <!-- Step 3: Training -->
+                <div class="upload-section" id="trainingSection" style="display: none;">
+                    <div class="training-progress">
+                        <div class="training-visual">
+                            <div class="training-ring"></div>
+                            <div class="training-ring-progress"></div>
+                            <div class="training-inner">
+                                <div class="training-percent"><span id="progressPercent">0</span><span class="training-percent-symbol">%</span></div>
+                                <div class="training-label">Complete</div>
+                            </div>
                         </div>
-                        <div class="training-info">
-                            <h3 id="progressTitle">Building Neural Network</h3>
-                            <p id="progressMessage">Initializing model architecture...</p>
-                            <div class="tech-progress-bar">
-                                <div class="tech-progress-fill" id="progressBar"></div>
+
+                        <h3 class="training-title" id="progressTitle">Training Model</h3>
+                        <p class="training-message" id="progressMessage">Initializing...</p>
+
+                        <div class="training-steps">
+                            <div class="training-step" id="step-processing">
+                                <span class="step-indicator">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                                <span>Parse</span>
                             </div>
-                            <div class="tech-steps">
-                                <div class="tech-step" id="step-processing">
-                                    <span class="step-dot"></span>
-                                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                    <span>DATA_PARSE</span>
-                                </div>
-                                <div class="tech-step" id="step-external">
-                                    <span class="step-dot"></span>
-                                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                    <span>FETCH_EXT</span>
-                                </div>
-                                <div class="tech-step" id="step-training">
-                                    <span class="step-dot"></span>
-                                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                    <span>TRAIN_MODEL</span>
-                                </div>
-                                <div class="tech-step" id="step-saving">
-                                    <span class="step-dot"></span>
-                                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                    <span>PERSIST</span>
-                                </div>
+                            <div class="training-step" id="step-external">
+                                <span class="step-indicator">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                                <span>Fetch</span>
                             </div>
-                            <div class="training-log" id="trainingLog">
-                                <div class="log-line">Initializing TrucastAI engine...</div>
+                            <div class="training-step" id="step-training">
+                                <span class="step-indicator">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                                <span>Train</span>
+                            </div>
+                            <div class="training-step" id="step-saving">
+                                <span class="step-indicator">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                                <span>Save</span>
+                            </div>
+                        </div>
+
+                        <div class="training-metrics">
+                            <div class="training-metric">
+                                <div class="training-metric-value" id="metricRows">--</div>
+                                <div class="training-metric-label">Rows</div>
+                            </div>
+                            <div class="training-metric">
+                                <div class="training-metric-value" id="metricFeatures">--</div>
+                                <div class="training-metric-label">Features</div>
+                            </div>
+                            <div class="training-metric">
+                                <div class="training-metric-value" id="metricExternal">--</div>
+                                <div class="training-metric-label">External</div>
                             </div>
                         </div>
                     </div>
@@ -803,278 +833,30 @@
         }
 
         let completedSteps = [];
-        let neuralNetwork = null;
-        let animationFrame = null;
-
-        // Neural Network Animation Class
-        class NeuralNetworkAnimation {
-            constructor(canvas) {
-                this.canvas = canvas;
-                this.ctx = canvas.getContext('2d');
-                this.nodes = [];
-                this.connections = [];
-                this.dataParticles = [];
-                this.progress = 0;
-                this.activeLayer = 0;
-                this.resize();
-                window.addEventListener('resize', () => this.resize());
-            }
-
-            resize() {
-                const rect = this.canvas.parentElement.getBoundingClientRect();
-                this.canvas.width = rect.width * 2;
-                this.canvas.height = rect.height * 2;
-                this.ctx.scale(2, 2);
-                this.width = rect.width;
-                this.height = rect.height;
-                this.initNetwork();
-            }
-
-            initNetwork() {
-                this.nodes = [];
-                this.connections = [];
-
-                // Create layers: input(4) -> hidden1(6) -> hidden2(8) -> hidden3(6) -> output(3)
-                const layers = [4, 6, 8, 6, 3];
-                const layerSpacing = this.width / (layers.length + 1);
-
-                layers.forEach((nodeCount, layerIndex) => {
-                    const x = layerSpacing * (layerIndex + 1);
-                    const nodeSpacing = this.height / (nodeCount + 1);
-
-                    for (let i = 0; i < nodeCount; i++) {
-                        const y = nodeSpacing * (i + 1);
-                        this.nodes.push({
-                            x, y,
-                            layer: layerIndex,
-                            index: i,
-                            radius: 8,
-                            active: false,
-                            pulse: 0,
-                            built: false
-                        });
-                    }
-                });
-
-                // Create connections between adjacent layers
-                this.nodes.forEach(node => {
-                    const nextLayerNodes = this.nodes.filter(n => n.layer === node.layer + 1);
-                    nextLayerNodes.forEach(targetNode => {
-                        this.connections.push({
-                            from: node,
-                            to: targetNode,
-                            active: false,
-                            progress: 0,
-                            built: false
-                        });
-                    });
-                });
-            }
-
-            setProgress(percent) {
-                this.progress = percent;
-                const totalLayers = 5;
-                this.activeLayer = Math.floor((percent / 100) * totalLayers);
-
-                // Build nodes and connections progressively
-                this.nodes.forEach(node => {
-                    if (node.layer <= this.activeLayer) {
-                        node.built = true;
-                        node.active = node.layer === this.activeLayer;
-                    }
-                });
-
-                this.connections.forEach(conn => {
-                    if (conn.from.layer < this.activeLayer) {
-                        conn.built = true;
-                        conn.progress = 1;
-                    } else if (conn.from.layer === this.activeLayer - 1) {
-                        conn.active = true;
-                        conn.progress = Math.min(1, conn.progress + 0.05);
-                    }
-                });
-
-                // Spawn data particles
-                if (Math.random() < 0.3 && this.activeLayer > 0) {
-                    this.spawnParticle();
-                }
-            }
-
-            spawnParticle() {
-                const startNodes = this.nodes.filter(n => n.layer === 0 && n.built);
-                if (startNodes.length === 0) return;
-
-                const startNode = startNodes[Math.floor(Math.random() * startNodes.length)];
-                this.dataParticles.push({
-                    x: startNode.x,
-                    y: startNode.y,
-                    targetLayer: 1,
-                    progress: 0,
-                    path: this.generatePath(startNode),
-                    color: Math.random() > 0.5 ? '#14B8A6' : '#6366f1'
-                });
-            }
-
-            generatePath(startNode) {
-                const path = [startNode];
-                let currentNode = startNode;
-
-                for (let layer = 1; layer <= Math.min(this.activeLayer, 4); layer++) {
-                    const nextNodes = this.nodes.filter(n => n.layer === layer && n.built);
-                    if (nextNodes.length === 0) break;
-                    currentNode = nextNodes[Math.floor(Math.random() * nextNodes.length)];
-                    path.push(currentNode);
-                }
-                return path;
-            }
-
-            draw() {
-                this.ctx.clearRect(0, 0, this.width, this.height);
-
-                // Draw connections
-                this.connections.forEach(conn => {
-                    if (!conn.from.built) return;
-
-                    const gradient = this.ctx.createLinearGradient(
-                        conn.from.x, conn.from.y, conn.to.x, conn.to.y
-                    );
-
-                    if (conn.active) {
-                        gradient.addColorStop(0, 'rgba(20, 184, 166, 0.8)');
-                        gradient.addColorStop(conn.progress, 'rgba(99, 102, 241, 0.8)');
-                        gradient.addColorStop(Math.min(1, conn.progress + 0.01), 'rgba(71, 85, 105, 0.2)');
-                        gradient.addColorStop(1, 'rgba(71, 85, 105, 0.1)');
-                    } else if (conn.built) {
-                        gradient.addColorStop(0, 'rgba(20, 184, 166, 0.4)');
-                        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.4)');
-                    } else {
-                        gradient.addColorStop(0, 'rgba(71, 85, 105, 0.15)');
-                        gradient.addColorStop(1, 'rgba(71, 85, 105, 0.15)');
-                    }
-
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(conn.from.x, conn.from.y);
-                    this.ctx.lineTo(conn.to.x, conn.to.y);
-                    this.ctx.strokeStyle = gradient;
-                    this.ctx.lineWidth = conn.active ? 2 : 1;
-                    this.ctx.stroke();
-                });
-
-                // Draw data particles
-                this.dataParticles.forEach((particle, index) => {
-                    if (particle.path.length < 2) return;
-
-                    const pathIndex = Math.floor(particle.progress * (particle.path.length - 1));
-                    const localProgress = (particle.progress * (particle.path.length - 1)) % 1;
-
-                    if (pathIndex >= particle.path.length - 1) {
-                        this.dataParticles.splice(index, 1);
-                        return;
-                    }
-
-                    const from = particle.path[pathIndex];
-                    const to = particle.path[pathIndex + 1];
-
-                    particle.x = from.x + (to.x - from.x) * localProgress;
-                    particle.y = from.y + (to.y - from.y) * localProgress;
-                    particle.progress += 0.02;
-
-                    // Draw particle with glow
-                    this.ctx.beginPath();
-                    this.ctx.arc(particle.x, particle.y, 4, 0, Math.PI * 2);
-                    this.ctx.fillStyle = particle.color;
-                    this.ctx.shadowColor = particle.color;
-                    this.ctx.shadowBlur = 10;
-                    this.ctx.fill();
-                    this.ctx.shadowBlur = 0;
-                });
-
-                // Draw nodes
-                this.nodes.forEach(node => {
-                    // Outer glow for active nodes
-                    if (node.active) {
-                        node.pulse = (node.pulse + 0.05) % (Math.PI * 2);
-                        const glowSize = 15 + Math.sin(node.pulse) * 5;
-
-                        const glow = this.ctx.createRadialGradient(
-                            node.x, node.y, 0, node.x, node.y, glowSize
-                        );
-                        glow.addColorStop(0, 'rgba(20, 184, 166, 0.4)');
-                        glow.addColorStop(1, 'rgba(20, 184, 166, 0)');
-
-                        this.ctx.beginPath();
-                        this.ctx.arc(node.x, node.y, glowSize, 0, Math.PI * 2);
-                        this.ctx.fillStyle = glow;
-                        this.ctx.fill();
-                    }
-
-                    // Node circle
-                    this.ctx.beginPath();
-                    this.ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-
-                    if (node.active) {
-                        this.ctx.fillStyle = '#14B8A6';
-                        this.ctx.shadowColor = '#14B8A6';
-                        this.ctx.shadowBlur = 15;
-                    } else if (node.built) {
-                        this.ctx.fillStyle = '#6366f1';
-                        this.ctx.shadowBlur = 0;
-                    } else {
-                        this.ctx.fillStyle = 'rgba(71, 85, 105, 0.3)';
-                        this.ctx.shadowBlur = 0;
-                    }
-
-                    this.ctx.fill();
-                    this.ctx.shadowBlur = 0;
-
-                    // Inner highlight
-                    if (node.built) {
-                        this.ctx.beginPath();
-                        this.ctx.arc(node.x - 2, node.y - 2, 3, 0, Math.PI * 2);
-                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                        this.ctx.fill();
-                    }
-                });
-            }
-
-            animate() {
-                this.draw();
-                animationFrame = requestAnimationFrame(() => this.animate());
-            }
-
-            stop() {
-                if (animationFrame) {
-                    cancelAnimationFrame(animationFrame);
-                    animationFrame = null;
-                }
-            }
-        }
-
-        function addLogLine(message, highlight = false) {
-            const log = document.getElementById('trainingLog');
-            const line = document.createElement('div');
-            line.className = 'log-line' + (highlight ? ' highlight' : '');
-            line.textContent = message;
-            log.appendChild(line);
-            log.scrollTop = log.scrollHeight;
-
-            // Keep only last 6 lines
-            while (log.children.length > 6) {
-                log.removeChild(log.firstChild);
-            }
-        }
+        let trainingMetrics = { rows: 0, features: 12, external: 0 };
 
         function updateProgress(step, message, progress) {
+            // Update percentage display
+            document.getElementById('progressPercent').textContent = Math.round(progress);
             document.getElementById('progressMessage').textContent = message;
-            document.getElementById('progressBar').style.width = progress + '%';
 
-            // Update neural network animation
-            if (neuralNetwork) {
-                neuralNetwork.setProgress(progress);
+            // Parse metrics from message
+            const rowMatch = message.match(/(\d{1,3}(?:,\d{3})*)\s*rows/i);
+            if (rowMatch) {
+                trainingMetrics.rows = rowMatch[1];
+                document.getElementById('metricRows').textContent = trainingMetrics.rows;
             }
 
-            // Add to training log
-            addLogLine(message, step === 'training');
+            const externalMatch = message.match(/(\d+)\s*external/i);
+            if (externalMatch) {
+                trainingMetrics.external = externalMatch[1];
+                document.getElementById('metricExternal').textContent = trainingMetrics.external;
+            }
+
+            // Update features estimate based on step
+            if (step === 'external' && progress >= 50) {
+                document.getElementById('metricFeatures').textContent = '12';
+            }
 
             // Update step indicators
             const stepOrder = ['processing', 'external', 'training', 'saving'];
@@ -1100,20 +882,15 @@
 
         function resetProgress() {
             completedSteps = [];
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('progressMessage').textContent = 'Initializing model architecture...';
-            document.getElementById('trainingLog').innerHTML = '<div class="log-line">Initializing TrucastAI engine...</div>';
-            document.querySelectorAll('.tech-step').forEach(el => {
+            trainingMetrics = { rows: 0, features: 12, external: 0 };
+            document.getElementById('progressPercent').textContent = '0';
+            document.getElementById('progressMessage').textContent = 'Initializing...';
+            document.getElementById('metricRows').textContent = '--';
+            document.getElementById('metricFeatures').textContent = '--';
+            document.getElementById('metricExternal').textContent = '--';
+            document.querySelectorAll('.training-step').forEach(el => {
                 el.classList.remove('active', 'completed');
             });
-
-            // Initialize neural network animation
-            const canvas = document.getElementById('neuralCanvas');
-            if (canvas) {
-                if (neuralNetwork) neuralNetwork.stop();
-                neuralNetwork = new NeuralNetworkAnimation(canvas);
-                neuralNetwork.animate();
-            }
         }
 
         async function startTraining() {
@@ -1197,12 +974,6 @@
         }
 
         function showResults(results) {
-            // Stop neural network animation
-            if (neuralNetwork) {
-                neuralNetwork.stop();
-                neuralNetwork = null;
-            }
-
             document.getElementById('trainingSection').style.display = 'none';
             document.getElementById('resultsSection').style.display = 'block';
 
@@ -1225,11 +996,6 @@
         }
 
         function resetUpload() {
-            // Stop neural network animation if running
-            if (neuralNetwork) {
-                neuralNetwork.stop();
-                neuralNetwork = null;
-            }
             clearFile();
             document.getElementById('trainingSection').style.display = 'none';
             document.getElementById('resultsSection').style.display = 'none';
