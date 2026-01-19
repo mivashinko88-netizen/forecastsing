@@ -163,7 +163,7 @@ async def serve_frontend():
     home_path = FRONTEND_DIR / "pages" / "home.html"
     if not home_path.exists():
         raise HTTPException(status_code=404, detail=f"Home page not found at {home_path}")
-    return FileResponse(home_path)
+    return FileResponse(home_path, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
 def clean_for_json(obj):
     """Replace NaN and Inf values with None for JSON serialization"""
